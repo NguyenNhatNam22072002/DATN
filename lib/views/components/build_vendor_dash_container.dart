@@ -32,16 +32,16 @@ class BuildDashboardContainer extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 50,
+                      width: 70,
                       child: FittedBox(
                         child: Text(
                           title,
@@ -75,7 +75,8 @@ class BuildDashboardContainer extends StatelessWidget {
             isBtn
                 ? ElevatedButton(
                     style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.white),
+                        ElevatedButton.styleFrom(backgroundColor: Colors.white,
+                        ),
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) =>

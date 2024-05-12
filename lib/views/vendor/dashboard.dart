@@ -85,7 +85,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
         index: 1,
       ),
       AppData(
-        title: 'Available Funds',
+        title: 'Revenues',
         number: availableFunds,
         color: dashGrey,
         icon: Icons.monetization_on,
@@ -124,7 +124,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                 ),
                 const SizedBox(height: AppSize.s10),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 6.5,
+                  height: MediaQuery.of(context).size.height / 5.5,
                   child: ListView.builder(
                     itemCount: data.length,
                     padding: EdgeInsets.zero,

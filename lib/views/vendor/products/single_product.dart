@@ -166,7 +166,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
               onTap: () => Navigator.of(context).pop(),
               child: const Icon(
                 Icons.chevron_left,
-                color: primaryColor,
+                color: Colors.black,
                 size: 35,
               ),
             );
@@ -270,7 +270,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
                           Text(
                             '${widget.product.quantity} available',
                             style: getRegularStyle(
-                              color: greyFontColor,
+                              color: Colors.black,
                               fontSize: FontSize.s16,
                             ),
                           ),
@@ -300,7 +300,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
                           backgroundColor: gridBg,
                           child: Text(
                             widget.product.sizesAvailable[index],
-                            style: getRegularStyle(color: greyFontColor),
+                            style: getRegularStyle(color: Colors.black),
                           ),
                         ),
                       ),
@@ -315,7 +315,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
                     trimCollapsedText: 'Show more ⌄',
                     trimExpandedText: 'Show less ^',
                     style: getRegularStyle(
-                      color: greyFontColor,
+                      color: Colors.black,
                       fontSize: FontSize.s16,
                     ),
                     lessStyle: const TextStyle(

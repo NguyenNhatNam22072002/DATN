@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:44906539150:android:da2ee0e9b8bfab819c01df",
+        "android_client_info": {
+          "package_name": "com.datn.shoe_shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44906539150-5mjcgdppsm2m4gvanv2d2nr1uubbokur.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQyqpunLkaxXRBgSBwechK45xYzvex2zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "44906539150-5mjcgdppsm2m4gvanv2d2nr1uubbokur.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "44906539150-dpkppfsth84qmqpe5anlc81mnr47um2c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.shoe-shop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:44906539150:android:9d9a0db8b27a034e9c01df",
         "android_client_info": {
           "package_name": "com.example.shoes_shop"
