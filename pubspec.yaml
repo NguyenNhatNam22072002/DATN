@@ -73,6 +73,7 @@ dependencies:
   flutterwave_standard: ^1.0.7
   flutter_slidable: ^3.0.0
   share_plus: ^7.0.2
+  skeletonizer: ^1.1.1
 
 dev_dependencies:
   flutter_test:
