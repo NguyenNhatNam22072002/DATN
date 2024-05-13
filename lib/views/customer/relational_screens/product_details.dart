@@ -74,7 +74,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
         vendorName = data['storeName'];
         vendorImage = data['storeImgUrl'];
-        vendorAddress = 'Locate in: ${data['city']} ${data['state']} ${reversedWord(data['country'])}';
+        vendorAddress =
+            'Locate in: ${data['city']} ${data['state']} ${reversedWord(data['country'])}';
         isLoadingVendor = false;
       });
     });
@@ -557,9 +558,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 5),
-
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.65, // 80% of screen width
+                                    width: MediaQuery.of(context).size.width *
+                                        0.65, // 80% of screen width
                                     child: Text(
                                       vendorAddress,
                                       style: getRegularStyle(
@@ -570,8 +571,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-
-
                                   const SizedBox(height: 5),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -634,7 +633,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     style: getRegularStyle(
                       color: Colors.black,
                       fontSize: FontSize.s16,
-                      fontWeight: FontWeight.bold, // Thêm dòng này để làm in đậm
+                      fontWeight:
+                          FontWeight.bold, // Thêm dòng này để làm in đậm
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -644,7 +644,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: SizedBox(
-                height: size.height / 3.7,
+                height: size.height / 3.5,
                 width: double.infinity,
                 child: StreamBuilder<QuerySnapshot>(
                   stream: similarProducts,
@@ -759,7 +759,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          product.productName,
+                                          product.productName.length > 12
+                                              ? '${product.productName.substring(0, 12)}...'
+                                              : product.productName,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                           ),
