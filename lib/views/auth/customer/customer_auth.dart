@@ -447,7 +447,7 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
                                     onPressed: () => _switchLog(),
                                     child: Text(
                                       isLogin
-                                          ? 'New here? Create Account'
+                                          ? 'Create a new account?'
                                           : 'Already a user? Sign in',
                                       style: const TextStyle(
                                         color: accentColor,

@@ -56,8 +56,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   isGreaterThanOrEqualTo: searchText.text.trim())
               .where('productName', isLessThan: '${searchText.text.trim()}z')
               .snapshots();
-
-
         } else {
           return productCollection
               .orderBy('productName', descending: true)
@@ -84,134 +82,150 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       }
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
-              right: 18,
-              left: 18,
-            ),
-            child: Column(
-              children: [
-                const Row(
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              pinned: true,
+              floating: true,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              flexibleSpace: Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  right: 18,
+                  left: 18,
+                ),
+                child: const Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    WelcomeIntro(),
-                    CartIcon(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        WelcomeIntro(),
+                        CartIcon(),
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: AppSize.s10),
-                SearchBox(searchText: searchText),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSize.s10),
-          const BannerComponent(),
-          const SizedBox(height: AppSize.s10),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Text(
-              'Categories',
-              style: getMediumStyle(
-                color: Colors.black,
-                fontSize: FontSize.s14,
               ),
             ),
-          ),
-          CategorySection(categoryProvider: categoryProvider),
-          // const SizedBox(height: 15),
-
-          // Product StreamBuilder
-          StreamBuilder<QuerySnapshot>(
-            stream: fetchProducts(),
-            builder: (
-              BuildContext context,
-              AsyncSnapshot<QuerySnapshot> snapshot,
-            ) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          AssetManager.warningImage,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text('An error occurred!'),
-                    ],
-                  ),
-                );
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: LoadingWidget(size: 30),
-                );
-              }
-
-              if (snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          AssetManager.addImage,
-                          width: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text('Product list is empty'),
-                    ],
-                  ),
-                );
-              }
-
-              return SizedBox(
-                height: size.height / 2.8,
-                child: MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  padding: const EdgeInsets.only(
-                    top: 0,
-                    right: 18,
-                    left: 18,
-                  ),
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    final item = snapshot.data!.docs[index];
-
-                    Product product = Product.fromJson(item);
-
-                    return InkWell(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailsScreen(
-                            product: product,
+          ];
+        },
+        body: ListView(
+          children: [
+            const BannerComponent(),
+            const SizedBox(height: AppSize.s10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: SearchBox(searchText: searchText),
+            ),
+            const SizedBox(height: AppSize.s10),
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: Text(
+                'Categories',
+                style: getMediumStyle(
+                  color: Colors.black,
+                  fontSize: FontSize.s14,
+                ),
+              ),
+            ),
+            CategorySection(categoryProvider: categoryProvider),
+            StreamBuilder<QuerySnapshot>(
+              stream: fetchProducts(),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<QuerySnapshot> snapshot,
+              ) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            AssetManager.warningImage,
+                            fit: BoxFit.cover,
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        const Text('An error occurred!'),
+                      ],
+                    ),
+                  );
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: LoadingWidget(size: 30),
+                  );
+                }
+
+                if (snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            AssetManager.addImage,
+                            width: 200,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text('Product list is empty'),
+                      ],
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    MasonryGridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      padding: const EdgeInsets.only(
+                        top: 0,
+                        right: 18,
+                        left: 18,
                       ),
-                      child: SingleProductGridItem(
-                        product: product,
-                        size: size,
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          )
-        ],
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        final item = snapshot.data!.docs[index];
+                        Product product = Product.fromJson(item);
+
+                        return InkWell(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailsScreen(
+                                product: product,
+                              ),
+                            ),
+                          ),
+                          child: SingleProductGridItem(
+                            product: product,
+                            size: size,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -23,7 +23,7 @@ class SearchBox extends StatelessWidget {
         hintText: 'Search here',
         suffixIcon: GestureDetector(
           onTap: () => handleSearch,
-          child: const Icon(Icons.search, color: primaryColor),
+          child: const Icon(Icons.search, color: Colors.black54),
         ),
         fillColor: searchBoxBg,
         enabledBorder: OutlineInputBorder(
