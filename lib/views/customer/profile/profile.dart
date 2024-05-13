@@ -155,7 +155,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : CustomScrollView(
             slivers: [
               SliverAppBar(
-                automaticallyImplyLeading: false, // Set to false to remove the back button
+                automaticallyImplyLeading:
+                    false, // Set to false to remove the back button
                 title: Center(
                   child: Text(
                     'My Profile',
@@ -168,7 +169,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 expandedHeight: 50,
                 backgroundColor: Colors.white, // Set the color you prefer
               ),
-
               SliverAppBar(
                 elevation: 0,
                 automaticallyImplyLeading: false,
@@ -179,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return FlexibleSpaceBar(
                       titlePadding: const EdgeInsets.symmetric(
                         horizontal: 18,
-                        vertical: 10 ,
+                        vertical: 10,
                       ),
                       title: AnimatedOpacity(
                         opacity: constraints.biggest.height <= 120 ? 1 : 0,
@@ -344,22 +344,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // const KDividerText(title: 'Account Information'),
                       const SizedBox(height: 20),
                       Container(
-                        height: size.height / 3,
+                        height: size.height / 3.5,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: ListView(
-                          padding: EdgeInsets.zero,
+                        child: Column(
                           children: [
                             KListTile(
                               title: 'Email Address',
                               subtitle: credential!['email'],
                               icon: Icons.email,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Divider(thickness: 1),
                             ),
                             KListTile(
                               title: 'Phone Number',
@@ -367,10 +362,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ? 'Not set yet'
                                   : credential!['phone'],
                               icon: Icons.phone,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Divider(thickness: 1),
                             ),
                             KListTile(
                               title: 'Delivery Address',
@@ -384,52 +375,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       // const KDividerText(title: 'Account Settings'),
                       const SizedBox(height: 20),
-                      Container(
-                        height: size.height / 3,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: [
-                            KListTile(
-                              title: 'App Settings',
-                              icon: Icons.settings,
-                              onTapHandler: _settings,
-                              showSubtitle: false,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Divider(thickness: 1),
-                            ),
-                            KListTile(
-                              title: 'Edit Profile',
-                              icon: Icons.edit_note,
-                              onTapHandler: _editProfile,
-                              showSubtitle: false,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Divider(thickness: 1),
-                            ),
-                            KListTile(
-                              title: 'Change Password',
-                              icon: Icons.key,
-                              onTapHandler: _changePassword,
-                              showSubtitle: false,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(1.0),
-                              child: Divider(thickness: 1),
-                            ),
-                            KListTile(
-                              title: 'Logout',
-                              icon: Icons.logout,
-                              onTapHandler: showLogoutOptions,
-                              showSubtitle: false,
-                            ),
-                          ],
+                      SingleChildScrollView(
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 24),
+                          height: size.height / 3.3,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Column(
+                            children: [
+                              KListTile(
+                                title: 'App Settings',
+                                icon: Icons.settings,
+                                onTapHandler: _settings,
+                                showSubtitle: false,
+                              ),
+                              KListTile(
+                                title: 'Edit Profile',
+                                icon: Icons.edit_note,
+                                onTapHandler: _editProfile,
+                                showSubtitle: false,
+                              ),
+                              KListTile(
+                                title: 'Change Password',
+                                icon: Icons.key,
+                                onTapHandler: _changePassword,
+                                showSubtitle: false,
+                              ),
+                              KListTile(
+                                title: 'Logout',
+                                icon: Icons.logout,
+                                onTapHandler: showLogoutOptions,
+                                showSubtitle: false,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
