@@ -249,6 +249,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Column(
                     children: [
+                      SizedBox(
+                        height: 10,
+                      ),
                       Container(
                         height: 60,
                         width: size.width / 0.9,
@@ -342,7 +345,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       // const KDividerText(title: 'Account Information'),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Container(
                         height: size.height / 3.5,
                         decoration: BoxDecoration(
