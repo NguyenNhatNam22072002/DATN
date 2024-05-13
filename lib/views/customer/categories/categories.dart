@@ -31,7 +31,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       isEnableSke = true;
     });
     // Simulate a delay of 2 seconds
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     setState(() {
       isEnableSke = false;
       // Reset the stream with new data
@@ -76,11 +76,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
             if (snapshot.connectionState == ConnectionState.waiting) {
               // Show skeleton loader while waiting for data
-              return ListView.builder(
-                itemCount: 6, // Number of skeleton items
-                itemBuilder: (context, index) {
-                  return LoadingWidget(size: 30);
-                },
+              return Center(
+                child: ListView.builder(
+                  itemCount: 1, // Number of skeleton items
+                  itemBuilder: (context, index) {
+                    return LoadingWidget(size: 1);
+                  },
+                ),
               );
             }
 
