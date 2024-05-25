@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
-import 'package:shoes_shop/views/widgets/vendor_livestream.dart';
+import 'package:shoes_shop/views/vendor/livestream/vendor_livestream.dart';
 import '../../constants/color.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
