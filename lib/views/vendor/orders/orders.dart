@@ -18,15 +18,15 @@ class _OrdersScreenState extends State<OrdersScreen>
   void initState() {
     super.initState();
     _tabBarController = TabController(
-      length: 4,
+      length: 5,
       vsync: this,
     );
   }
 
   @override
   void dispose() {
-    super.dispose();
     _tabBarController!.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,52 +48,98 @@ class _OrdersScreenState extends State<OrdersScreen>
             ),
           ],
         ),
-
         backgroundColor: primaryColor,
         bottom: PreferredSize(
-              preferredSize: Size.fromHeight(35.0), // Đặt chiều cao là 0 để ẩn bottom
-              child: Container(
-                padding: EdgeInsets.only(bottom: 2.0), // Điều chỉnh giá trị này để làm cho mặt dưới gần các Tab hơn
-                child: TabBar(
-                      controller: _tabBarController,
-                      indicatorColor: accentColor,
-                      tabs: const [
-                        Tab(child: Text(
-                          'Approved',
-                          style: TextStyle(
-                            fontSize: 10.6,
-                          ),
-                        )
-                        ),
-                        Tab(child: Text('Unapproved',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                          ),
-                        )
-                        ),
-                        Tab(child: Text('Undelivered',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                          ),
-                        )
-                        ),
-                        Tab(child: Text('Delivered',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                          ),
-                        )
-                        ),
-                      ],
-                    ),
+          preferredSize: Size.fromHeight(60.0),
+          child: Container(
+            padding: const EdgeInsets.only(bottom: 2.0),
+            child: TabBar(
+              padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+              controller: _tabBarController,
+              indicatorColor: accentColor,
+              tabs: const [
+                Tab(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.pending),
+                      SizedBox(height: 2.0),
+                      Text(
+                        'Pending',
+                        style: TextStyle(fontSize: 9),
+                      ),
+                    ],
                   ),
                 ),
+                Tab(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check_circle),
+                      SizedBox(height: 2.0),
+                      Text(
+                        'Approved',
+                        style: TextStyle(fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.hourglass_top),
+                      SizedBox(height: 2.0),
+                      Text(
+                        'Processing',
+                        style: TextStyle(fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.local_shipping),
+                      SizedBox(height: 2.0),
+                      Text(
+                        'Delivering',
+                        style: TextStyle(fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.done_all),
+                      SizedBox(height: 2.0),
+                      Text(
+                        'Delivered',
+                        style: TextStyle(fontSize: 9),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: TabBarView(
         controller: _tabBarController,
         children: const [
+          PendingOrders(),
           ApprovedOrders(),
-          UnApprovedOrders(),
-          UnDeliveredOrders(),
+          ProcessingOrders(),
+          DeliveringOrders(),
           DeliveredOrders(),
         ],
       ),

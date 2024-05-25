@@ -14,14 +14,14 @@ import '../../../widgets/are_you_sure_dialog.dart';
 import '../../../widgets/loading_widget.dart';
 import 'package:uuid/uuid.dart';
 
-class UnApprovedOrders extends StatefulWidget {
-  const UnApprovedOrders({super.key});
+class ProcessingOrders extends StatefulWidget {
+  const ProcessingOrders({super.key});
 
   @override
-  State<UnApprovedOrders> createState() => _UnApprovedOrdersState();
+  State<ProcessingOrders> createState() => _ProcessingOrdersState();
 }
 
-class _UnApprovedOrdersState extends State<UnApprovedOrders> {
+class _ProcessingOrdersState extends State<ProcessingOrders> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
 
@@ -31,14 +31,14 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          checkedOutItem.status == 4 ? 'Cancel Approval' : 'Approve Order',
+          checkedOutItem.status == 5 ? 'Cancel Approval' : 'Approve Order',
           style: getMediumStyle(
             color: Colors.black,
             fontSize: FontSize.s16,
           ),
         ),
         content: Text(
-          'Are you sure you want to ${checkedOutItem.status == 4 ? 'cancel approval of' : 'approve'} ${checkedOutItem.prodName}',
+          'Are you sure you want to ${checkedOutItem.status == 5 ? 'cancel approval of' : 'approve'} ${checkedOutItem.prodName}',
         ),
         actions: [
           ElevatedButton(
@@ -49,7 +49,7 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
               ),
             ),
             onPressed: () => toggleApproval(
-                checkedOutItem.orderId, checkedOutItem.status == 4),
+                checkedOutItem.orderId, checkedOutItem.status == 5),
             child: const Text('Yes'),
           ),
           ElevatedButton(
@@ -72,7 +72,7 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
     await FirebaseCollections.ordersCollection.doc(orderId).update({
       'isApproved': !isApproved,
     }).whenComplete(
-          () => Navigator.of(context).pop(),
+      () => Navigator.of(context).pop(),
     );
   }
 
@@ -109,7 +109,7 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
         .where('isApproved', isEqualTo: false)
         .get()
         .then(
-          (QuerySnapshot data) {
+      (QuerySnapshot data) {
         for (var doc in data.docs) {
           // cancel all deliveries
           FirebaseCollections.ordersCollection.doc(doc['orderId']).update({
@@ -118,7 +118,7 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
         }
       },
     ).whenComplete(
-          () => Navigator.of(context).pop(),
+      () => Navigator.of(context).pop(),
     );
   }
 
@@ -126,16 +126,16 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
         .where('vendorId', isEqualTo: userId)
-        .where('isApproved', isEqualTo: false)
+        .where('status', isEqualTo: 3)
         .snapshots();
 
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
         stream: ordersStream,
         builder: (
-            BuildContext context,
-            AsyncSnapshot<QuerySnapshot> snapshot,
-            ) {
+          BuildContext context,
+          AsyncSnapshot<QuerySnapshot> snapshot,
+        ) {
           if (snapshot.hasError) {
             return Center(
               child: Column(
@@ -219,10 +219,10 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
                           togglePublishProductDialog(checkedOutItem),
                       backgroundColor: Colors.grey,
                       foregroundColor: Colors.white,
-                      icon: checkedOutItem.status == 4
+                      icon: checkedOutItem.status == 5
                           ? Icons.cancel
                           : Icons.check_circle,
-                      label: checkedOutItem.status == 4
+                      label: checkedOutItem.status == 5
                           ? 'Cancel Approval'
                           : 'Approved',
                     ),
