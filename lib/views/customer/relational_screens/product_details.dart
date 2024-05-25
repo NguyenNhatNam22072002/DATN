@@ -759,8 +759,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          product.productName.length > 12
-                                              ? '${product.productName.substring(0, 12)}...'
+                                          product.productName.length > 9
+                                              ? '${product.productName.substring(0, 9)}...'
                                               : product.productName,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,

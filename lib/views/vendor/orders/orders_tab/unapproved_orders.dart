@@ -31,14 +31,14 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          checkedOutItem.isApproved ? 'Cancel Approval' : 'Approve Order',
+          checkedOutItem.status == 4 ? 'Cancel Approval' : 'Approve Order',
           style: getMediumStyle(
             color: Colors.black,
             fontSize: FontSize.s16,
           ),
         ),
         content: Text(
-          'Are you sure you want to ${checkedOutItem.isApproved ? 'cancel approval of' : 'approve'} ${checkedOutItem.prodName}',
+          'Are you sure you want to ${checkedOutItem.status == 4 ? 'cancel approval of' : 'approve'} ${checkedOutItem.prodName}',
         ),
         actions: [
           ElevatedButton(
@@ -49,7 +49,7 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
               ),
             ),
             onPressed: () => toggleApproval(
-                checkedOutItem.orderId, checkedOutItem.isApproved),
+                checkedOutItem.orderId, checkedOutItem.status == 4),
             child: const Text('Yes'),
           ),
           ElevatedButton(
@@ -219,10 +219,10 @@ class _UnApprovedOrdersState extends State<UnApprovedOrders> {
                           togglePublishProductDialog(checkedOutItem),
                       backgroundColor: Colors.grey,
                       foregroundColor: Colors.white,
-                      icon: checkedOutItem.isApproved
+                      icon: checkedOutItem.status == 4
                           ? Icons.cancel
                           : Icons.check_circle,
-                      label: checkedOutItem.isApproved
+                      label: checkedOutItem.status == 4
                           ? 'Cancel Approval'
                           : 'Approved',
                     ),

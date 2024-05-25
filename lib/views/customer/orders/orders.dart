@@ -86,8 +86,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   Future<void> saveAPIKeys() async {
-    await storage.write(key: 'flutterwave_public_key', value: 'FLWPUBK_TEST-8702ae0933b8391716dc72a1eda6049c-X');
-    await storage.write(key: 'flutterwave_encrypt_key', value: 'FLWSECK_TEST0bf8411bf744');
+    await storage.write(
+        key: 'flutterwave_public_key',
+        value: 'FLWPUBK_TEST-8702ae0933b8391716dc72a1eda6049c-X');
+    await storage.write(
+        key: 'flutterwave_encrypt_key', value: 'FLWSECK_TEST0bf8411bf744');
   }
 
   // pop out
@@ -143,16 +146,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
           FirebaseCollections.ordersCollection.doc(id).set({
             'orderId': id,
             'vendorId': item.vendorId,
-            'customerId':buyer.customerId,
+            'customerId': buyer.customerId,
             'prodId': item.prodId,
             'prodName': item.prodName,
             'prodImg': item.prodImg,
             'prodSize': item.prodSize,
-            'prodPrice':item.price,
+            'prodPrice': item.price,
             'prodQuantity': item.quantity,
             'date': item.date,
-            'isDelivered': false,
-            'isApproved': false,
+            'status': 5
           });
         }
       }
@@ -172,50 +174,51 @@ class _OrdersScreenState extends State<OrdersScreen> {
           action: navigateToProfile,
           confirmBtnText: 'Update Profile',
         );
-      }
-
-      // handle payment
-
-      if (apiPublicKey == null) {
-        return;
-      }
-      final Customer customer = Customer(email: buyer.email.toString(), name: buyer.fullname.toString(), phoneNumber: buyer.phone.toString());
-
-      final Flutterwave flutterwave = Flutterwave(
-        context: context,
-        publicKey: apiPublicKey!,
-        currency: "USD",
-        redirectUrl: "https://www.google.com",
-        txRef: "${buyer.customerId}_${Timestamp.now().toString()}",
-        amount: orderData.getTotal.toString(),
-        customer: customer,
-        paymentOptions: "card, payattitude, barter, bank transfer, ussd",
-        customization: Customization(
-          title: "Make Payment",
-          description: "Make payment for the order items",
-        ),
-        isTestMode: false,
-      );
-
-      try
-      {
-        final ChargeResponse response = await flutterwave.charge();
-        print("NAMNAMNAMANMAN");
-        if (response.success == true) {
-          showLoading(
-              "You have successfully placed your order", Status.success);
-          submitOrderToFirebase(); // upload to firebase
-          removeAllOrderItems(); // remove order
-        } else {
-          showLoading(
-            'Ops! Payment was not successful',
-            Status.error,
-          );
+      } else {
+        // handle payment
+        if (apiPublicKey == null) {
+          return;
         }
-      } catch (e, stacktrace) {
-        print("Error: $e");
-        print("Stacktrace: $stacktrace");
-        showLoading('Ops! Payment was not successful', Status.error);
+        final Customer customer = Customer(
+            email: buyer.email.toString(),
+            name: buyer.fullname.toString(),
+            phoneNumber: buyer.phone.toString());
+
+        final Flutterwave flutterwave = Flutterwave(
+          context: context,
+          publicKey: apiPublicKey!,
+          currency: "USD",
+          redirectUrl: "https://www.google.com",
+          txRef: "${buyer.customerId}_${Timestamp.now().toString()}",
+          amount: orderData.getTotal.toString(),
+          customer: customer,
+          paymentOptions: "card, payattitude, barter, bank transfer, ussd",
+          customization: Customization(
+            title: "Make Payment",
+            description: "Make payment for the order items",
+          ),
+          isTestMode: false,
+        );
+
+        try {
+          final ChargeResponse response = await flutterwave.charge();
+          print("NAMNAMNAMANMAN");
+          if (response.success == true) {
+            showLoading(
+                "You have successfully placed your order", Status.success);
+            submitOrderToFirebase(); // upload to firebase
+            removeAllOrderItems(); // remove order
+          } else {
+            showLoading(
+              'Ops! Payment was not successful',
+              Status.error,
+            );
+          }
+        } catch (e, stacktrace) {
+          print("Error: $e");
+          print("Stacktrace: $stacktrace");
+          showLoading('Ops! Payment was not successful', Status.error);
+        }
       }
     }
 
@@ -276,24 +279,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
               ),
             )
           : Column(
-            children: [
-              Expanded(
-                flex: 5,
-                child: ListView.builder(
-                  itemCount: orderData.orders.length,
-                  itemBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SingleOrderItem(
-                      id: orderData.orders[index].id,
-                      totalAmount: orderData.orders[index].totalAmount,
-                      date: orderData.orders[index].orderDate,
-                      orders: orderData.orders[index],
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: ListView.builder(
+                    itemCount: orderData.orders.length,
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleOrderItem(
+                        id: orderData.orders[index].id,
+                        totalAmount: orderData.orders[index].totalAmount,
+                        date: orderData.orders[index].orderDate,
+                        orders: orderData.orders[index],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
       bottomSheet: orderData.orders.isNotEmpty
           ? Container(
               color: Colors.white,

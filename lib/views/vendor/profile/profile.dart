@@ -127,8 +127,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var id = const Uuid().v4();
     double totalAmount = 0.0;
 
-
-
     await FirebaseCollections.ordersCollection
         .where('isDelivered', isEqualTo: false)
         .get()
@@ -152,14 +150,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       });
 
-       FirebaseCollections.cashOutCollection.doc(id).set({
+      FirebaseCollections.cashOutCollection.doc(id).set({
         'id': id,
         'vendorId': userId,
         'amount': totalAmount,
         'status': false,
         'date': DateTime.now(),
       });
-
     });
 
     Future.delayed(const Duration(seconds: 1));
@@ -388,12 +385,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.white,
                           ),
                           SizedBox(width: 15),
-
                         ],
                       ),
                     ),
                   ),
-              GestureDetector(
+                  GestureDetector(
                     onTap: () => cashOutDialog(),
                     child: Container(
                       height: 50,

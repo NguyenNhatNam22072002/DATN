@@ -30,14 +30,14 @@ class _UnDeliveredOrdersState extends State<UnDeliveredOrders> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          checkedOutItem.isDelivered ? 'Cancel Delivery' : 'Deliver Product',
+          checkedOutItem.status == 1 ? 'Cancel Delivery' : 'Deliver Product',
           style: getMediumStyle(
             color: Colors.black,
             fontSize: FontSize.s16,
           ),
         ),
         content: Text(
-          'Are you sure you want to ${checkedOutItem.isDelivered ? 'cancel delivery of' : 'deliver'} ${checkedOutItem.prodName}',
+          'Are you sure you want to ${checkedOutItem.status == 1 ? 'cancel delivery of' : 'deliver'} ${checkedOutItem.prodName}',
         ),
         actions: [
           ElevatedButton(
@@ -48,7 +48,7 @@ class _UnDeliveredOrdersState extends State<UnDeliveredOrders> {
               ),
             ),
             onPressed: () => toggleDelivery(
-                checkedOutItem.orderId, checkedOutItem.isDelivered),
+                checkedOutItem.orderId, checkedOutItem.status == 1),
             child: const Text('Yes'),
           ),
           ElevatedButton(
@@ -265,10 +265,10 @@ class _UnDeliveredOrdersState extends State<UnDeliveredOrders> {
                           toggleDeliveryDialog(checkedOutItem),
                       backgroundColor: Colors.grey,
                       foregroundColor: Colors.white,
-                      icon: checkedOutItem.isDelivered
+                      icon: checkedOutItem.status == 1
                           ? Icons.cancel
                           : Icons.check_circle,
-                      label: checkedOutItem.isDelivered ? 'Cancel' : 'Deliver',
+                      label: checkedOutItem.status == 1 ? 'Cancel' : 'Deliver',
                     ),
                   ],
                 ),

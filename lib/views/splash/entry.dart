@@ -19,7 +19,9 @@ class EntryScreen extends StatefulWidget {
 }
 
 class _EntryScreenState extends State<EntryScreen> {
-  isFirstRun() {
+  Timer? _timer;
+
+  void isFirstRun() {
     if (widget.isAppPreviouslyRun) {
       // app has ran before
       FirebaseAuth.instance.authStateChanges().listen((User? user) {
@@ -27,30 +29,38 @@ class _EntryScreenState extends State<EntryScreen> {
           // user is logged in
           if (widget.isCustomer) {
             // user is a customer
-            Timer(const Duration(seconds: 3), () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  RouteManager.customerMainScreen, (route) => false);
+            _timer = Timer(const Duration(seconds: 3), () {
+              if (mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    RouteManager.customerMainScreen, (route) => false);
+              }
             });
           } else {
             // user is a vendor
-            Timer(const Duration(seconds: 3), () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  RouteManager.vendorEntryScreen, (route) => false);
+            _timer = Timer(const Duration(seconds: 3), () {
+              if (mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    RouteManager.vendorEntryScreen, (route) => false);
+              }
             });
           }
         } else {
           // user is not logged in
-          Timer(const Duration(seconds: 3), () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                RouteManager.accountType, (route) => false);
+          _timer = Timer(const Duration(seconds: 3), () {
+            if (mounted) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  RouteManager.accountType, (route) => false);
+            }
           });
         }
       });
     } else {
       // app has not ran before
-      Timer(const Duration(seconds: 3), () {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            RouteManager.splashScreen, (router) => false);
+      _timer = Timer(const Duration(seconds: 3), () {
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteManager.splashScreen, (router) => false);
+        }
       });
     }
   }
@@ -60,6 +70,12 @@ class _EntryScreenState extends State<EntryScreen> {
     super.initState();
     Permission.storage.request();
     isFirstRun();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override

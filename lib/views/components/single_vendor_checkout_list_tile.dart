@@ -63,10 +63,9 @@ class _SingleVendorCheckOutListTileState
               children: [
                 KCachedImage(
                   image: widget.checkoutItem.prodImg,
-                  height:100,
-                  width:120,
+                  height: 100,
+                  width: 120,
                 ),
-
                 const SizedBox(height: 10),
                 Text(
                   widget.checkoutItem.prodName,
@@ -84,7 +83,7 @@ class _SingleVendorCheckOutListTileState
                       title: 'Product Price: ',
                     ),
                     ItemRow(
-                      value: widget.checkoutItem.isDelivered ? 'Yes' : 'No',
+                      value: widget.checkoutItem.status == 1 ? 'Yes' : 'No',
                       title: 'Delivered Product: ',
                     ),
                   ],

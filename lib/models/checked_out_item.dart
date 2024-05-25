@@ -11,8 +11,7 @@ class CheckedOutItem {
   final int prodQuantity;
   final String prodSize;
   final DateTime date;
-  final bool isDelivered;
-  final bool isApproved;
+  final int status;
 
   CheckedOutItem({
     required this.orderId,
@@ -25,8 +24,7 @@ class CheckedOutItem {
     required this.prodQuantity,
     required this.prodSize,
     required this.date,
-    required this.isDelivered,
-    required this.isApproved,
+    required this.status,
   });
 
   CheckedOutItem.fromJson(QueryDocumentSnapshot item)
@@ -41,7 +39,6 @@ class CheckedOutItem {
           prodQuantity: int.parse(item['prodQuantity'].toString()),
           prodSize: item['prodSize'],
           date: item['date'].toDate(),
-          isDelivered: item['isDelivered'],
-          isApproved: item['isApproved'],
+          status: item['status'],
         );
 }
