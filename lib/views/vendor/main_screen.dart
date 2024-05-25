@@ -10,7 +10,6 @@ class VendorMainScreen extends StatefulWidget {
   const VendorMainScreen({super.key, required this.index});
   final int index;
 
-
   @override
   State<VendorMainScreen> createState() => _CustomerMainStateScreen();
 }
@@ -44,7 +43,7 @@ class _CustomerMainStateScreen extends State<VendorMainScreen> {
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
         backgroundColor: primaryColor,
-        activeColor: Colors.white,
+        activeColor: Color.fromARGB(255, 166, 202, 245),
         style: TabStyle.reactCircle,
         initialActiveIndex: _pageIndex,
         items: [

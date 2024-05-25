@@ -231,26 +231,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 5),
-              Row(
+              Column(
                 children: [
                   Text(
-                    vendor.email,
+                    "Email: " + vendor.email,
                     style: getRegularStyle(
                       color: Colors.white,
                       fontSize: FontSize.s14,
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      '${vendor.city} ${vendor.state} ${reversedWord(vendor.country)}',
-                      style: getRegularStyle(
-                        color: Colors.white,
-                        fontSize: FontSize.s13,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                  Text(
+                    '${vendor.city} ${vendor.state} ${reversedWord(vendor.country)}',
+                    style: getRegularStyle(
+                      color: Colors.white,
+                      fontSize: FontSize.s13,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
