@@ -130,6 +130,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.of(context).pushNamed('');
   }
 
+  _editAddresses() {
+    Navigator.of(context).pushNamed('');
+  }
+
   _changePassword() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -173,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             )
           : CustomScrollView(
               slivers: [
-                SliverAppBar(
+                const SliverAppBar(
                   automaticallyImplyLeading:
                       false, // Set to false to remove the back button
                   title: Center(

@@ -2,11 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-
 import '../../constants/firebase_refs/collections.dart';
 import '../../resources/assets_manager.dart';
-import 'loading_widget.dart';
 
 class BannerComponent extends StatefulWidget {
   const BannerComponent({Key? key}) : super(key: key);
@@ -34,7 +31,6 @@ class _BannerComponentState extends State<BannerComponent> {
   void initState() {
     super.initState();
     _fetchBanners();
-
   }
 
   @override

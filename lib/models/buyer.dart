@@ -7,6 +7,8 @@ class Buyer {
   final String email;
   final String phone;
   final String address;
+  final double lat;
+  final double lng;
 
   Buyer({
     required this.customerId,
@@ -15,6 +17,8 @@ class Buyer {
     required this.email,
     required this.phone,
     required this.address,
+    required this.lat,
+    required this.lng,
   });
 
   factory Buyer.initial() => Buyer(
@@ -24,6 +28,8 @@ class Buyer {
         image: '',
         phone: '',
         address: '',
+        lat: 0.0,
+        lng: 0.0,
       );
 
   Buyer.fromJson(DocumentSnapshot data)
@@ -34,5 +40,7 @@ class Buyer {
           email: data['email'],
           phone: data['phone'],
           address: data['address'],
+          lat: data['latitude'],
+          lng: data['longitude'],
         );
 }

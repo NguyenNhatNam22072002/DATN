@@ -171,8 +171,7 @@ class _DeliveredOrdersState extends State<DeliveredOrders> {
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
         .where('vendorId', isEqualTo: userId)
-        .where('isDelivered', isEqualTo: true)
-        .where('isApproved', isEqualTo: true)
+        .where('status', isEqualTo: 1)
         .snapshots();
 
     return Scaffold(

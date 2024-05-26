@@ -25,20 +25,19 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
 
-  // toggle delivery dialog
-  void togglePublishProductDialog(CheckedOutItem checkedOutItem) {
+  void moveToDeliveringDialog(CheckedOutItem checkedOutItem) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          checkedOutItem.status == 5 ? 'Cancel Approval' : 'Approve Order',
+          'Move to Delivering',
           style: getMediumStyle(
             color: Colors.black,
             fontSize: FontSize.s16,
           ),
         ),
         content: Text(
-          'Are you sure you want to ${checkedOutItem.status == 5 ? 'cancel approval of' : 'approve'} ${checkedOutItem.prodName}',
+          'Are you sure you want to move ${checkedOutItem.prodName} to delivering?',
         ),
         actions: [
           ElevatedButton(
@@ -48,8 +47,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () => toggleApproval(
-                checkedOutItem.orderId, checkedOutItem.status == 5),
+            onPressed: () => moveToDelivering(checkedOutItem.orderId),
             child: const Text('Yes'),
           ),
           ElevatedButton(
@@ -67,10 +65,10 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
     );
   }
 
-  // toggleDelivery
-  Future<void> toggleApproval(String orderId, bool isApproved) async {
+  // change status to delivering
+  Future<void> moveToDelivering(String orderId) async {
     await FirebaseCollections.ordersCollection.doc(orderId).update({
-      'isApproved': !isApproved,
+      'status': 2,
     }).whenComplete(
       () => Navigator.of(context).pop(),
     );
@@ -93,40 +91,11 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
     await FirebaseCollections.ordersCollection.doc(prodId).delete();
   }
 
-  // deliver all items dialog
-  void approveAllProductsDialog() {
-    areYouSureDialog(
-      title: 'Cancel all delivery of products',
-      content: 'Are you sure you want to approve of all orders?',
-      context: context,
-      action: approveAllApprovals,
-    );
-  }
-
-  // cancel all deliveries
-  Future<void> approveAllApprovals() async {
-    await FirebaseCollections.ordersCollection
-        .where('isApproved', isEqualTo: false)
-        .get()
-        .then(
-      (QuerySnapshot data) {
-        for (var doc in data.docs) {
-          // cancel all deliveries
-          FirebaseCollections.ordersCollection.doc(doc['orderId']).update({
-            'isApproved': true,
-          });
-        }
-      },
-    ).whenComplete(
-      () => Navigator.of(context).pop(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
         .where('vendorId', isEqualTo: userId)
-        .where('status', isEqualTo: 3)
+        .where('status', isEqualTo: 3) // Status 3 for processing
         .snapshots();
 
     return Scaffold(
@@ -216,15 +185,11 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                     SlidableAction(
                       borderRadius: BorderRadius.circular(10),
                       onPressed: (context) =>
-                          togglePublishProductDialog(checkedOutItem),
-                      backgroundColor: Colors.grey,
+                          moveToDeliveringDialog(checkedOutItem),
+                      backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      icon: checkedOutItem.status == 5
-                          ? Icons.cancel
-                          : Icons.check_circle,
-                      label: checkedOutItem.status == 5
-                          ? 'Cancel Approval'
-                          : 'Approved',
+                      icon: Icons.local_shipping,
+                      label: 'Deliver',
                     ),
                   ],
                 ),
@@ -338,28 +303,6 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () => approveAllProductsDialog(),
-                        child: Container(
-                          height: 50,
-                          width: 120,
-                          decoration: const BoxDecoration(
-                            color: accentColor,
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(5),
-                              topRight: Radius.circular(5),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Approval All Orders',
-                              style: getMediumStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
                     ],
                   )
                 ],

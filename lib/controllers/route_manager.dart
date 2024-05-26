@@ -23,12 +23,12 @@ class RouteManager {
 
   static const String customerAuthScreen = "/customerAuthScreen";
   static const String customerForgotPass = "/customerForgotPass";
-  static const String signupAcknowledgeScreen = "/signupAcknowledge";
+  static const String signUpAccountScreen = "/sigUpAccountScreen";
   static const String customerMainScreen = '/customerHomeScreen';
   static const String ordersScreen = '/OrdersScreen';
   static const String wishList = '/wishList';
   static const String favoriteList = '/favoriteList';
-
+  static const String editAddress = '/editAddressScreen';
   static const String vendorAuthScreen = "/vendorAuthScreen";
   static const String vendorForgotPass = "/vendorForgotPass";
   static const String vendorMainScreen = '/vendorMainScreen';
@@ -48,6 +48,7 @@ final routes = {
   RouteManager.customerMainScreen: (context) =>
       const CustomerMainScreen(index: 0),
   RouteManager.customerForgotPass: (context) => const CustomerForgotPassword(),
+  RouteManager.editAddress: (context) => const CustomerForgotPassword(),
   RouteManager.ordersScreen: (context) => const OrdersScreen(),
   RouteManager.wishList: (context) => const WishListProducts(),
   RouteManager.favoriteList: (context) => const FavoriteProducts(),
@@ -57,7 +58,7 @@ final routes = {
   RouteManager.vendorForgotPass: (context) => const VendorForgotPassword(),
   RouteManager.vendorCreatePost: (context) => const VendorCreateProduct(),
   RouteManager.vendorDataAnalysis: (context) => const StoreDataAnalysis(),
-  RouteManager.shipperAuthScreen: (context) => const ShipperAuthScreen(),
+  // RouteManager.shipperAuthScreen: (context) => const ShipperAuthScreen(),
   RouteManager.shipperMainScreen: (context) =>
       const ShipperMainScreen(index: 0),
   RouteManager.shipperForgotPass: (context) => const ShipperForgotPassword(),

@@ -165,7 +165,7 @@ class _EditProfileState extends State<EditProfile> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Password changed successful'),
           duration: Duration(seconds: 2),
         ),

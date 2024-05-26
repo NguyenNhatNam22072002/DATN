@@ -25,20 +25,19 @@ class _PendingOrdersState extends State<PendingOrders> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
 
-  // toggle delivery dialog
-  void togglePublishProductDialog(CheckedOutItem checkedOutItem) {
+  void approveOrderDialog(CheckedOutItem checkedOutItem) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          checkedOutItem.status == 5 ? 'Cancel Approval' : 'Approve Order',
+          'Approve Order',
           style: getMediumStyle(
             color: Colors.black,
             fontSize: FontSize.s16,
           ),
         ),
         content: Text(
-          'Are you sure you want to ${checkedOutItem.status == 5 ? 'cancel approval of' : 'approve'} ${checkedOutItem.prodName}',
+          'Are you sure you want to approve ${checkedOutItem.prodName}?',
         ),
         actions: [
           ElevatedButton(
@@ -48,8 +47,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () => toggleApproval(
-                checkedOutItem.orderId, checkedOutItem.status == 5),
+            onPressed: () => approveOrder(checkedOutItem.orderId),
             child: const Text('Yes'),
           ),
           ElevatedButton(
@@ -67,10 +65,10 @@ class _PendingOrdersState extends State<PendingOrders> {
     );
   }
 
-  // toggleDelivery
-  Future<void> toggleApproval(String orderId, bool isApproved) async {
+  // approveOrder
+  Future<void> approveOrder(String orderId) async {
     await FirebaseCollections.ordersCollection.doc(orderId).update({
-      'isApproved': !isApproved,
+      'status': 4,
     }).whenComplete(
       () => Navigator.of(context).pop(),
     );
@@ -79,8 +77,8 @@ class _PendingOrdersState extends State<PendingOrders> {
   // delete product dialog
   void deleteProductDialog(CheckedOutItem checkOutItem) {
     areYouSureDialog(
-      title: 'Delete Product',
-      content: 'Are you sure you want to delete ${checkOutItem.prodName}',
+      title: 'Delete Orders',
+      content: 'Are you sure you want to delete this order?',
       context: context,
       action: deleteProduct,
       isIdInvolved: true,
@@ -93,25 +91,24 @@ class _PendingOrdersState extends State<PendingOrders> {
     await FirebaseCollections.ordersCollection.doc(prodId).delete();
   }
 
-  // deliver all items dialog
-  void approveAllProductsDialog() {
+  // approve all items dialog
+  void approveAllOrdersDialog() {
     areYouSureDialog(
-      title: 'Approved all orders',
-      content: 'Are you sure you want to approve of all orders?',
+      title: 'Approve all orders',
+      content: 'Are you sure you want to approve all orders?',
       context: context,
-      action: approveAllApprovals,
+      action: approveAllOrders,
     );
   }
 
-  // cancel all deliveries
-  Future<void> approveAllApprovals() async {
+  // approve all orders
+  Future<void> approveAllOrders() async {
     await FirebaseCollections.ordersCollection
         .where('status', isEqualTo: 5)
         .get()
         .then(
       (QuerySnapshot data) {
         for (var doc in data.docs) {
-          // cancel all deliveries
           FirebaseCollections.ordersCollection.doc(doc['orderId']).update({
             'status': 4,
           });
@@ -216,15 +213,11 @@ class _PendingOrdersState extends State<PendingOrders> {
                     SlidableAction(
                       borderRadius: BorderRadius.circular(10),
                       onPressed: (context) =>
-                          togglePublishProductDialog(checkedOutItem),
-                      backgroundColor: Colors.grey,
+                          approveOrderDialog(checkedOutItem),
+                      backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      icon: checkedOutItem.status == 5
-                          ? Icons.cancel
-                          : Icons.check_circle,
-                      label: checkedOutItem.status == 5
-                          ? 'Cancel Approval'
-                          : 'Approved',
+                      icon: Icons.check_circle,
+                      label: 'Approve',
                     ),
                   ],
                 ),
@@ -339,7 +332,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => approveAllProductsDialog(),
+                        onTap: () => approveAllOrdersDialog(),
                         child: Container(
                           height: 50,
                           width: 120,
@@ -352,7 +345,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                           ),
                           child: Center(
                             child: Text(
-                              'Approval All Orders',
+                              'Approve All Orders',
                               style: getMediumStyle(
                                 color: Colors.white,
                               ),

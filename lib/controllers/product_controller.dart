@@ -29,13 +29,12 @@ class ProductController {
       });
 
       return RequestResult.success(Success(msg: 'Upload successfully'));
-    } on FirebaseException catch (e) {
+    } on FirebaseException {
       return RequestResult.error('Error with uploading');
     } catch (e) {
       return RequestResult.error('Error occurred!');
     }
   }
-
 
   // edit product
   Future<RequestResult> editProduct({required Product product}) async {
@@ -60,7 +59,7 @@ class ProductController {
       });
 
       return RequestResult.success(Success(msg: 'Upload successfully'));
-    } on FirebaseException catch (e) {
+    } on FirebaseException {
       return RequestResult.error('Error with uploading');
     } catch (e) {
       return RequestResult.error('Error occurred!');
