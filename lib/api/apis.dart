@@ -101,7 +101,7 @@ class APIs {
       };
 
       // Firebase Project > Project Settings > General Tab > Project ID
-      const projectID = 'we-chat-75f13';
+      const projectID = 'shoe-shop-3ef3a';
 
       // get firebase admin token
       final bearerToken = await NotificationAccessToken.getToken;
