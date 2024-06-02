@@ -5,7 +5,6 @@ import 'package:shoes_shop/views/widgets/loading_widget.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 
-
 class VendorWelcomeIntro extends StatefulWidget {
   const VendorWelcomeIntro({
     Key? key,
@@ -20,16 +19,14 @@ class _VendorWelcomeIntroState extends State<VendorWelcomeIntro> {
   bool isLoading = true;
 
   final userId = FirebaseAuth.instance.currentUser!.uid;
-  final firebaseFirestore =  FirebaseFirestore.instance;
+  final firebaseFirestore = FirebaseFirestore.instance;
 
-  fetchUserDetails()async{
+  fetchUserDetails() async {
     store = await firebaseFirestore.collection('vendors').doc(userId).get();
     setState(() {
       isLoading = false;
     });
-
   }
-
 
   @override
   void initState() {
@@ -37,24 +34,25 @@ class _VendorWelcomeIntroState extends State<VendorWelcomeIntro> {
     fetchUserDetails();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return !isLoading?  Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        CircleAvatar(
-          backgroundImage: NetworkImage(store!['storeImgUrl']),
-        ),
-        const SizedBox(width: 15),
-        Text(
-          'Hello ${store!['storeName']} 👋',
-          style: getRegularStyle(
-            color: Colors.black,
-            fontSize: FontSize.s16,
-          ),
-        )
-      ],
-    ): const LoadingWidget(size:20);
+    return !isLoading
+        ? Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(store!['storeImgUrl']),
+              ),
+              const SizedBox(width: 15),
+              Text(
+                'Hello ${store!['storeName']} 👋',
+                style: getRegularStyle(
+                  color: Colors.black,
+                  fontSize: FontSize.s16,
+                ),
+              )
+            ],
+          )
+        : const LoadingWidget(size: 20);
   }
 }

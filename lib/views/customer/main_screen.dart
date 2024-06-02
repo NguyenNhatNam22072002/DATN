@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_shop/views/customer/favorite/favorite.dart';
-import 'package:shoes_shop/views/customer/relational_screens/wishlist_products.dart';
 import '../../providers/cart.dart';
 import 'categories/categories.dart';
 import 'profile/profile.dart';
 import 'search/search.dart';
-import 'store/store.dart';
 import '../../constants/color.dart';
 import 'cart/cart.dart';
 import 'home_screen.dart';
@@ -49,7 +47,6 @@ class _CustomerMainStateScreen extends State<CustomerMainScreen> {
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
 
-
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
         backgroundColor: primaryColor,
@@ -66,8 +63,8 @@ class _CustomerMainStateScreen extends State<CustomerMainScreen> {
           TabItem(
             icon: Badge(
               backgroundColor: Colors.white,
-              label:  Text(
-               '${cartProvider.getCartQuantity}',
+              label: Text(
+                '${cartProvider.getCartQuantity}',
                 style: const TextStyle(
                   color: Colors.black,
                 ),

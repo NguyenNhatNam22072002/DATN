@@ -14,8 +14,6 @@ class Vendor {
   final String storeImgUrl;
   final String? address;
   final String authType;
-  //final double lat; // Add latitude field
-  //final double lng; // Add longitude field
   double balanceAvailable;
   bool isApproved;
   bool isStoreRegistered;
@@ -33,8 +31,6 @@ class Vendor {
     required this.storeImgUrl,
     required this.address,
     required this.authType,
-    //required this.lat, // Add latitude to constructor
-    //required this.lng, // Add longitude to constructor
     this.isApproved = false,
     this.isStoreRegistered = false,
     this.balanceAvailable = 0.0,
@@ -53,8 +49,6 @@ class Vendor {
         storeImgUrl: AssetManager.avatarPlaceholderUrl,
         address: '',
         authType: '',
-        //lat: 0.0, // Default value for latitude
-        //lng: 0.0, // Default value for longitude
       );
 
   Vendor.fromJson(Map<String, dynamic> data)
@@ -71,8 +65,6 @@ class Vendor {
           address: data['address'],
           authType: data['authType'],
           storeImgUrl: data['storeImgUrl'],
-          //lat: data['lat'], // Initialize latitude from data
-          //lng: data['lng'], // Initialize longitude from data
           balanceAvailable: double.parse(data['balanceAvailable'].toString()),
           isApproved: data['isApproved'],
           isStoreRegistered: data['isStoreRegistered'],
@@ -92,8 +84,6 @@ class Vendor {
           address: data['address'],
           authType: data['authType'],
           storeImgUrl: data['storeImgUrl'],
-          // lat: data['lat'], // Initialize latitude from DocumentSnapshot
-          // lng: data['lng'], // Initialize longitude from DocumentSnapshot
           balanceAvailable: double.parse(data['balanceAvailable'].toString()),
           isApproved: data['isApproved'],
           isStoreRegistered: data['isStoreRegistered'],
@@ -112,8 +102,6 @@ class Vendor {
         'address': address,
         'authType': authType,
         'storeImgUrl': storeImgUrl,
-        //'lat': lat, // Add latitude to toJson method
-        // 'lng': lng, // Add longitude to toJson method
         'isStoreRegistered': isStoreRegistered,
         'isApproved': isApproved,
         'balanceAvailable': balanceAvailable,

@@ -7,7 +7,7 @@ import 'package:shoes_shop/controllers/auth_controller.dart';
 import '../../constants/color.dart';
 import '../../constants/firebase_refs/collections.dart';
 import '../../controllers/route_manager.dart';
-import '../../models/vendor.dart';
+import '../../models/shipper.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../widgets/are_you_sure_dialog.dart';
@@ -16,14 +16,14 @@ import 'package:confetti/confetti.dart';
 import '../widgets/loading_widget.dart';
 import 'main_screen.dart';
 
-class VendorEntryScreen extends StatefulWidget {
-  const VendorEntryScreen({Key? key}) : super(key: key);
+class ShipperEntryScreen extends StatefulWidget {
+  const ShipperEntryScreen({Key? key}) : super(key: key);
 
   @override
-  State<VendorEntryScreen> createState() => _VendorEntryScreenState();
+  State<ShipperEntryScreen> createState() => _ShipperEntryScreenState();
 }
 
-class _VendorEntryScreenState extends State<VendorEntryScreen> {
+class _ShipperEntryScreenState extends State<ShipperEntryScreen> {
   final ConfettiController confettiController = ConfettiController();
   AuthController authController = AuthController();
   final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -63,7 +63,7 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
   @override
   Widget build(BuildContext context) {
     final Stream<DocumentSnapshot> query =
-        FirebaseCollections.vendorsCollection.doc(userId).snapshots();
+        FirebaseCollections.shippersCollection.doc(userId).snapshots();
 
     return Scaffold(
       body: StreamBuilder<DocumentSnapshot>(
@@ -77,12 +77,12 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
             return const Center(child: LoadingWidget(size: 50));
           }
 
-          Vendor vendor =
-              Vendor.fromJson(snapshot.data!.data() as Map<String, dynamic>);
+          Shipper shipper =
+              Shipper.fromJson(snapshot.data!.data() as Map<String, dynamic>);
 
-          if (vendor.isApproved) {
+          if (shipper.isApproved) {
             // account is approved
-            return const VendorMainScreen(index: 0);
+            return const ShipperMainScreen(index: 0);
           }
 
           return Column(
@@ -108,7 +108,7 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
                 borderRadius: BorderRadius.circular(20),
                 child: CachedNetworkImage(
                   fit: BoxFit.cover,
-                  imageUrl: vendor.storeImgUrl,
+                  imageUrl: shipper.image,
                   placeholder: (context, url) =>
                       Image.asset(AssetManager.emptyImg),
                   errorWidget: (context, url, error) =>
@@ -117,11 +117,11 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              Text('Hello ${vendor.storeName},'),
+              Text('Hello ${shipper.fullname},'),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Congratulations on creating your store with us! Allow us some time so we can kindly confirm to finalize the setup and ensure the accuracy of your store details.\n\nBest regards!',
+                  'Congratulations on joining our platform! Allow us some time to verify your details and finalize the setup.\n\nBest regards!',
                   style: getRegularStyle(color: Colors.black),
                 ),
               ),

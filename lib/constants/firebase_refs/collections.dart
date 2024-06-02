@@ -8,7 +8,7 @@ class FirebaseCollections {
       FirebaseFirestore.instance.collection('vendors');
 
   static final shippersCollection =
-  FirebaseFirestore.instance.collection('shippers');
+      FirebaseFirestore.instance.collection('shippers');
 
   static final customersCollection =
       FirebaseFirestore.instance.collection('customers');
@@ -24,4 +24,7 @@ class FirebaseCollections {
 
   static final cashOutCollection =
       FirebaseFirestore.instance.collection('cash_outs');
+
+  static final reviewsCollection =
+      FirebaseFirestore.instance.collection('reviews');
 }

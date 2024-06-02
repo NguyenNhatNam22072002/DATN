@@ -21,13 +21,10 @@ class AuthController {
       );
       return AuthResult.success(credential.user);
     } on FirebaseAuthException catch (e) {
-      var response = 'error occurred!';
-
-      var error = authErrorFormatter(e);
-      response = error;
-      return AuthResult.error(response);
+      var errorMessage = authErrorFormatter(e);
+      return AuthResult.error(errorMessage);
     } catch (e) {
-      throw Exception(e);
+      throw Exception('An unexpected error occurred: ${e.toString()}');
     }
   }
 
@@ -77,9 +74,9 @@ class AuthController {
           'city': city,
           'taxNumber': taxNumber,
           'storeNumber': storeRegNo,
-          'balanceAvailable':0.0,
-          'isApproved':false,
-          'isStoreRegistered':isStoreRegistered,
+          'balanceAvailable': 0.0,
+          'isApproved': false,
+          'isStoreRegistered': isStoreRegistered,
           'storeId': credential.user!.uid,
         });
       } else {
@@ -104,6 +101,61 @@ class AuthController {
     }
   }
 
+  Future<AuthResult?> signUpShipper({
+    required String email,
+    required String fullname,
+    required String phone,
+    required String password,
+    required AccountType accountType,
+    required File profileImage,
+    String country = '',
+    String state = '',
+    String city = '',
+    String vehicleType = '',
+  }) async {
+    try {
+      UserCredential credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Upload image
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('shipper-images')
+          .child('${credential.user!.uid}.jpg');
+
+      await storageRef.putFile(profileImage);
+      var downloadUrl = await storageRef.getDownloadURL();
+
+      // Save shipper information to Firestore
+      await FirebaseFirestore.instance
+          .collection('shippers')
+          .doc(credential.user!.uid)
+          .set({
+        'fullname': fullname,
+        'email': email,
+        'image': downloadUrl,
+        'authType': 'email',
+        'phone': phone,
+        'address': '',
+        'country': country,
+        'state': state,
+        'city': city,
+        'vehicleType': vehicleType,
+        'shipperId': credential.user!.uid,
+        'isApproved': false,
+      });
+
+      return AuthResult.success(credential.user);
+    } on FirebaseAuthException catch (e) {
+      var error = authErrorFormatter(e);
+      return AuthResult.error(error);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<AuthResult?> googleAuth(AccountType accountType) async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -119,7 +171,7 @@ class AuthController {
     );
 
     try {
-      // send username, email, and phone number to firestore
+      // Sign in with Google credential
       var logCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       if (accountType == AccountType.vendor) {
@@ -139,10 +191,30 @@ class AuthController {
             'city': '',
             'taxNumber': '',
             'storeNumber': '',
-            'balanceAvailable':0.0,
-            'isApproved':false,
-            'isStoreRegistered':false,
+            'balanceAvailable': 0.0,
+            'isApproved': false,
+            'isStoreRegistered': false,
             'storeId': logCredential.user!.uid,
+          },
+        );
+      } else if (accountType == AccountType.shipper) {
+        await FirebaseFirestore.instance
+            .collection('shippers')
+            .doc(logCredential.user!.uid)
+            .set(
+          {
+            'fullname': googleUser!.displayName,
+            'email': googleUser.email,
+            'image': googleUser.photoUrl,
+            'authType': 'google',
+            'phone': '',
+            'address': '',
+            'country': '',
+            'state': '',
+            'city': '',
+            'vehicleType': '',
+            'shipperId': logCredential.user!.uid,
+            'isApproved': false,
           },
         );
       } else {
@@ -161,13 +233,12 @@ class AuthController {
           },
         );
       }
-      // sign in with credential
+
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       return AuthResult.success(userCredential.user);
     } on FirebaseAuthException catch (e) {
       var response = 'error';
-
       var error = authErrorFormatter(e);
       response = error;
       return AuthResult.error(response);
@@ -178,12 +249,15 @@ class AuthController {
 
   Future<void> signOut() async {
     try {
-      _auth.signOut();
+      await _auth.signOut();
     } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('FirebaseAuthException: $e');
+      }
       rethrow;
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print('Exception: $e');
       }
     }
   }

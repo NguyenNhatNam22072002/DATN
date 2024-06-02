@@ -1,37 +1,32 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 String authErrorFormatter(FirebaseAuthException e) {
-  var response = 'error';
-  if (e.message != null) {
-    if (e.code == 'user-not-found') {
-      response = "Email not recognised!";
-    } else if (e.code == 'account-exists-with-different-credential') {
-      response = "Email already in use!";
-    } else if (e.code == 'wrong-password') {
-      response = 'Email or Password Incorrect!';
-    } else if (e.code == 'network-request-failed') {
-      response = 'Network error!';
-    } else {
-      response = e.code;
-    }
+  switch (e.code) {
+    case 'user-not-found':
+      return "Email not recognized!";
+    case 'account-exists-with-different-credential':
+      return "Email already in use!";
+    case 'wrong-password':
+      return 'Email or Password Incorrect!';
+    case 'network-request-failed':
+      return 'Network error!';
+    default:
+      return e.message ?? 'An unknown error occurred';
   }
-
-  return response;
 }
 
 String extractErrorMessage(String exceptionMessage) {
-  // Extract the first value before the comma inside the brackets
-  RegExp regex = RegExp(r'\((.*?)\)');
-  RegExpMatch? match = regex.firstMatch(exceptionMessage);
-  String errorMessage = 'Unknown error';
-
+  // Use a regular expression to find the first value before the comma inside the parentheses
+  final regex = RegExp(r'\((.*?)\)');
+  final match = regex.firstMatch(exceptionMessage);
   if (match != null) {
-    String? bracketContent = match.group(1);
-    List<String> parts = bracketContent!.split(',');
-    if (parts.isNotEmpty) {
-      errorMessage = parts.first.trim();
+    final bracketContent = match.group(1);
+    if (bracketContent != null) {
+      final parts = bracketContent.split(',');
+      if (parts.isNotEmpty) {
+        return parts.first.trim();
+      }
     }
   }
-
-  return errorMessage;
+  return 'Unknown error';
 }

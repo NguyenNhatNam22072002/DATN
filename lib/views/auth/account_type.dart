@@ -66,8 +66,6 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     Widget authWidget({required String title, required String routeName}) {

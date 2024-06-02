@@ -175,9 +175,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
   // routing to the main screen or the entry screen based on whether approved or not
   routingVendor() async {
     var userId = FirebaseAuth.instance.currentUser!.uid;
-    var data = await FirebaseCollections.vendorsCollection
-        .doc(userId)
-        .get();
+    var data = await FirebaseCollections.vendorsCollection.doc(userId).get();
 
     if (data['isApproved']) {
       // account approved
@@ -383,7 +381,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                   const SizedBox(height: 20),
                   Center(
                     child: Text(
-                      isLogin ? 'Vendor Signin ' : 'Vendor Signup',
+                      isLogin ? 'Vendor SignIn ' : 'Vendor SignUp',
                       style: const TextStyle(
                         color: accentColor,
                         fontSize: 18,
@@ -514,8 +512,8 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                                   onPressed: () => _handleAuth(),
                                   label: Text(
                                     isLogin
-                                        ? 'Signin Account'
-                                        : 'Signup Account',
+                                        ? 'SignIn Account'
+                                        : 'SignUp Account',
                                     style: const TextStyle(
                                       color: Colors.white,
                                     ),
@@ -542,8 +540,8 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                                     const SizedBox(width: 20),
                                     Text(
                                       isLogin
-                                          ? 'Signin with google'
-                                          : 'Signup with google',
+                                          ? 'SignIn with google'
+                                          : 'SignUp with google',
                                       style: const TextStyle(
                                           color: Colors.grey,
                                           fontWeight: FontWeight.w600),

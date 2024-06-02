@@ -20,10 +20,11 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
   var orders = 0;
   var availableFunds = 0.0;
   var products = 0;
-  var undeliveredOrders = 0;
+  var deliveringOrders = 0;
   var deliveredOrders = 0;
-  var unApprovedOrders = 0;
+  var pendingOrders = 0;
   var approvedOrders = 0;
+  var processingOrders = 0;
   var approvedProducts = 0;
   var unapprovedProducts = 0;
 
@@ -35,13 +36,14 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
       orders = 0;
       availableFunds = 0.0;
       products = 0;
-      undeliveredOrders = 0;
+      deliveringOrders = 0;
       deliveredOrders = 0;
       approvedProducts = 0;
       unapprovedProducts = 0;
       earnings = 0.0;
-      unApprovedOrders = 0;
+      pendingOrders = 0;
       approvedOrders = 0;
+      processingOrders = 0;
     });
 
     // orders
@@ -59,7 +61,7 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
             for (var doc in data.docs)
               {
                 // handling checkouts
-                if (!doc['isDelivered'])
+                if (!doc['status == 1'])
                   {
                     setState(() {
                       availableFunds += doc['prodPrice'] * doc['prodQuantity'];
@@ -68,7 +70,7 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
                 //
 
                 // handling delivered and undelivered orders
-                if (doc['isDelivered'])
+                if (doc['status == 1'])
                   {
                     setState(() {
                       deliveredOrders += 1;
@@ -77,13 +79,13 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
                 else
                   {
                     setState(() {
-                      undeliveredOrders += 1;
+                      deliveringOrders += 1;
                     })
                   },
                 //
 
                 // handling unapproved and unApproved orders
-                if (doc['isApproved'])
+                if (doc['status == 4'])
                   {
                     setState(() {
                       approvedOrders += 1;
@@ -92,7 +94,7 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
                 else
                   {
                     setState(() {
-                      unApprovedOrders += 1;
+                      pendingOrders += 1;
                     })
                   }
                 //
@@ -148,14 +150,20 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
         icon: Icons.shopping_cart_checkout,
       ),
       AppData(
-        title: 'Unapproved \nOrders',
-        number: unApprovedOrders,
+        title: 'Pending \nOrders',
+        number: pendingOrders,
         color: dashLime,
         icon: Icons.shopping_bag_rounded,
       ),
       AppData(
-        title: 'Undelivered \nOrders',
-        number: undeliveredOrders,
+        title: 'Processing \nOrders',
+        number: processingOrders,
+        color: dashOrange,
+        icon: Icons.shopping_bag_rounded,
+      ),
+      AppData(
+        title: 'Delivering \nOrders',
+        number: deliveringOrders,
         color: dashOrange,
         icon: Icons.delivery_dining,
       ),

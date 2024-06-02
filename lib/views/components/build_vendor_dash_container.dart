@@ -4,6 +4,7 @@ import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../vendor/main_screen.dart';
 
+// ignore: must_be_immutable
 class BuildDashboardContainer extends StatelessWidget {
   BuildDashboardContainer({
     Key? key,
@@ -74,9 +75,9 @@ class BuildDashboardContainer extends StatelessWidget {
             const SizedBox(height: 8.0),
             isBtn
                 ? ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.white,
-                        ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                    ),
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) =>

@@ -65,7 +65,7 @@ class _SingleCartItemState extends State<SingleCartItem> {
     fetchProduct();
   }
 
-  // snack bar warning msg
+  // Snack bar warning message
   void showWarningMsg({required String message}) {
     displaySnackBar(
       status: Status.error,
@@ -74,7 +74,7 @@ class _SingleCartItemState extends State<SingleCartItem> {
     );
   }
 
-  // increment product cart quantity
+  // Increment product cart quantity
   void incrementQuantity() {
     if (widget.cartData.getProductQuantityOnCart(widget.item.prodId) <
         product.quantity) {
@@ -85,7 +85,7 @@ class _SingleCartItemState extends State<SingleCartItem> {
     }
   }
 
-  // decrement product cart quantity
+  // Decrement product cart quantity
   void decrementQuantity() {
     if (widget.item.quantity > 1) {
       widget.cartData.decreaseQuantity(widget.item.prodId);
@@ -148,87 +148,100 @@ class _SingleCartItemState extends State<SingleCartItem> {
           ),
         ),
         child: Card(
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListTile(
-              leading:
-              KCachedImage(
-                image: widget.item.prodImg,
-                isCircleAvatar:true,
-                radius:25,
-              ),
-
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(widget.item.prodName),
-                  Text(
-                    '\$${widget.item.price}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: getMediumStyle(color: accentColor),
-                  ),
-                  Text(
-                    'Quantity: ${widget.item.quantity}',
-                    style: getMediumStyle(color: accentColor),
-                  )
-                ],
-              ),
-              subtitle: Row(
-                children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
+            child: Row(
+              children: [
+                KCachedImage(
+                  image: widget.item.prodImg,
+                  isCircleAvatar: true,
+                  radius: 25,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () => decrementQuantity(),
-                        child: Chip(
-                          avatar: CircleAvatar(
-                            backgroundColor: accentColor.withOpacity(0.3),
-                            child: Center(
-                              child: Text(
-                                '-',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25,
-                                  color: widget.item.quantity == 1
-                                      ? Colors.grey
-                                      : accentColor,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          label: const Text(
-                            'Decrease',
-                          ),
+                      Text(
+                        widget.item.prodName,
+                        style: getMediumStyle(
+                          color: Colors.black,
+                          fontSize: FontSize.s16,
                         ),
                       ),
-                      const SizedBox(width: 5),
-                      GestureDetector(
-                        onTap: () => incrementQuantity(),
-                        child: Chip(
-                          avatar: CircleAvatar(
-                            backgroundColor: accentColor.withOpacity(0.3),
-                            child: const Center(
-                              child: Text(
-                                '+',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25,
-                                  color: accentColor,
+                      const SizedBox(height: 5),
+                      Text(
+                        '\$${widget.item.price}',
+                        style: getMediumStyle(
+                          color: accentColor,
+                          fontSize: FontSize.s14,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Quantity: ${widget.item.quantity}',
+                        style: getRegularStyle(
+                          color: Colors.grey,
+                          fontSize: FontSize.s14,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => decrementQuantity(),
+                            child: Chip(
+                              avatar: CircleAvatar(
+                                backgroundColor: accentColor.withOpacity(0.3),
+                                child: Center(
+                                  child: Text(
+                                    '-',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: widget.item.quantity == 1
+                                          ? Colors.grey
+                                          : accentColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ),
+                              label: const Text('Decrease'),
                             ),
                           ),
-                          label: const Text('Increase'),
-                        ),
-                      )
+                          const SizedBox(width: 5),
+                          GestureDetector(
+                            onTap: () => incrementQuantity(),
+                            child: Chip(
+                              avatar: CircleAvatar(
+                                backgroundColor: accentColor.withOpacity(0.3),
+                                child: const Center(
+                                  child: Text(
+                                    '+',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: accentColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              label: const Text('Increase'),
+                            ),
+                          )
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-              // trailing: Text('Quantity: ${widget.item.quantity}')),
+                ),
+              ],
             ),
           ),
         ),

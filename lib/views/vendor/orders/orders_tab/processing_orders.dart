@@ -25,55 +25,6 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
 
-  void moveToDeliveringDialog(CheckedOutItem checkedOutItem) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Move to Delivering',
-          style: getMediumStyle(
-            color: Colors.black,
-            fontSize: FontSize.s16,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to move ${checkedOutItem.prodName} to delivering?',
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () => moveToDelivering(checkedOutItem.orderId),
-            child: const Text('Yes'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Dismiss'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // change status to delivering
-  Future<void> moveToDelivering(String orderId) async {
-    await FirebaseCollections.ordersCollection.doc(orderId).update({
-      'status': 2,
-    }).whenComplete(
-      () => Navigator.of(context).pop(),
-    );
-  }
-
   // delete product dialog
   void deleteProductDialog(CheckedOutItem checkOutItem) {
     areYouSureDialog(
@@ -176,20 +127,6 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                       foregroundColor: Colors.white,
                       icon: Icons.delete,
                       label: 'Delete',
-                    ),
-                  ],
-                ),
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      borderRadius: BorderRadius.circular(10),
-                      onPressed: (context) =>
-                          moveToDeliveringDialog(checkedOutItem),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      icon: Icons.local_shipping,
-                      label: 'Deliver',
                     ),
                   ],
                 ),

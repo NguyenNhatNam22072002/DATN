@@ -1,3 +1,1 @@
-enum AccountType{
-  customer, vendor, shipper
-}
+enum AccountType { customer, vendor, shipper }

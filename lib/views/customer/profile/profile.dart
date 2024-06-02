@@ -17,37 +17,40 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  var firebase = FirebaseFirestore.instance;
-  var auth = FirebaseAuth.instance;
-  var userId = FirebaseAuth.instance.currentUser!.uid;
-  DocumentSnapshot? credential;
-  var isLoading = true;
-  var isInit = true;
+  final FirebaseFirestore _firebase = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final String _userId;
+  DocumentSnapshot? _credential;
+  bool _isLoading = true;
 
-  // fetch user credentials
-  _fetchUserDetails() async {
-    credential = await firebase.collection('customers').doc(userId).get();
-    setState(() {
-      isLoading = false;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _userId = _auth.currentUser!.uid;
+    _fetchUserDetails();
+  }
+
+  Future<void> _fetchUserDetails() async {
+    try {
+      _credential = await _firebase.collection('customers').doc(_userId).get();
+    } catch (e) {
+      // Handle errors
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _refresh() async {
     setState(() {
-      isLoading = true; // Set isLoading to true to show loading indicator
+      _isLoading = true;
     });
-
-    // Wait for 2 seconds
     await Future.delayed(const Duration(seconds: 2));
-
-    await _fetchUserDetails(); // Fetch user details again
-
-    setState(() {
-      isLoading = false; // Set isLoading to false to hide loading indicator
-    });
+    await _fetchUserDetails();
   }
 
-  showLogoutOptions() {
+  void _showLogoutOptions() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -66,9 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        content: const Text(
-          'Are you sure you want to log out?',
-        ),
+        content: const Text('Are you sure you want to log out?'),
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -77,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () => _logout(),
+            onPressed: _logout,
             child: const Text(
               'Yes',
               style: TextStyle(
@@ -107,58 +108,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  _logout() {
-    auth.signOut();
+  void _logout() {
+    _auth.signOut();
     Navigator.of(context).pushNamed(RouteManager.accountType);
   }
 
-  _editProfile() {
+  void _editProfile() {
     Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (context) => const EditProfile(),
-          ),
-        )
-        .then(
-          (value) => setState(
-            () {},
-          ),
-        );
-  }
-
-  _settings() {
-    Navigator.of(context).pushNamed('');
-  }
-
-  _editAddresses() {
-    Navigator.of(context).pushNamed('');
-  }
-
-  _changePassword() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const EditProfile(
-          editPasswordOnly: true,
-        ),
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    if (isInit) {
-      _fetchUserDetails();
-    }
-    setState(() {
-      isInit = false;
-    });
-    super.didChangeDependencies();
+        .push(MaterialPageRoute(builder: (context) => const EditProfile()))
+        .then((_) => _fetchUserDetails());
   }
 
   @override
@@ -169,28 +127,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onRefresh: _refresh,
       color: Colors.black,
       backgroundColor: Colors.white,
-      child: isLoading
+      child: _isLoading
           ? const Center(
-              child: LoadingWidget(
-                size: 50,
-              ),
+              child: LoadingWidget(size: 50),
             )
           : CustomScrollView(
               slivers: [
                 const SliverAppBar(
-                  automaticallyImplyLeading:
-                      false, // Set to false to remove the back button
+                  automaticallyImplyLeading: false,
                   title: Center(
                     child: Text(
                       'My Profile',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 25, // Adjust the font size as needed
+                        fontSize: 25,
                       ),
                     ),
                   ),
                   expandedHeight: 50,
-                  backgroundColor: Colors.white, // Set the color you prefer
+                  backgroundColor: Colors.white,
                 ),
                 SliverAppBar(
                   elevation: 0,
@@ -206,9 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         title: AnimatedOpacity(
                           opacity: constraints.biggest.height <= 120 ? 1 : 0,
-                          duration: const Duration(
-                            milliseconds: 300,
-                          ),
+                          duration: const Duration(milliseconds: 300),
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
@@ -216,12 +169,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 radius: 20,
                                 backgroundColor: primaryColor,
                                 backgroundImage: NetworkImage(
-                                  credential!['image'],
+                                  _credential!['image'],
                                 ),
                               ),
                               const SizedBox(width: 20),
                               Text(
-                                credential!['fullname'],
+                                _credential!['fullname'],
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Colors.white,
@@ -234,10 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         background: Container(
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [
-                                primaryColor,
-                                Colors.black26,
-                              ],
+                              colors: [primaryColor, Colors.black26],
                               stops: [0.1, 1],
                               end: Alignment.topRight,
                             ),
@@ -249,11 +199,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 radius: 65,
                                 backgroundColor: primaryColor,
                                 backgroundImage: NetworkImage(
-                                  credential!['image'],
+                                  _credential!['image'],
                                 ),
                               ),
                               Text(
-                                credential!['fullname'],
+                                _credential!['fullname'],
                                 style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.white,
@@ -272,182 +222,188 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 60,
-                          width: size.width / 0.9,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 25,
-                                      vertical: 10,
-                                    ),
-                                    backgroundColor: Colors.lightGreen,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(30),
-                                        bottomLeft: Radius.circular(30),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () => Navigator.of(context)
-                                      .pushNamed(RouteManager.ordersScreen),
-                                  child: const Text(
-                                    'Order',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22,
-                                      color: primaryColor,
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 10,
-                                    ),
-                                    backgroundColor: Colors.green,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                  ),
-                                  onPressed: () => Navigator.of(context)
-                                      .pushNamed(RouteManager.wishList),
-                                  child: const Text(
-                                    'Wishlist',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 25,
-                                      vertical: 10,
-                                    ),
-                                    backgroundColor: Colors.lightGreen,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(30),
-                                        bottomRight: Radius.circular(30),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CustomerMainScreen(index: 4),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Cart',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22,
-                                      color: primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // const KDividerText(title: 'Account Information'),
                         const SizedBox(height: 10),
-                        Container(
-                          height: size.height / 3.5,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Column(
-                            children: [
-                              KListTile(
-                                title: 'Email Address',
-                                subtitle: credential!['email'],
-                                icon: Icons.email,
-                                onTapHandler: _editProfile,
-                              ),
-                              KListTile(
-                                title: 'Phone Number',
-                                subtitle: credential!['phone'] == ""
-                                    ? 'Not set yet'
-                                    : credential!['phone'],
-                                icon: Icons.phone,
-                                onTapHandler: _editProfile,
-                              ),
-                              KListTile(
-                                title: 'Delivery Address',
-                                subtitle: credential!['address'] == ""
-                                    ? 'Not set yet'
-                                    : credential!['address'],
-                                icon: Icons.location_pin,
-                                onTapHandler: _editProfile,
-                              ),
-                            ],
-                          ),
-                        ),
-                        // const KDividerText(title: 'Account Settings'),
+                        _buildTopButtons(size),
+                        const SizedBox(height: 10),
+                        _buildAccountInfo(size),
                         const SizedBox(height: 20),
-                        SingleChildScrollView(
-                          child: Container(
-                            margin: EdgeInsets.only(bottom: 24),
-                            height: size.height / 3.3,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Column(
-                              children: [
-                                KListTile(
-                                  title: 'App Settings',
-                                  icon: Icons.settings,
-                                  onTapHandler: _settings,
-                                  showSubtitle: false,
-                                ),
-                                KListTile(
-                                  title: 'Edit Profile',
-                                  icon: Icons.edit_note,
-                                  onTapHandler: _editProfile,
-                                  showSubtitle: false,
-                                ),
-                                KListTile(
-                                  title: 'Change Password',
-                                  icon: Icons.key,
-                                  onTapHandler: _changePassword,
-                                  showSubtitle: false,
-                                ),
-                                KListTile(
-                                  title: 'Logout',
-                                  icon: Icons.logout,
-                                  onTapHandler: showLogoutOptions,
-                                  showSubtitle: false,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        _buildSettings(size),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
+    );
+  }
+
+  Widget _buildTopButtons(Size size) {
+    return Container(
+      height: 60,
+      width: size.width / 0.9,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildTopButton(
+              label: 'Order',
+              backgroundColor: Colors.lightGreen,
+              textColor: primaryColor,
+              onPressed: () => Navigator.of(context)
+                  .pushNamed(RouteManager.orderManageScreen),
+            ),
+            _buildTopButton(
+              label: 'Wishlist',
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(RouteManager.wishList),
+            ),
+            _buildTopButton(
+              label: 'Cart',
+              backgroundColor: Colors.lightGreen,
+              textColor: primaryColor,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CustomerMainScreen(index: 4),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopButton({
+    required String label,
+    required Color backgroundColor,
+    required Color textColor,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        backgroundColor: backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: label == 'Order'
+              ? const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                )
+              : label == 'Cart'
+                  ? const BorderRadius.only(
+                      topRight: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    )
+                  : BorderRadius.circular(5),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountInfo(Size size) {
+    return Container(
+      height: size.height / 3.5,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        children: [
+          KListTile(
+            title: 'Email Address',
+            subtitle: _credential!['email'],
+            icon: Icons.email,
+            onTapHandler: _editProfile,
+          ),
+          KListTile(
+            title: 'Phone Number',
+            subtitle: _credential!['phone'] == ""
+                ? 'Not set yet'
+                : _credential!['phone'],
+            icon: Icons.phone,
+            onTapHandler: _editProfile,
+          ),
+          KListTile(
+            title: 'Delivery Address',
+            subtitle: _credential!['address'] == ""
+                ? 'Not set yet'
+                : _credential!['address'],
+            icon: Icons.location_pin,
+            onTapHandler: _editProfile,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettings(Size size) {
+    return SingleChildScrollView(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        height: size.height / 3.3,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          children: [
+            KListTile(
+              title: 'App Settings',
+              icon: Icons.settings,
+              onTapHandler: _settings,
+              showSubtitle: false,
+            ),
+            KListTile(
+              title: 'Edit Profile',
+              icon: Icons.edit_note,
+              onTapHandler: _editProfile,
+              showSubtitle: false,
+            ),
+            KListTile(
+              title: 'Change Password',
+              icon: Icons.key,
+              onTapHandler: _changePassword,
+              showSubtitle: false,
+            ),
+            KListTile(
+              title: 'Logout',
+              icon: Icons.logout,
+              onTapHandler: _showLogoutOptions,
+              showSubtitle: false,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _settings() {
+    // Handle settings tap
+  }
+
+  void _changePassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const EditProfile(
+          editPasswordOnly: true,
+        ),
+      ),
     );
   }
 }

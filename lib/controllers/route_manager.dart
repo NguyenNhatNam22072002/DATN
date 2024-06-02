@@ -4,7 +4,9 @@ import 'package:shoes_shop/views/auth/vendor/forgot_password.dart';
 import 'package:shoes_shop/views/auth/vendor/vendor_auth.dart';
 import 'package:shoes_shop/views/customer/favorite/favorite.dart';
 import 'package:shoes_shop/views/customer/orders/orders.dart';
+import 'package:shoes_shop/views/customer/orders/orders_management.dart';
 import 'package:shoes_shop/views/shipper/main_screen.dart';
+import 'package:shoes_shop/views/shipper/shipper_entry_screen.dart';
 import 'package:shoes_shop/views/vendor/profile/store_data_analysis.dart';
 
 import '../views/auth/account_type.dart';
@@ -26,6 +28,7 @@ class RouteManager {
   static const String signUpAccountScreen = "/sigUpAccountScreen";
   static const String customerMainScreen = '/customerHomeScreen';
   static const String ordersScreen = '/OrdersScreen';
+  static const String orderManageScreen = '/orderManagementScreen';
   static const String wishList = '/wishList';
   static const String favoriteList = '/favoriteList';
   static const String editAddress = '/editAddressScreen';
@@ -37,6 +40,7 @@ class RouteManager {
   static const String vendorDataAnalysis = '/vendorDataAnalysis';
 
   static const String shipperAuthScreen = "/shipperAuthScreen";
+  static const String shipperEntryScreen = "/shipperEntryScreen";
   static const String shipperForgotPass = "/shipperForgotPass";
   static const String shipperMainScreen = '/shipperMainScreen';
 }
@@ -50,6 +54,7 @@ final routes = {
   RouteManager.customerForgotPass: (context) => const CustomerForgotPassword(),
   RouteManager.editAddress: (context) => const CustomerForgotPassword(),
   RouteManager.ordersScreen: (context) => const OrdersScreen(),
+  RouteManager.orderManageScreen: (context) => const OrdersManagementScreen(),
   RouteManager.wishList: (context) => const WishListProducts(),
   RouteManager.favoriteList: (context) => const FavoriteProducts(),
   RouteManager.vendorAuthScreen: (context) => const VendorAuthScreen(),
@@ -58,8 +63,9 @@ final routes = {
   RouteManager.vendorForgotPass: (context) => const VendorForgotPassword(),
   RouteManager.vendorCreatePost: (context) => const VendorCreateProduct(),
   RouteManager.vendorDataAnalysis: (context) => const StoreDataAnalysis(),
-  // RouteManager.shipperAuthScreen: (context) => const ShipperAuthScreen(),
+  RouteManager.shipperAuthScreen: (context) => const ShipperAuthScreen(),
   RouteManager.shipperMainScreen: (context) =>
       const ShipperMainScreen(index: 0),
   RouteManager.shipperForgotPass: (context) => const ShipperForgotPassword(),
+  RouteManager.shipperEntryScreen: (context) => const ShipperEntryScreen(),
 };

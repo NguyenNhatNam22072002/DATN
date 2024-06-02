@@ -133,8 +133,7 @@ class _DeliveredOrdersState extends State<DeliveredOrders> {
   // cancel all deliveries
   Future<void> cancelAllDeliveries() async {
     await FirebaseCollections.ordersCollection
-        .where('isDelivered', isEqualTo: true)
-        .where('isApproved', isEqualTo: true)
+        .where('status', isEqualTo: 1)
         .get()
         .then(
       (QuerySnapshot data) {

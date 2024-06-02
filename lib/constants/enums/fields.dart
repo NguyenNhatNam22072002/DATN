@@ -7,4 +7,5 @@ enum Field {
   taxNumber,
   storeRegNo,
   address,
+  vehicleType,
 }

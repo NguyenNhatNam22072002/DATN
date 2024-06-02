@@ -46,7 +46,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
             // checkouts
             for (var doc in data.docs)
               {
-                if (!doc['isDelivered'])
+                if (!(doc['status'] == 1))
                   {
                     setState(() {
                       availableFunds += doc['prodPrice'] * doc['prodQuantity'];

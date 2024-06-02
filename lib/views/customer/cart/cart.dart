@@ -61,7 +61,7 @@ class CartScreenState extends State<CartScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Cart', // Thay 'Your App Title' bằng tiêu đề mong muốn
           style: TextStyle(
             color: Colors.black, // Màu chữ cho tiêu đề

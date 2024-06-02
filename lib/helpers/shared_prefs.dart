@@ -14,21 +14,39 @@ Future<void> setAppPreviouslyRun() async {
   await prefs.setBool('isAppPreviouslyRun', true);
 }
 
-
-
-// set account type
 Future<void> setAccountType({required AccountType accountType}) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setBool(
-    'isCustomer',
-    accountType == AccountType.customer ? true : false,
-  );
+
+  // Reset all account type flags to false
+  await prefs.setBool('isCustomer', false);
+  await prefs.setBool('isVendor', false);
+  await prefs.setBool('isShipper', false);
+
+  // Set the selected account type to true
+  switch (accountType) {
+    case AccountType.customer:
+      await prefs.setBool('isCustomer', true);
+      break;
+    case AccountType.vendor:
+      await prefs.setBool('isVendor', true);
+      break;
+    case AccountType.shipper:
+      await prefs.setBool('isShipper', true);
+      break;
+  }
 }
 
-
-
-// check account type
-Future<bool> checkAccountType() async {
+Future<bool> checkIfCustomer() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getBool('isCustomer') ?? true;
+  return prefs.getBool('isCustomer') ?? false;
+}
+
+Future<bool> checkIfVendor() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('isVendor') ?? false;
+}
+
+Future<bool> checkIfShipper() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('isShipper') ?? false;
 }

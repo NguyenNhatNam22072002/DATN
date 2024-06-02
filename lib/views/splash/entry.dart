@@ -10,9 +10,14 @@ class EntryScreen extends StatefulWidget {
     Key? key,
     required this.isAppPreviouslyRun,
     required this.isCustomer,
+    required this.isVendor,
+    required this.isShipper,
   }) : super(key: key);
+
   final bool isAppPreviouslyRun;
   final bool isCustomer;
+  final bool isVendor;
+  final bool isShipper;
 
   @override
   State<EntryScreen> createState() => _EntryScreenState();
@@ -23,7 +28,7 @@ class _EntryScreenState extends State<EntryScreen> {
 
   void isFirstRun() {
     if (widget.isAppPreviouslyRun) {
-      // app has ran before
+      // app has run before
       FirebaseAuth.instance.authStateChanges().listen((User? user) {
         if (user != null) {
           // user is logged in
@@ -35,12 +40,20 @@ class _EntryScreenState extends State<EntryScreen> {
                     RouteManager.customerMainScreen, (route) => false);
               }
             });
-          } else {
+          } else if (widget.isVendor) {
             // user is a vendor
             _timer = Timer(const Duration(seconds: 3), () {
               if (mounted) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     RouteManager.vendorEntryScreen, (route) => false);
+              }
+            });
+          } else if (widget.isShipper) {
+            // user is a shipper
+            _timer = Timer(const Duration(seconds: 3), () {
+              if (mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    RouteManager.shipperEntryScreen, (route) => false);
               }
             });
           }
@@ -55,7 +68,7 @@ class _EntryScreenState extends State<EntryScreen> {
         }
       });
     } else {
-      // app has not ran before
+      // app has not run before
       _timer = Timer(const Duration(seconds: 3), () {
         if (mounted) {
           Navigator.of(context).pushNamedAndRemoveUntil(

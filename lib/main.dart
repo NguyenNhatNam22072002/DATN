@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:shoes_shop/controllers/route_manager.dart';
 import 'package:shoes_shop/providers/cart.dart';
 import 'package:shoes_shop/providers/category.dart';
@@ -7,14 +12,11 @@ import 'package:shoes_shop/providers/order.dart';
 import 'package:shoes_shop/providers/product.dart';
 import 'package:shoes_shop/resources/theme_manager.dart';
 import 'package:shoes_shop/views/splash/entry.dart';
+
 import 'constants/color.dart';
 import 'controllers/configs.dart';
 import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'helpers/shared_prefs.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,28 +24,38 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await Config.fetchApiKeys(); // fetching api keys
+  SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  );
 
-  bool isAppPreviouslyRun =
-      await checkIfAppPreviouslyRun(); // checking if app is previously ran
-  bool isCustomer =
-      await checkAccountType(); // checking if logged in user is a customer
+  await Config.fetchApiKeys();
+
+  bool isAppPreviouslyRun = await checkIfAppPreviouslyRun();
+  bool isCustomer = await checkIfCustomer();
+  bool isVendor = await checkIfVendor();
+  bool isShipper = await checkIfShipper();
 
   runApp(MyApp(
     isAppPreviouslyRun: isAppPreviouslyRun,
     isCustomer: isCustomer,
+    isVendor: isVendor,
+    isShipper: isShipper,
   ));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({
-    super.key,
-    this.isAppPreviouslyRun = false,
-    this.isCustomer = true,
-  });
+    Key? key,
+    required this.isAppPreviouslyRun,
+    required this.isCustomer,
+    required this.isVendor,
+    required this.isShipper,
+  }) : super(key: key);
 
   final bool isAppPreviouslyRun;
   final bool isCustomer;
+  final bool isVendor;
+  final bool isShipper;
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +74,10 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => ProductData(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => CartProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => OrderProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => CategoryData(),
-        ),
+        ChangeNotifierProvider(create: (context) => ProductData()),
+        ChangeNotifierProvider(create: (context) => CartProvider()),
+        ChangeNotifierProvider(create: (context) => OrderProvider()),
+        ChangeNotifierProvider(create: (context) => CategoryData()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(360, 690),
@@ -92,13 +96,10 @@ class MyApp extends StatelessWidget {
         child: EntryScreen(
           isAppPreviouslyRun: isAppPreviouslyRun,
           isCustomer: isCustomer,
+          isVendor: isVendor,
+          isShipper: isShipper,
         ),
       ),
     );
   }
 }
-
-
-
-
-// TODO: Refactor logic codes to controller later

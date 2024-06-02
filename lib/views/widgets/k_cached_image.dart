@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../resources/assets_manager.dart';
 
+// ignore: must_be_immutable
 class KCachedImage extends StatelessWidget {
   KCachedImage({
     super.key,
