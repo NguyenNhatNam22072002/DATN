@@ -13,6 +13,29 @@ import '../models/message.dart';
 import 'notification_access_token.dart';
 
 class APIs {
+  // Singleton pattern
+  static final APIs _instance = APIs._internal();
+
+  factory APIs() {
+    return _instance;
+  }
+
+  APIs._internal() {
+    _initialize();
+  }
+
+  void _initialize() {
+    // Register onTokenRefresh
+    fMessaging.onTokenRefresh.listen((newToken) {
+      log('Token refreshed: $newToken');
+      me.pushToken = newToken;
+      updateActiveStatus(true);
+    });
+
+    // Optionally, you can call getFirebaseMessagingToken here
+    getFirebaseMessagingToken();
+  }
+
   // for authentication
   static FirebaseAuth get auth => FirebaseAuth.instance;
 
@@ -48,6 +71,7 @@ class APIs {
       if (t != null) {
         me.pushToken = t;
         log('Push Token: $t');
+        updateActiveStatus(true);
       }
     });
 
