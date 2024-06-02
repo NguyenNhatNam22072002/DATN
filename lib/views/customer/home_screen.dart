@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shoes_shop/models/product.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
 import 'package:shoes_shop/views/customer/relational_screens/product_details.dart';
+import 'package:shoes_shop/views/vendor/chat/home_screen.dart';
 import '../../constants/firebase_refs/collections.dart';
 import '../../providers/category.dart';
 import '../../resources/assets_manager.dart';
@@ -226,6 +227,20 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Điều hướng đến giao diện chat ở đây
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        },
+        child: Icon(
+          Icons.chat,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.blue, // Thay đổi màu sắc tùy ý
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shoes_shop/api/apis.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
 import 'package:shoes_shop/views/widgets/are_you_sure_dialog.dart';
@@ -189,6 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // logout
   Future<void> logout() async {
+    await APIs.updateActiveStatus(false);
     await auth.signOut();
     Navigator.of(cxt).pushNamed(RouteManager.accountType);
   }

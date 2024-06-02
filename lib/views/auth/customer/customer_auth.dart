@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:shoes_shop/api/apis.dart';
 import 'package:shoes_shop/views/widgets/kcool_alert.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/account_type.dart';
@@ -200,6 +201,8 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
           action: completeAction,
         );
       } else {
+        APIs.updateActiveStatus(true);
+
         isLoadingFnc();
       }
     } else {
@@ -235,6 +238,8 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
           action: completeAction,
         );
       } else {
+        APIs.updateActiveStatus(true);
+
         isLoadingFnc();
       }
     }
@@ -252,6 +257,8 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
       );
 
       if (result!.user != null) {
+        APIs.updateActiveStatus(true);
+
         isLoadingFnc();
       } else {
         kCoolAlert(

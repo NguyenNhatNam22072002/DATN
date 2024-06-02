@@ -78,6 +78,27 @@ dependencies:
   url_launcher: ^6.2.6
   geolocator: ^12.0.0
   geocoding: ^3.0.0
+  flutter_dotenv: ^5.0.1
+
+  # For showing Emojis
+  emoji_picker_flutter: ^2.0.0
+
+  # For accessing firebase messaging (Push Notification)
+  firebase_messaging: ^14.8.1
+
+  # Bearer Token for Push Notification
+  googleapis_auth: ^1.6.0
+
+  # For calling RestAPIs
+  http: ^1.2.1
+
+  # For creating notification channel
+  flutter_notification_channel: ^3.1.0
+
+  # For storing images into gallery
+  gallery_saver_updated: ^3.0.0
+
+  get: ^4.6.4
 
 dev_dependencies:
   flutter_test:

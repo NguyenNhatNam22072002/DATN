@@ -7,8 +7,12 @@ import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
+import 'package:shoes_shop/api/apis.dart';
+import 'package:shoes_shop/helpers/dialogs.dart';
+import 'package:shoes_shop/models/chat_user.dart';
 import 'package:shoes_shop/providers/cart.dart';
 import 'package:shoes_shop/views/customer/store/store_details.dart';
+import 'package:shoes_shop/views/vendor/chat/chat_screen.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/status.dart';
 import '../../../constants/firebase_refs/collections.dart';
@@ -49,36 +53,148 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   Uuid uuid = const Uuid();
   bool isFav = false;
   Vendor vendor = Vendor.initial();
+  ChatUser user = ChatUser(
+      image: '',
+      about: '',
+      name: '',
+      createdAt: '',
+      isOnline: false,
+      id: '',
+      lastActive: '',
+      email: '',
+      pushToken: '');
 
   // fetch vendorDetails
   Future<void> fetchVendorDetails() async {
-    await FirebaseCollections.vendorsCollection
-        .doc(widget.product.vendorId)
-        .get()
-        .then((DocumentSnapshot data) {
-      setState(() {
-        vendor = Vendor(
-          storeId: data['storeId'],
-          storeName: data['storeName'],
-          email: data['email'],
-          phone: data['phone'],
-          taxNumber: data['taxNumber'],
-          storeNumber: data['storeNumber'],
-          country: data['country'],
-          state: data['state'],
-          city: data['city'],
-          storeImgUrl: data['storeImgUrl'],
-          address: data['address'],
-          authType: data['authType'],
-        );
+    try {
+      final doc = await FirebaseCollections.vendorsCollection
+          .doc(widget.product.vendorId)
+          .get();
 
-        vendorName = data['storeName'];
-        vendorImage = data['storeImgUrl'];
-        vendorAddress =
-            'Locate in: ${data['city']} ${data['state']} ${reversedWord(data['country'])}';
-        isLoadingVendor = false;
-      });
-    });
+      if (doc.exists) {
+        final data = doc.data()!;
+        setState(() {
+          vendor = Vendor(
+            storeId: data['storeId'],
+            storeName: data['storeName'],
+            email: data['email'],
+            phone: data['phone'],
+            taxNumber: data['taxNumber'],
+            storeNumber: data['storeNumber'],
+            country: data['country'],
+            state: data['state'],
+            city: data['city'],
+            storeImgUrl: data['storeImgUrl'],
+            address: data['address'],
+            authType: data['authType'],
+          );
+
+          vendorName = data['storeName'];
+          vendorImage = data['storeImgUrl'];
+          vendorAddress =
+              'Located in: ${data['city']} ${data['state']} ${reversedWord(data['country'])}';
+          isLoadingVendor = false;
+        });
+      } else {
+        // Show dialog if the document does not exist
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Error'),
+            content: Text('Vendor details not found.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle any other errors
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred while fetching vendor details.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<void> fetchUserDetails() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.product.vendorId)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data()!;
+        setState(() {
+          user = ChatUser(
+            about: data['about'],
+            createdAt: data['created_at'],
+            email: data['email'],
+            id: data['id'],
+            image: data['image'],
+            isOnline: data['is_online'],
+            lastActive: data['last_active'],
+            name: data['name'],
+            pushToken: data['push_token'],
+          );
+        });
+      } else {
+        // Show dialog if the document does not exist
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Error'),
+            content: Text('Vendor details not found.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle any other errors
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred while fetching vendor details.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   // navigate to store
@@ -187,6 +303,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
       //  fetching store details
       fetchVendorDetails();
+      fetchUserDetails();
       setState(() {
         isFav = widget.product.isFav;
       });
@@ -513,7 +630,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                               widget.product.sizesAvailable[index], index),
                           child: CircleAvatar(
                             backgroundColor: selectedProductSizeIndex == index
-                                ? accentColor
+                                ? Colors.black12
                                 : gridBg,
                             child: Text(
                               widget.product.sizesAvailable[index],
@@ -572,30 +689,69 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 5),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      side:
-                                          const BorderSide(color: accentColor),
-                                    ),
-                                    onPressed: () => navigateToVendorStore(),
-                                    child: Wrap(
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: [
-                                        const Icon(Icons.storefront,
-                                            color: accentColor),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Visit store',
-                                          style: getRegularStyle(
-                                            color: accentColor,
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                  Row(
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          side: const BorderSide(
+                                              color: accentColor),
+                                        ),
+                                        onPressed: () =>
+                                            navigateToVendorStore(),
+                                        child: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
+                                            const Icon(Icons.storefront,
+                                                color: accentColor),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              'Visit store',
+                                              style: getRegularStyle(
+                                                color: accentColor,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 5, vertical: 5),
+                                          side: const BorderSide(
+                                              color: accentColor),
+                                        ),
+                                        onPressed: () async {
+                                          if (user.email.isNotEmpty) {
+                                            await APIs.addChatUser(user.email)
+                                                .then((value) {
+                                              if (!value) {
+                                                Dialogs.showSnackbar(context,
+                                                    'User does not Exists!');
+                                              }
+                                            });
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) => ChatScreen(
+                                                        user: user)));
+                                          }
+                                        },
+                                        child: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
+                                            const Icon(Icons.chat,
+                                                color: accentColor),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

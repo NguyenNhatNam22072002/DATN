@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shoes_shop/api/apis.dart';
 import '../constants/enums/account_type.dart';
 import '../helpers/auth_error_formatter.dart';
 import '../models/auth_result.dart';
@@ -61,6 +62,7 @@ class AuthController {
 
       await storageRef.putFile(file);
       var downloadUrl = await storageRef.getDownloadURL();
+      await APIs.createUser(fullname, downloadUrl);
       if (accountType == AccountType.vendor) {
         firebase.collection('vendors').doc(credential.user!.uid).set({
           'storeName': fullname,
