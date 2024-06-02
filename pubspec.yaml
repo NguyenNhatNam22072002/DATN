@@ -99,6 +99,7 @@ dependencies:
   gallery_saver_updated: ^3.0.0
 
   get: ^4.6.4
+  flutter_local_notifications: ^17.1.0
 
 dev_dependencies:
   flutter_test:
