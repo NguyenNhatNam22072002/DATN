@@ -571,7 +571,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                                     onPressed: () => _switchLog(),
                                     child: Text(
                                       isLogin
-                                          ? 'New here? Create Account'
+                                          ? 'Create new account?'
                                           : 'Already a vendor? Sign in',
                                       style: const TextStyle(
                                         color: accentColor,

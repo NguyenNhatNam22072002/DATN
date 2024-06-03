@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/controllers/route_manager.dart';
 import 'package:shoes_shop/resources/assets_manager.dart';
@@ -15,12 +16,50 @@ class _VendorForgotPasswordState extends State<VendorForgotPassword> {
   final _emailController = TextEditingController();
 
   // handle forgot password
-  _handleForgotPassword() {
+  _handleForgotPassword() async {
     var valid = _formKey.currentState!.validate();
     if (!valid) {
       return null;
     }
-    // TODO: Implement forgot password
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text,
+      );
+      // Gửi email thành công
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Success'),
+          content: Text('An email has been sent to reset your password.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _navigateToSignIn();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      // Xử lý lỗi
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Error'),
+          content: Text(error.toString()),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   // navigate to sign in screen
@@ -99,7 +138,7 @@ class _VendorForgotPasswordState extends State<VendorForgotPassword> {
                     textDirection: TextDirection.rtl,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
+                        backgroundColor: Colors.green,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),

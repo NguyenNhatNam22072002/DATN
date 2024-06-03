@@ -464,7 +464,7 @@ class _ShipperAuthScreenState extends State<ShipperAuthScreen> {
                                     onPressed: _switchLog,
                                     child: Text(
                                       isLogin
-                                          ? 'New here? Create Account'
+                                          ? 'Create new account?'
                                           : 'Already a Shipper? Sign in',
                                       style: const TextStyle(
                                         color: accentColor,
