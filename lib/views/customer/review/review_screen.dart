@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shoes_shop/models/review.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
 
@@ -14,7 +15,7 @@ class ReviewScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ReviewScreenState createState() => _ReviewScreenState();
+  State<ReviewScreen> createState() => _ReviewScreenState();
 }
 
 class _ReviewScreenState extends State<ReviewScreen> {
@@ -75,7 +76,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Submit Review'),
+        title: const Text(
+          'Submit Review',
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 16,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -96,19 +103,26 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              Text(
-                'Rating: $_rating',
+              const Text(
+                'Rating:',
                 style: const TextStyle(fontSize: 18),
               ),
-              Slider(
-                value: _rating,
-                min: 0,
-                max: 5,
-                divisions: 5,
-                label: _rating.toString(),
-                onChanged: (value) {
+              RatingBar.builder(
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                unratedColor: Colors.grey[300],
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding:
+                    const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
                   setState(() {
-                    _rating = value;
+                    _rating = rating;
                   });
                 },
               ),

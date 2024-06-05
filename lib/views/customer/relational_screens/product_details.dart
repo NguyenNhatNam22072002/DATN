@@ -2,15 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
+import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shoes_shop/api/apis.dart';
 import 'package:shoes_shop/helpers/dialogs.dart';
+import 'package:shoes_shop/models/buyer.dart';
 import 'package:shoes_shop/models/chat_user.dart';
+import 'package:shoes_shop/models/review.dart';
 import 'package:shoes_shop/providers/cart.dart';
+import 'package:shoes_shop/views/components/review_widget.dart';
 import 'package:shoes_shop/views/customer/store/store_details.dart';
 import 'package:shoes_shop/views/vendor/chat/chat_screen.dart';
 import '../../../constants/color.dart';
@@ -29,7 +35,6 @@ import '../../widgets/loading_widget.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:uuid/uuid.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
 import '../../widgets/msg_snackbar.dart';
 import '../main_screen.dart';
 
@@ -47,11 +52,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   String selectedProductSize = '';
   int? selectedProductSizeIndex;
   bool isLoadingVendor = true;
+  bool isLoadingRating = true;
+  bool isLoadingReviews = true;
   String vendorName = '';
   String vendorImage = '';
   String vendorAddress = '';
   Uuid uuid = const Uuid();
   bool isFav = false;
+  double _averageRating = 0.0;
+  int _ratingCount = 0;
   Vendor vendor = Vendor.initial();
   ChatUser user = ChatUser(
       image: '',
@@ -63,6 +72,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
       lastActive: '',
       email: '',
       pushToken: '');
+
+  List<Map<String, dynamic>> _reviews = [];
 
   // fetch vendorDetails
   Future<void> fetchVendorDetails() async {
@@ -197,6 +208,72 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     }
   }
 
+  Future<void> _fetchReviews() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('prodId', isEqualTo: widget.product.prodId)
+          .get();
+
+      final reviews = await Future.wait(querySnapshot.docs.map(
+        (doc) async {
+          final reviewData = doc.data();
+          final customerId = reviewData['customerId'];
+
+          final customerDoc = await FirebaseFirestore.instance
+              .collection('customers')
+              .doc(customerId)
+              .get();
+
+          final customerData = customerDoc.data();
+          final fullname = customerData?['fullname'] ?? 'Unknown';
+
+          return {
+            'reviewText': reviewData['reviewText'],
+            'date': (reviewData['date'] as Timestamp).toDate(),
+            'fullname': fullname,
+          };
+        },
+      ));
+
+      setState(() {
+        _reviews = reviews;
+      });
+    } on FirebaseException catch (e) {
+      if (kDebugMode) {
+        print('Firebase Error getting reviews: ${e.code}: ${e.message}');
+      }
+      // Hiển thị thông báo lỗi cho người dùng (ví dụ: dùng SnackBar)
+    } catch (e) {
+      if (kDebugMode) {
+        print('General Error getting reviews: $e');
+      }
+      // Hiển thị thông báo lỗi cho người dùng (ví dụ: dùng SnackBar)
+    }
+  }
+
+  Future<void> _fetchAverageRating() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('prodId', isEqualTo: widget.product.prodId)
+          .get();
+      List<double> ratings = querySnapshot.docs
+          .map((doc) => (doc['rating'] as num).toDouble())
+          .toList();
+      if (ratings.isEmpty) return;
+      double averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
+      setState(() {
+        _averageRating = averageRating;
+        _ratingCount = ratings.length;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting average rating: $e');
+      }
+    }
+  }
+
   // navigate to store
   void navigateToVendorStore() {
     // Todo: Navigate to vendor store
@@ -303,6 +380,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
       //  fetching store details
       fetchVendorDetails();
+      _fetchAverageRating();
+      _fetchReviews();
       fetchUserDetails();
       setState(() {
         isFav = widget.product.isFav;
@@ -560,6 +639,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                       fontSize: FontSize.s16,
                     ),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      RatingBarIndicator(
+                        rating: _averageRating,
+                        unratedColor: greyShade2,
+                        itemBuilder: (context, index) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        itemCount: 5,
+                        itemSize: 30.0,
+                        direction: Axis.horizontal,
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        '${(_averageRating.toStringAsFixed(1))}/5',
+                        style: getRegularStyle(
+                          color: Colors.black,
+                          fontSize: FontSize.s16,
+                        ),
+                      ),
+                      const SizedBox(width: 12.0),
+                      Text(
+                        '($_ratingCount sold)',
+                        style: getRegularStyle(
+                          color: Colors.black,
+                          fontSize: FontSize.s16,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -721,7 +832,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.white,
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               horizontal: 5, vertical: 5),
                                           side: const BorderSide(
                                               color: accentColor),
@@ -742,11 +853,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                                         user: user)));
                                           }
                                         },
-                                        child: Wrap(
+                                        child: const Wrap(
                                           crossAxisAlignment:
                                               WrapCrossAlignment.center,
                                           children: [
-                                            const Icon(Icons.chat,
+                                            Icon(Icons.chat,
                                                 color: accentColor),
                                           ],
                                         ),
@@ -830,7 +941,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                         ],
                       );
                     }
-
                     return CarouselSlider.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index, i) {
@@ -943,6 +1053,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            ReviewsWidget(reviewTexts: _reviews),
           ],
         ),
       ),

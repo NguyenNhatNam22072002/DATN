@@ -27,4 +27,7 @@ class FirebaseCollections {
 
   static final reviewsCollection =
       FirebaseFirestore.instance.collection('reviews');
+
+  static final refundsCollection =
+      FirebaseFirestore.instance.collection('refunds');
 }

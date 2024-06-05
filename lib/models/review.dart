@@ -26,4 +26,13 @@ class Review {
           rating: double.parse(item['rating'].toString()),
           date: item['date'].toDate(),
         );
+
+  Map<String, dynamic> toJson() => {
+        'reviewId': reviewId,
+        'customerId': customerId,
+        'prodId': prodId,
+        'reviewText': reviewText,
+        'rating': rating,
+        'date': date,
+      };
 }

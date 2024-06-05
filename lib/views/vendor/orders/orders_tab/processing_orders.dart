@@ -42,6 +42,41 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
     await FirebaseCollections.ordersCollection.doc(prodId).delete();
   }
 
+  // update readyDelivery to true
+  Future<void> updateReadyDelivery() async {
+    final batch = FirebaseFirestore.instance.batch();
+
+    QuerySnapshot querySnapshot = await FirebaseCollections.ordersCollection
+        .where('vendorId', isEqualTo: userId)
+        .where('status', isEqualTo: 3) // Status 3 for processing
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      batch.update(doc.reference, {'status': 6});
+    }
+
+    await batch.commit();
+
+    // Show dialog after update
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Update Successful'),
+          content: const Text('Orders are ready for delivery.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
@@ -239,6 +274,10 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                             ],
                           ),
                         ),
+                      ),
+                      ElevatedButton(
+                        onPressed: updateReadyDelivery,
+                        child: const Text('Ready to Delivery'),
                       ),
                     ],
                   )

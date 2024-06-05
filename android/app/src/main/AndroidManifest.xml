@@ -20,7 +20,7 @@
         android:label="ShoesShop"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <activity
+ <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

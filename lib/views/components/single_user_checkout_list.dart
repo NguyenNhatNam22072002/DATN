@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
+import 'package:shoes_shop/views/customer/return/refund_screen.dart';
 import 'package:shoes_shop/views/customer/review/review_screen.dart';
 import '../../constants/firebase_refs/collections.dart';
 import '../../models/buyer.dart';
@@ -81,7 +82,7 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
             .doc(widget.checkoutItem.orderId)
             .delete();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Order cancelled successfully')),
+          const SnackBar(content: Text('Order cancelled successfully')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -90,28 +91,81 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text(
                 'Order cannot be cancelled as the 30-minute window has passed.')),
       );
     }
   }
 
+  // Method to show the return button only after delivery and within 7 days
+  Widget showReturnButton() {
+    DateTime deliveryDate = widget.checkoutItem.date;
+    DateTime currentDate = DateTime.now();
+    Duration difference = currentDate.difference(deliveryDate);
+
+    return ElevatedButton(
+      onPressed: () {
+        if (difference.inDays <= 7) {
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RefundScreen(
+                  orderId: widget.checkoutItem.orderId,
+                  vendorId: widget.checkoutItem.vendorId,
+                  customerId: widget.checkoutItem.customerId,
+                  orderAmount: widget.checkoutItem.prodPrice,
+                ),
+              ),
+            );
+          }
+        } else {
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Refund Window Closed'),
+                content: const Text(
+                    'The refund window for this order has passed. Returns are only allowed within 7 days of delivery.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      },
+      child: const Text(
+        'Refund Product',
+        style: TextStyle(fontWeight: FontWeight.normal),
+      ),
+    );
+  }
+
   // Method to show the review button only after delivery
   Widget showReviewButton() {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ReviewScreen(
-              customerId: widget.checkoutItem.customerId,
-              prodId: widget.checkoutItem.prodId,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ReviewScreen(
+                customerId: widget.checkoutItem.customerId,
+                prodId: widget.checkoutItem.prodId,
+              ),
             ),
-          ),
-        );
-      },
-      child: const Text('Review Product'),
-    );
+          );
+        },
+        child: const Text(
+          'Review Product',
+          style: TextStyle(fontWeight: FontWeight.normal),
+        ));
   }
 
   @override
@@ -174,15 +228,17 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
                   title: 'Order Date: ',
                 ),
                 const SizedBox(height: 15),
-                if (widget.checkoutItem.status != 1)
+                if (widget.checkoutItem.status == 5)
                   ElevatedButton(
                     onPressed: () async {
                       await cancelOrder();
-                      Navigator.of(context).pop(); // Close the bottom sheet
+                      Navigator.of(context).pop();
                     },
-                    child: const Text('Cancel Order'),
+                    child: const Text('Cancel Order',
+                        style: TextStyle(fontWeight: FontWeight.normal)),
                   ),
                 if (widget.checkoutItem.status == 1) showReviewButton(),
+                if (widget.checkoutItem.status == 1) showReturnButton(),
               ],
             ),
           ),

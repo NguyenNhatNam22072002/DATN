@@ -245,7 +245,7 @@ class _ImageUploadTabState extends State<ImageUploadTab>
           : const SizedBox.shrink(),
       body: !isLoading
           ? SingleChildScrollView(
-            child: Padding(
+              child: Padding(
                 padding: const EdgeInsets.only(
                   top: 20,
                   left: 18,
@@ -415,7 +415,7 @@ class _ImageUploadTabState extends State<ImageUploadTab>
                   ],
                 ),
               ),
-          )
+            )
 
           // loading is true
           : const Center(

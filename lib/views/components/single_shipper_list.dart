@@ -13,8 +13,8 @@ import '../widgets/item_row.dart';
 import 'package:intl/intl.dart' as intl;
 import '../widgets/k_cached_image.dart';
 
-class SingleUserCheckOutList extends StatefulWidget {
-  const SingleUserCheckOutList({
+class SingleShipperCheckOutList extends StatefulWidget {
+  const SingleShipperCheckOutList({
     super.key,
     required this.checkoutItem,
   });
@@ -22,10 +22,11 @@ class SingleUserCheckOutList extends StatefulWidget {
   final CheckedOutItem checkoutItem;
 
   @override
-  State<SingleUserCheckOutList> createState() => _SingleUserCheckOutListState();
+  State<SingleShipperCheckOutList> createState() =>
+      _SingleShipperCheckOutListState();
 }
 
-class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
+class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
   Buyer buyer = Buyer.initial();
   Vendor vendor = Vendor.initial();
 
@@ -36,7 +37,7 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
         .get()
         .then((DocumentSnapshot data) {
       setState(() {
-        buyer = Buyer.fromJson(data.data() as DocumentSnapshot<Object?>);
+        buyer = Buyer.fromJson(data);
       });
     });
   }
@@ -63,6 +64,8 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
   // Method to get the status label based on the status value
   String getStatusLabel(int status) {
     switch (status) {
+      case 6:
+        return 'Ready to Deliver';
       case 1:
         return 'Delivered';
       case 2:

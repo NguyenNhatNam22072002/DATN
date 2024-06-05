@@ -99,9 +99,11 @@ dependencies:
   gallery_saver_updated: ^3.0.0
 
   get: ^4.6.4
-  flutter_local_notifications: ^17.1.0
+  flutter_rating_bar: ^4.0.1
+  flutter_local_notifications: ^17.1.2
   pinput: ^3.0.1
   dotenv: ^4.0.1
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

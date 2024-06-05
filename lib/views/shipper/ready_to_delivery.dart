@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
-import 'package:shoes_shop/views/components/single_user_checkout_list.dart';
+import 'package:shoes_shop/views/components/single_shipper_list.dart';
 import 'package:shoes_shop/views/widgets/loading_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
@@ -20,10 +20,16 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
 
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context)
+        .pushReplacementNamed('/login'); // Adjust the route as needed
+  }
+
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
-        .where('status', isEqualTo: 3)
+        .where('status', isEqualTo: 6)
         .snapshots();
 
     return Scaffold(
@@ -41,6 +47,12 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: ordersStream,
@@ -120,7 +132,7 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
                     ),
                   ],
                 ),
-                child: SingleUserCheckOutList(
+                child: SingleShipperCheckOutList(
                   checkoutItem: checkedOutItem,
                 ),
               );

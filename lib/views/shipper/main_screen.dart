@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_shop/views/customer/favorite/favorite.dart';
+import 'package:shoes_shop/views/shipper/ready_to_delivery.dart';
 import '../../providers/cart.dart';
 import '../../constants/color.dart';
 
@@ -17,6 +18,7 @@ class _ShipperMainStateScreen extends State<ShipperMainScreen> {
   var _pageIndex = 0;
   final List<Widget> _pages = const [
     FavoriteProducts(),
+    ReadyDeliveryScreen(), // Thêm ReadyDeliveryScreen vào danh sách trang
   ];
 
   void setNewPage(int index) {
@@ -45,10 +47,7 @@ class _ShipperMainStateScreen extends State<ShipperMainScreen> {
         initialActiveIndex: _pageIndex,
         items: [
           buildTabItem(Icons.home, 0),
-          buildTabItem(Icons.manage_search, 1),
-          buildTabItem(Icons.favorite_border, 2),
-          buildTabItem(Icons.search, 3),
-
+          buildTabItem(Icons.local_shipping, 1), // Thêm biểu tượng tab mới
           // cart
           TabItem(
             icon: Badge(
