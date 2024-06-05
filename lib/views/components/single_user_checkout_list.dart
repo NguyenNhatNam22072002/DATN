@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
-import 'package:shoes_shop/views/customer/return/refund_screen.dart';
+import 'package:shoes_shop/views/customer/refund/refund_screen.dart';
 import 'package:shoes_shop/views/customer/review/review_screen.dart';
 import '../../constants/firebase_refs/collections.dart';
 import '../../models/buyer.dart';
