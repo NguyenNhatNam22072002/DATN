@@ -52,75 +52,69 @@ class _MediaPickerState extends State<MediaPicker> {
   }
 
   // widget for each media selector
-  Widget kContainer(String mediaType) {
+  Widget mediaButton(String mediaType, IconData icon, Color color) {
     return GestureDetector(
       onTap: () => _selectMedia(mediaType),
       child: Container(
-        height: 40,
-        width: 40,
+        height: 50,
+        width: 50,
         decoration: BoxDecoration(
-          color: accentColor,
-          borderRadius: mediaType == 'image'
-              ? const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                )
-              : const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
+          color: color,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 5,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
-        child: Center(
-          child: Icon(
-            mediaType == 'image' ? Icons.photo : Icons.videocam,
-            color: Colors.white,
-          ),
-        ),
+        child: Icon(icon, color: Colors.white, size: 30),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CircleAvatar(
-          radius: selectedMedia == null ? 60 : 80,
+          radius: 80,
           backgroundColor: Colors.white,
-          child: Center(
+          child: ClipOval(
             child: selectedMedia == null
                 ? widget.isReg
                     ? Image.asset(
                         AssetManager.addImage,
                         color: accentColor,
+                        fit: BoxFit.cover,
                       )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: Image.network(widget.imgUrl),
-                      ) // this will load imgUrl from firebase
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: selectedMedia!.path.endsWith('.mp4')
-                        ? const Icon(
-                            Icons.videocam,
-                            size: 50,
-                            color: accentColor,
-                          )
-                        : Image.file(
-                            File(selectedMedia!.path),
-                          ),
-                  ),
+                    : Image.network(
+                        widget.imgUrl,
+                        fit: BoxFit.cover,
+                      )
+                : selectedMedia!.path.endsWith('.mp4')
+                    ? const Icon(
+                        Icons.videocam,
+                        size: 50,
+                        color: accentColor,
+                      )
+                    : Image.file(
+                        File(selectedMedia!.path),
+                        fit: BoxFit.cover,
+                      ),
           ),
         ),
-        const SizedBox(width: 5),
-        Column(
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            kContainer('image'),
-            const SizedBox(height: 5),
-            kContainer('video')
+            mediaButton('image', Icons.photo, Colors.blueAccent),
+            const SizedBox(width: 20),
+            mediaButton('video', Icons.videocam, Colors.redAccent),
           ],
-        )
+        ),
       ],
     );
   }

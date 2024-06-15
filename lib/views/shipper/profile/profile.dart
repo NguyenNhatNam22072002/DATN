@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/api/apis.dart';
-import 'package:shoes_shop/views/customer/main_screen.dart';
+import 'package:shoes_shop/views/components/flashing_funds.dart';
+import 'package:shoes_shop/views/shipper/main_screen.dart'; // Updated import for shipper main screen
 import '../../../constants/color.dart';
 import '../../../controllers/route_manager.dart';
 import '../../../resources/assets_manager.dart';
@@ -11,7 +12,9 @@ import '../../widgets/loading_widget.dart';
 import 'edit_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final bool flashFunds;
+
+  const ProfileScreen({Key? key, this.flashFunds = false}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -22,47 +25,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late final String _userId;
   DocumentSnapshot? _credential;
+  var earnings = 0.0;
   bool _isLoading = true;
-  double refundAmount = 0.0;
 
   @override
   void initState() {
     super.initState();
     _userId = _auth.currentUser!.uid;
     _fetchUserDetails();
-    _fetchRefundAmount();
   }
 
   Future<void> _fetchUserDetails() async {
     try {
-      _credential = await _firebase.collection('customers').doc(_userId).get();
+      // Fetching shipper details
+      _credential = await _firebase.collection('shippers').doc(_userId).get();
+      if (_credential != null) {
+        setState(() {
+          earnings = (_credential!.data() as Map<String, dynamic>)['earnings']
+                  ?.toDouble() ??
+              0.0;
+        });
+      }
     } catch (e) {
-      // Handle errors
+      // Handle errors if any
+      print('Error fetching user details: $e');
     } finally {
       setState(() {
         _isLoading = false;
       });
-    }
-  }
-
-  Future<void> _fetchRefundAmount() async {
-    try {
-      QuerySnapshot snapshot = await _firebase
-          .collection('walletTransactions')
-          .where('customerId', isEqualTo: _userId)
-          .where('status', isEqualTo: 1)
-          .get();
-
-      double totalRefund = 0.0;
-      for (var doc in snapshot.docs) {
-        totalRefund += doc['amount'];
-      }
-
-      setState(() {
-        refundAmount = totalRefund;
-      });
-    } catch (e) {
-      // Handle errors
     }
   }
 
@@ -72,7 +62,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     await Future.delayed(const Duration(seconds: 2));
     await _fetchUserDetails();
-    await _fetchRefundAmount();
   }
 
   void _showLogoutOptions() {
@@ -147,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
+    Size size = MediaQuery.of(context).size;
 
     return RefreshIndicator(
       onRefresh: _refresh,
@@ -249,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10),
-                        _buildTopButtons(size),
+                        _buildAvailableFunds(), // Update this line to include flashing logic
                         const SizedBox(height: 10),
                         _buildAccountInfo(size),
                         const SizedBox(height: 20),
@@ -263,46 +252,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTopButtons(Size size) {
-    return Container(
-      height: 60,
-      width: size.width / 0.9,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildTopButton(
-              label: 'Order',
-              backgroundColor: Colors.lightGreen,
-              textColor: primaryColor,
-              onPressed: () => Navigator.of(context)
-                  .pushNamed(RouteManager.orderManageScreen),
-            ),
-            _buildTopButton(
-              label: 'Wishlist',
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(RouteManager.wishList),
-            ),
-            _buildTopButton(
-              label: 'Cart',
-              backgroundColor: Colors.lightGreen,
-              textColor: primaryColor,
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const CustomerMainScreen(index: 4),
-                ),
+  Widget _buildAvailableFunds() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: widget.flashFunds
+          ? FlashingFunds(
+              earnings: earnings,
+              key: UniqueKey(),
+            )
+          : Chip(
+              label: FittedBox(
+                child:
+                    Text('Available Funds: \$${earnings.toStringAsFixed(2)}'),
               ),
+              avatar: const Icon(Icons.monetization_on),
+              backgroundColor: Colors.white,
             ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -317,12 +282,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
         backgroundColor: backgroundColor,
         shape: RoundedRectangleBorder(
-          borderRadius: label == 'Order'
+          borderRadius: label == 'Manage Orders'
               ? const BorderRadius.only(
                   topLeft: Radius.circular(30),
                   bottomLeft: Radius.circular(30),
                 )
-              : label == 'Cart'
+              : label == 'Earnings'
                   ? const BorderRadius.only(
                       topRight: Radius.circular(30),
                       bottomRight: Radius.circular(30),
@@ -344,21 +309,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildAccountInfo(Size size) {
     return Container(
-      height: 280,
+      height: 440,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
-          const SizedBox(height: 10), // Add spacing if needed
-          Chip(
-            label: FittedBox(
-              child: Text('Wallet: \$${refundAmount.toStringAsFixed(2)}'),
-            ),
-            avatar: const Icon(Icons.monetization_on),
-            backgroundColor: Colors.white,
-          ),
           KListTile(
             title: 'Email Address',
             subtitle: _credential!['email'],
@@ -374,11 +331,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onTapHandler: _editProfile,
           ),
           KListTile(
-            title: 'Delivery Address',
-            subtitle: _credential!['address'] == ""
+            title: 'City',
+            subtitle: _credential!['city'] == ""
                 ? 'Not set yet'
-                : _credential!['address'],
-            icon: Icons.location_pin,
+                : _credential!['city'],
+            icon: Icons.location_city,
+            onTapHandler: _editProfile,
+          ),
+          KListTile(
+            title: 'State',
+            subtitle: _credential!['state'] == ""
+                ? 'Not set yet'
+                : _credential!['state'],
+            icon: Icons.location_on,
+            onTapHandler: _editProfile,
+          ),
+          KListTile(
+            title: 'Country',
+            subtitle: _credential!['country'] == ""
+                ? 'Not set yet'
+                : _credential!['country'],
+            icon: Icons.flag,
+            onTapHandler: _editProfile,
+          ),
+          KListTile(
+            title: 'Vehicle Type',
+            subtitle: _credential!['vehicleType'] == ""
+                ? 'Not set yet'
+                : _credential!['vehicleType'],
+            icon: Icons.directions_car,
             onTapHandler: _editProfile,
           ),
         ],

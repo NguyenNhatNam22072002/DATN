@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:shoes_shop/views/customer/favorite/favorite.dart';
-import 'package:shoes_shop/views/shipper/ready_to_delivery.dart';
+import 'package:shoes_shop/views/shipper/home_screen.dart';
+import 'package:shoes_shop/views/shipper/shipping/delivered_orders.dart';
+import 'package:shoes_shop/views/shipper/profile/profile.dart';
+import 'package:shoes_shop/views/shipper/shipping/ready_to_delivery_orders.dart';
 import '../../providers/cart.dart';
 import '../../constants/color.dart';
 
@@ -17,8 +19,10 @@ class ShipperMainScreen extends StatefulWidget {
 class _ShipperMainStateScreen extends State<ShipperMainScreen> {
   var _pageIndex = 0;
   final List<Widget> _pages = const [
-    FavoriteProducts(),
-    ReadyDeliveryScreen(), // Thêm ReadyDeliveryScreen vào danh sách trang
+    ShipperHomeScreen(),
+    ReadyDeliveryScreen(),
+    DeliveredOrdersScreen(),
+    ProfileScreen(),
   ];
 
   void setNewPage(int index) {
@@ -47,25 +51,9 @@ class _ShipperMainStateScreen extends State<ShipperMainScreen> {
         initialActiveIndex: _pageIndex,
         items: [
           buildTabItem(Icons.home, 0),
-          buildTabItem(Icons.local_shipping, 1), // Thêm biểu tượng tab mới
-          // cart
-          TabItem(
-            icon: Badge(
-              backgroundColor: Colors.white,
-              label: Text(
-                '${cartProvider.getCartQuantity}',
-                style: const TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              child: Icon(
-                Icons.shopping_cart,
-                size: _pageIndex == 4 ? 40 : 25,
-                color: accentColor,
-              ),
-            ),
-          ),
-          buildTabItem(Icons.person, 5),
+          buildTabItem(Icons.local_shipping, 1),
+          buildTabItem(Icons.local_shipping_outlined, 2),
+          buildTabItem(Icons.person, 3),
         ],
         onTap: setNewPage,
       ),

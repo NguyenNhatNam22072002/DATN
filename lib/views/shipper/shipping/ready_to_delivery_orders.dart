@@ -7,7 +7,7 @@ import 'package:shoes_shop/views/widgets/loading_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import '../../../../resources/assets_manager.dart';
+import '../../../../../resources/assets_manager.dart';
 
 class ReadyDeliveryScreen extends StatefulWidget {
   const ReadyDeliveryScreen({super.key});
@@ -19,12 +19,6 @@ class ReadyDeliveryScreen extends StatefulWidget {
 class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
-
-  Future<void> _logout() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context)
-        .pushReplacementNamed('/login'); // Adjust the route as needed
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +41,6 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
             Navigator.of(context).pop();
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: ordersStream,
@@ -124,11 +112,14 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
                   children: [
                     SlidableAction(
                       borderRadius: BorderRadius.circular(10),
-                      onPressed: (context) {},
-                      backgroundColor: Colors.blue,
+                      onPressed: (context) {
+                        // Handle the delivery action here
+                        markAsDelivered(checkedOutItem, userId);
+                      },
+                      backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      icon: Icons.info,
-                      label: 'Details',
+                      icon: Icons.local_shipping,
+                      label: 'Delivery',
                     ),
                   ],
                 ),
@@ -141,5 +132,59 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
         },
       ),
     );
+  }
+
+  void markAsDelivered(CheckedOutItem item, String shipperId) async {
+    try {
+      // Start a batch write to ensure atomic updates
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Reference to the order document
+      DocumentReference orderRef =
+          FirebaseCollections.ordersCollection.doc(item.orderId);
+
+      // Update the order status and shipperId
+      batch.update(orderRef, {
+        'status': 1,
+        'shipperId': shipperId,
+      });
+
+      // Reference to the shipper document
+      DocumentReference shipperRef =
+          FirebaseCollections.shippersCollection.doc(shipperId);
+
+      // Get the current earnings of the shipper
+      DocumentSnapshot shipperSnapshot = await shipperRef.get();
+      Map<String, dynamic>? shipperData =
+          shipperSnapshot.data() as Map<String, dynamic>?;
+
+      // Check if earnings field exists, otherwise default to 0.0
+      double currentEarnings =
+          shipperData != null && shipperData.containsKey('earnings')
+              ? shipperData['earnings'] as double
+              : 0.0;
+
+      // Increment the earnings by $1.0
+      double newEarnings = currentEarnings + 1.0;
+
+      // Update the shipper's earnings in the batch
+      batch.update(shipperRef, {
+        'earnings': newEarnings,
+      });
+
+      // Commit the batch
+      await batch.commit();
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Order marked as delivered and earnings updated')),
+      );
+    } catch (error) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to mark as delivered: $error')),
+      );
+    }
   }
 }

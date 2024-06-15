@@ -30,4 +30,7 @@ class FirebaseCollections {
 
   static final refundsCollection =
       FirebaseFirestore.instance.collection('refunds');
+
+  static final walletTransactionsCollection =
+      FirebaseFirestore.instance.collection('walletTransactions');
 }

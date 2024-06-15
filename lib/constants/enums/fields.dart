@@ -8,4 +8,7 @@ enum Field {
   storeRegNo,
   address,
   vehicleType,
+  city,
+  state,
+  country,
 }

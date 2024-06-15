@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
 import 'package:shoes_shop/views/vendor/chat/home_screen.dart';
 import 'package:shoes_shop/views/vendor/livestream/vendor_livestream.dart';
@@ -164,14 +163,13 @@ class _VendorDashboardState extends State<VendorDashboard> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Điều hướng đến giao diện chat ở đây
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         },
-        child: Icon(Icons.chat),
-        backgroundColor: Colors.blue, // Thay đổi màu sắc tùy ý
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.chat), // Thay đổi màu sắc tùy ý
       ),
     );
   }

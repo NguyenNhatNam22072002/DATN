@@ -215,6 +215,7 @@ class AuthController {
             'state': '',
             'city': '',
             'vehicleType': '',
+            'earnings': 0.0,
             'shipperId': logCredential.user!.uid,
             'isApproved': false,
           },

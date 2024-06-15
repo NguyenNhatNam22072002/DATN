@@ -64,8 +64,6 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
   // Method to get the status label based on the status value
   String getStatusLabel(int status) {
     switch (status) {
-      case 6:
-        return 'Ready to Deliver';
       case 1:
         return 'Delivered';
       case 2:
@@ -76,6 +74,8 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
         return 'Approved';
       case 5:
         return 'Pending';
+      case 6:
+        return 'Ready to Deliver';
       default:
         return 'Unknown';
     }
@@ -126,66 +126,110 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ItemRow(
-                      value: widget.checkoutItem.prodPrice.toString(),
-                      title: 'Product Price: ',
-                    ),
-                    ItemRow(
-                      value: getStatusLabel(widget.checkoutItem.status),
-                      title: 'Status: ',
-                    ),
-                  ],
+                // Product Information Box
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Colors.grey[200],
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ItemRow(
+                            value: widget.checkoutItem.prodPrice.toString(),
+                            title: 'Product Price: ',
+                          ),
+                          ItemRow(
+                            value: getStatusLabel(widget.checkoutItem.status),
+                            title: 'Status: ',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ItemRow(
+                            value: widget.checkoutItem.prodSize,
+                            title: 'Selected Size: ',
+                          ),
+                          ItemRow(
+                            value: widget.checkoutItem.prodQuantity.toString(),
+                            title: 'Product Quantity: ',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ItemRow(
+                        value: intl.DateFormat.yMMMEd()
+                            .format(widget.checkoutItem.date),
+                        title: 'Order Date: ',
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ItemRow(
-                      value: widget.checkoutItem.prodSize,
-                      title: 'Selected Size: ',
-                    ),
-                    ItemRow(
-                      value: widget.checkoutItem.prodQuantity.toString(),
-                      title: 'Product Quantity: ',
-                    ),
-                  ],
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Colors.grey[200],
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ItemRow(
+                        value: buyer.fullname,
+                        title: 'Customer Name: ',
+                      ),
+                      const SizedBox(height: 10),
+                      ItemRow(
+                        value: buyer.phone,
+                        title: 'Customer Contact: ',
+                      ),
+                      const SizedBox(height: 10),
+                      ItemRow(
+                        value: buyer.address,
+                        title: 'Customer Address: ',
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 10),
-                ItemRow(
-                  value:
-                      intl.DateFormat.yMMMEd().format(widget.checkoutItem.date),
-                  title: 'Order Date: ',
-                ),
-                const SizedBox(height: 10),
-                ItemRow(
-                  value: buyer.fullname,
-                  title: 'Customer Name: ',
-                ),
-                const SizedBox(height: 10),
-                ItemRow(
-                  value: buyer.phone,
-                  title: 'Customer Contact: ',
-                ),
-                ItemRow(
-                  value: buyer.address,
-                  title: 'Customer Address: ',
-                ),
-                ItemRow(
-                  value: vendor.storeName,
-                  title: 'Vendor Name: ',
-                ),
-                const SizedBox(height: 10),
-                ItemRow(
-                  value: vendor.phone,
-                  title: 'Vendor Contact: ',
-                ),
-                const SizedBox(height: 10),
-                ItemRow(
-                  value: vendor.address,
-                  title: 'Vendor Address: ',
+                // Vendor Information Box
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Colors.grey[200],
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ItemRow(
+                        value: vendor.storeName,
+                        title: 'Vendor Name: ',
+                      ),
+                      const SizedBox(height: 10),
+                      ItemRow(
+                        value: vendor.phone,
+                        title: 'Vendor Contact: ',
+                      ),
+                      const SizedBox(height: 10),
+                      ItemRow(
+                        value: vendor.address,
+                        title: 'Vendor Address: ',
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 15),
                 ElevatedButton(

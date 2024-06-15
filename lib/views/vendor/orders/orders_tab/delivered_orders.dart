@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
+import 'package:shoes_shop/views/vendor/refund/refund_details_screen.dart';
 import '../../../../constants/color.dart';
 import '../../../../resources/assets_manager.dart';
 import '../../../../resources/font_manager.dart';
 import '../../../../resources/styles_manager.dart';
 import '../../../components/single_vendor_checkout_list_tile.dart';
-import '../../../widgets/are_you_sure_dialog.dart';
-import '../../../widgets/loading_widget.dart';
-import 'package:uuid/uuid.dart';
+import '../../../widgets/loading_widget.dart'; // Add this import to navigate to refund details
 
 class DeliveredOrders extends StatefulWidget {
   const DeliveredOrders({super.key});
@@ -23,147 +22,13 @@ class DeliveredOrders extends StatefulWidget {
 
 class _DeliveredOrdersState extends State<DeliveredOrders> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
-  Uuid uid = const Uuid();
 
-  // toggle delivery dialog
-  void toggleDeliveryDialog(CheckedOutItem checkedOutItem) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          checkedOutItem.status == 1 ? 'Cancel Delivery' : 'Deliver Product',
-          style: getMediumStyle(
-            color: Colors.black,
-            fontSize: FontSize.s16,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to ${checkedOutItem.status == 1 ? 'cancel delivery of' : 'deliver'} ${checkedOutItem.prodName}',
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () => toggleDelivery(
-                checkedOutItem.orderId, checkedOutItem.status == 1),
-            child: const Text('Yes'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Dismiss'),
-          ),
-        ],
-      ),
-    );
-  }
+  Future<bool> isOrderRefundRequested(String orderId) async {
+    QuerySnapshot refundSnapshot = await FirebaseCollections.refundsCollection
+        .where('orderId', isEqualTo: orderId)
+        .get();
 
-  // toggleDelivery
-  Future<void> toggleDelivery(String orderId, bool isDelivered) async {
-    await FirebaseCollections.ordersCollection.doc(orderId).update({
-      'isDelivered': !isDelivered,
-    }).whenComplete(
-      () {
-        // decrement vendor balance
-        FirebaseCollections.ordersCollection
-            .doc(orderId)
-            .get()
-            .then((DocumentSnapshot doc) {
-          double totalAmount = 0.0;
-
-          // update totalAmount
-          totalAmount += doc['prodPrice'] * doc['prodQuantity'];
-
-          // updating vendor's balance
-          FirebaseCollections.vendorsCollection
-              .doc(userId)
-              .get()
-              .then((DocumentSnapshot data) {
-            FirebaseCollections.vendorsCollection.doc(userId).update({
-              'balanceAvailable': data['balanceAvailable'] - totalAmount,
-            });
-          });
-
-          // remove from cash out
-          // Todo: cash out removal of fund after delivery removal
-        });
-
-        // pop out
-        Navigator.of(context).pop();
-      },
-    );
-  }
-
-  // delete product dialog
-  void deleteProductDialog(CheckedOutItem checkOutItem) {
-    areYouSureDialog(
-      title: 'Delete Product',
-      content: 'Are you sure you want to delete ${checkOutItem.prodName}',
-      context: context,
-      action: deleteProduct,
-      isIdInvolved: true,
-      id: checkOutItem.prodId,
-    );
-  }
-
-  // delete product
-  Future<void> deleteProduct(String prodId) async {
-    await FirebaseCollections.ordersCollection.doc(prodId).delete();
-  }
-
-  // deliver all items dialog
-  void deliverAllProductsDialog() {
-    areYouSureDialog(
-      title: 'Cancel all delivery of products',
-      content: 'Are you sure you want to cancel delivery of all items?',
-      context: context,
-      action: cancelAllDeliveries,
-    );
-  }
-
-  // cancel all deliveries
-  Future<void> cancelAllDeliveries() async {
-    await FirebaseCollections.ordersCollection
-        .where('status', isEqualTo: 1)
-        .get()
-        .then(
-      (QuerySnapshot data) {
-        double totalAmount = 0.0;
-        for (var doc in data.docs) {
-          // update totalAmount
-          totalAmount += doc['prodPrice'] * doc['prodQuantity'];
-
-          // cancel all deliveries
-          FirebaseCollections.ordersCollection.doc(doc['orderId']).update({
-            'isDelivered': false,
-          });
-        }
-
-        // updating vendor's balance
-        FirebaseCollections.vendorsCollection
-            .doc(userId)
-            .get()
-            .then((DocumentSnapshot data) {
-          FirebaseCollections.vendorsCollection.doc(userId).update({
-            'balanceAvailable': data['balanceAvailable'] - totalAmount,
-          });
-        });
-
-        // remove from cash out
-        // Todo: cash out removal of fund after delivery removal
-      },
-    ).whenComplete(
-      () => Navigator.of(context).pop(),
-    );
+    return refundSnapshot.docs.isNotEmpty;
   }
 
   @override
@@ -237,44 +102,56 @@ class _DeliveredOrdersState extends State<DeliveredOrders> {
 
               CheckedOutItem checkedOutItem = CheckedOutItem.fromJson(item);
 
-              return Slidable(
-                key: const ValueKey(0),
-                startActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      padding: const EdgeInsets.only(right: 3),
-                      borderRadius: BorderRadius.circular(10),
-                      onPressed: (context) =>
-                          deleteProductDialog(checkedOutItem),
-                      backgroundColor: const Color(0xFFFE4A49),
-                      foregroundColor: Colors.white,
-                      icon: Icons.delete,
-                      label: 'Delete',
+              return FutureBuilder<bool>(
+                future: isOrderRefundRequested(checkedOutItem.orderId),
+                builder: (context, refundSnapshot) {
+                  if (refundSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                      child: LoadingWidget(size: 30),
+                    );
+                  }
+
+                  if (refundSnapshot.hasError) {
+                    return ListTile(
+                      title: Text(checkedOutItem.prodName),
+                      subtitle: Text('Error checking refund status'),
+                    );
+                  }
+
+                  bool isRefundRequested = refundSnapshot.data ?? false;
+
+                  return Slidable(
+                    key: const ValueKey(0),
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        if (isRefundRequested)
+                          SlidableAction(
+                            padding: const EdgeInsets.only(right: 3),
+                            borderRadius: BorderRadius.circular(10),
+                            onPressed: (context) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RefundDetailsPage(
+                                      orderId: checkedOutItem.orderId),
+                                ),
+                              );
+                            },
+                            backgroundColor:
+                                const Color.fromARGB(255, 101, 228, 145),
+                            foregroundColor: Colors.white,
+                            icon: Icons.warning,
+                            label: 'Refund Requested',
+                          ),
+                      ],
                     ),
-                  ],
-                ),
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  children: [
-                    SlidableAction(
-                      borderRadius: BorderRadius.circular(10),
-                      onPressed: (context) =>
-                          toggleDeliveryDialog(checkedOutItem),
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
-                      icon: checkedOutItem.status == 1
-                          ? Icons.cancel
-                          : Icons.check_circle,
-                      label: checkedOutItem.status == 1
-                          ? 'Cancel Delivery'
-                          : 'Deliver',
+                    child: SingleVendorCheckOutListTile(
+                      checkoutItem: checkedOutItem,
                     ),
-                  ],
-                ),
-                child: SingleVendorCheckOutListTile(
-                  checkoutItem: checkedOutItem,
-                ),
+                  );
+                },
               );
             },
           );
@@ -382,28 +259,6 @@ class _DeliveredOrdersState extends State<DeliveredOrders> {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () => deliverAllProductsDialog(),
-                        child: Container(
-                          height: 50,
-                          width: 120,
-                          decoration: const BoxDecoration(
-                            color: accentColor,
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(5),
-                              topRight: Radius.circular(5),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Cancel Delivery',
-                              style: getMediumStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
                     ],
                   )
                 ],

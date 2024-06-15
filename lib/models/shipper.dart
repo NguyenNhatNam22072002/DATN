@@ -13,6 +13,7 @@ class Shipper {
   final String? address;
   final String authType;
   final String? vehicleType;
+  double earnings;
   bool isApproved;
 
   Shipper({
@@ -27,6 +28,7 @@ class Shipper {
     required this.address,
     required this.authType,
     required this.vehicleType,
+    this.earnings = 0.0,
     this.isApproved = false,
   });
 
@@ -57,6 +59,9 @@ class Shipper {
           authType: data['authType'],
           image: data['image'],
           isApproved: data['isApproved'],
+          earnings: data['earnings'] != null
+              ? double.parse(data['earnings'].toString())
+              : 0.0,
           vehicleType: data['vehicleType'],
         );
 
@@ -73,6 +78,9 @@ class Shipper {
           authType: data['authType'],
           image: data['image'],
           isApproved: data['isApproved'],
+          earnings: data['earnings'] != null
+              ? double.parse(data['earnings'].toString())
+              : 0.0,
           vehicleType: data['vehicleType'],
         );
 
@@ -88,6 +96,7 @@ class Shipper {
         'authType': authType,
         'isApproved': isApproved,
         'image': image,
+        'earnings': earnings,
         'vehicleType': vehicleType,
       };
 }

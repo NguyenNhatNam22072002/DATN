@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // checkouts
             for (var doc in data.docs)
               {
-                if (!doc['isDelivered'])
+                if (!doc['status'] == 1)
                   {
                     setState(() {
                       availableFunds += doc['prodPrice'] * doc['prodQuantity'];
@@ -236,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 children: [
                   Text(
-                    "Email: " + vendor.email,
+                    "Email: ${vendor.email}",
                     style: getRegularStyle(
                       color: Colors.white,
                       fontSize: FontSize.s14,

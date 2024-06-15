@@ -33,9 +33,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
   bool isPhoneNumberEmpty = false;
   String? apiPublicKey;
   String? apiEncryptKey;
-  FlutterSecureStorage storage = const FlutterSecureStorage();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
   bool isTestMode = true;
-  Uuid uuid = const Uuid();
+  final Uuid uuid = const Uuid();
+  double refundAmount = 0.0;
 
   // fetch Api keys
   Future<void> fetchAPIKeys() async {
@@ -77,12 +78,36 @@ class _OrdersScreenState extends State<OrdersScreen> {
     });
   }
 
+  Future<void> _fetchRefundAmount() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('walletTransactions')
+          .where('customerId',
+              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('status', isEqualTo: 1)
+          .get();
+
+      double totalRefund = 0.0;
+      for (var doc in snapshot.docs) {
+        totalRefund += doc['amount'];
+      }
+
+      setState(() {
+        refundAmount = totalRefund;
+      });
+    } catch (e) {
+      // Handle errors
+      print("Error fetching refund amount: $e");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     saveAPIKeys();
     fetchCustomerDetails();
     fetchAPIKeys();
+    _fetchRefundAmount();
   }
 
   Future<void> saveAPIKeys() async {
@@ -165,10 +190,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
       if (profileIncomplete) {
         kCoolAlert(
           message: isAddressEmpty && isPhoneNumberEmpty
-              ? 'Your profile is complete! Update your address and phone number'
+              ? 'Your profile is incomplete! Update your address and phone number'
               : isPhoneNumberEmpty
-                  ? 'Your profile is complete! Update your phone number'
-                  : 'Your profile is complete! Update your address',
+                  ? 'Your profile is incomplete! Update your phone number'
+                  : 'Your profile is incomplete! Update your address',
           context: context,
           alert: CoolAlertType.error,
           action: navigateToProfile,
@@ -206,7 +231,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           if (response.success == true) {
             showLoading(
                 "You have successfully placed your order", Status.success);
-            submitOrderToFirebase(); // upload to firebase
+            await submitOrderToFirebase(); // upload to firebase
             removeAllOrderItems(); // remove order
           } else {
             showLoading(
@@ -222,8 +247,115 @@ class _OrdersScreenState extends State<OrdersScreen> {
       }
     }
 
+    Future<void> orderNowWithWallet() async {
+      if (profileIncomplete) {
+        kCoolAlert(
+          message: isAddressEmpty && isPhoneNumberEmpty
+              ? 'Your profile is incomplete! Update your address and phone number'
+              : isPhoneNumberEmpty
+                  ? 'Your profile is incomplete! Update your phone number'
+                  : 'Your profile is incomplete! Update your address',
+          context: context,
+          alert: CoolAlertType.error,
+          action: navigateToProfile,
+          confirmBtnText: 'Update Profile',
+        );
+      } else {
+        double totalAmount = orderData.getTotal;
+
+        try {
+          DocumentSnapshot walletSnapshot = await FirebaseCollections
+              .walletTransactionsCollection
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .get();
+
+          if (walletSnapshot.exists) {
+            Map<String, dynamic> walletData =
+                walletSnapshot.data() as Map<String, dynamic>;
+            double currentBalance = walletData['amount'];
+            double availableBalance = currentBalance + refundAmount;
+
+            if (availableBalance >= totalAmount) {
+              await FirebaseCollections.walletTransactionsCollection
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                  .update({
+                'amount': currentBalance - totalAmount,
+              });
+              await FirebaseCollections.walletTransactionsCollection.add({
+                'customerId': FirebaseAuth.instance.currentUser!.uid,
+                'amount': -totalAmount,
+                'status': 1,
+                'transactionDate': Timestamp.now(),
+                'transactionId': uuid.v4(),
+              });
+              await submitOrderToFirebase();
+              removeAllOrderItems();
+
+              showLoading(
+                  "You have successfully placed your order", Status.success);
+            } else {
+              showLoading(
+                  'Ops! Insufficient funds in your wallet', Status.error);
+            }
+          } else {
+            showLoading('Ops! Wallet not found', Status.error);
+          }
+        } catch (e, stacktrace) {
+          print("Error: $e");
+          print("Stacktrace: $stacktrace");
+          showLoading('Ops! An error occurred while processing your order',
+              Status.error);
+        }
+      }
+    }
+
+    void showPaymentMethodDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Select Payment Method',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.credit_card, color: Colors.blue),
+                    title: const Text('Using Card',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      orderNow();
+                    },
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.account_balance_wallet,
+                        color: Colors.green),
+                    title: const Text('Using Wallet',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(
+                      'Current amount: \$${refundAmount.toStringAsFixed(2)}',
+                      style: getRegularStyle(
+                          color: greyFontColor, fontSize: FontSize.s12),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      orderNowWithWallet();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
@@ -361,7 +493,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => orderNow(),
+                          onTap: () => showPaymentMethodDialog(),
                           child: Container(
                             height: 50,
                             width: 120,
@@ -381,9 +513,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
