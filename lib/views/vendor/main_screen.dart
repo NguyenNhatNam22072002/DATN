@@ -43,7 +43,7 @@ class _CustomerMainStateScreen extends State<VendorMainScreen> {
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
         backgroundColor: primaryColor,
-        activeColor: Color.fromARGB(255, 166, 202, 245),
+        activeColor: const Color.fromARGB(255, 166, 202, 245),
         style: TabStyle.reactCircle,
         initialActiveIndex: _pageIndex,
         items: [

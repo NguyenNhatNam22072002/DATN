@@ -59,8 +59,6 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   // increment or decrement product in cart | alternative method - (NOT CURRENTLY USED)
   void toggleQuantity(QuantityOperation operation, String cartId) {
     // another way you can implement this is by making use of the model and creating a method for increment and decrement

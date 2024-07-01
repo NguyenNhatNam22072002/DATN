@@ -28,11 +28,13 @@ class SingleUserCheckOutList extends StatefulWidget {
 class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
   Buyer buyer = Buyer.initial();
   bool isLoading = true;
+  bool isRefunded = false;
 
   @override
   void initState() {
     super.initState();
     fetchCustomerDetails();
+    checkRefundStatus();
   }
 
   // fetch customer details
@@ -51,6 +53,24 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
         isLoading = false;
       });
       print('Failed to fetch customer details: $e');
+    }
+  }
+
+  // Check if the order has been refunded
+  Future<void> checkRefundStatus() async {
+    try {
+      QuerySnapshot refundSnapshot = await FirebaseCollections.refundsCollection
+          .where('orderId', isEqualTo: widget.checkoutItem.orderId)
+          .where('status', isEqualTo: 1)
+          .get();
+
+      if (refundSnapshot.docs.isNotEmpty) {
+        setState(() {
+          isRefunded = true;
+        });
+      }
+    } catch (e) {
+      print('Failed to check refund status: $e');
     }
   }
 
@@ -105,43 +125,45 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
     Duration difference = currentDate.difference(deliveryDate);
 
     return ElevatedButton(
-      onPressed: () {
-        if (difference.inDays <= 7) {
-          if (mounted) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => RefundScreen(
-                  orderId: widget.checkoutItem.orderId,
-                  vendorId: widget.checkoutItem.vendorId,
-                  customerId: widget.checkoutItem.customerId,
-                  orderAmount: widget.checkoutItem.prodPrice,
-                ),
-              ),
-            );
-          }
-        } else {
-          if (mounted) {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Refund Window Closed'),
-                content: const Text(
-                    'The refund window for this order has passed. Returns are only allowed within 7 days of delivery.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-            );
-          }
-        }
-      },
+      onPressed: isRefunded || widget.checkoutItem.status == 4
+          ? null
+          : () {
+              if (difference.inDays <= 7) {
+                if (mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => RefundScreen(
+                        orderId: widget.checkoutItem.orderId,
+                        vendorId: widget.checkoutItem.vendorId,
+                        customerId: widget.checkoutItem.customerId,
+                        orderAmount: widget.checkoutItem.prodPrice,
+                      ),
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Refund Window Closed'),
+                      content: const Text(
+                          'The refund window for this order has passed. Returns are only allowed within 7 days of delivery.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              }
+            },
       child: const Text(
         'Refund Product',
         style: TextStyle(fontWeight: FontWeight.normal),
@@ -152,20 +174,21 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
   // Method to show the review button only after delivery
   Widget showReviewButton() {
     return ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ReviewScreen(
-                customerId: widget.checkoutItem.customerId,
-                prodId: widget.checkoutItem.prodId,
-              ),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ReviewScreen(
+              customerId: widget.checkoutItem.customerId,
+              prodId: widget.checkoutItem.prodId,
             ),
-          );
-        },
-        child: const Text(
-          'Review Product',
-          style: TextStyle(fontWeight: FontWeight.normal),
-        ));
+          ),
+        );
+      },
+      child: const Text(
+        'Review Product',
+        style: TextStyle(fontWeight: FontWeight.normal),
+      ),
+    );
   }
 
   @override

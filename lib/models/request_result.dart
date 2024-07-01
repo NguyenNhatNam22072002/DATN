@@ -6,8 +6,9 @@ class RequestResult {
 
   RequestResult({this.success, this.errorMessage});
 
-  factory RequestResult.success(Success? success) => RequestResult(success:success,errorMessage: null);
+  factory RequestResult.success(Success? success) =>
+      RequestResult(success: success, errorMessage: null);
 
   factory RequestResult.error(String errorMessage) =>
-      RequestResult(success:null, errorMessage: errorMessage);
+      RequestResult(success: null, errorMessage: errorMessage);
 }

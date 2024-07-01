@@ -217,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             right: 18,
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               KCachedImage(
                 image: vendor.storeImgUrl,

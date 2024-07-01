@@ -262,32 +262,40 @@ class _OrdersScreenState extends State<OrdersScreen> {
         );
       } else {
         double totalAmount = orderData.getTotal;
+        String userId = FirebaseAuth.instance.currentUser!.uid;
 
         try {
-          DocumentSnapshot walletSnapshot = await FirebaseCollections
-              .walletTransactionsCollection
-              .doc(FirebaseAuth.instance.currentUser!.uid)
+          // Lấy thông tin khách hàng
+          DocumentSnapshot customerSnapshot = await FirebaseFirestore.instance
+              .collection('customers')
+              .doc(userId)
               .get();
 
-          if (walletSnapshot.exists) {
-            Map<String, dynamic> walletData =
-                walletSnapshot.data() as Map<String, dynamic>;
-            double currentBalance = walletData['amount'];
-            double availableBalance = currentBalance + refundAmount;
+          if (customerSnapshot.exists) {
+            Map<String, dynamic> customerData =
+                customerSnapshot.data() as Map<String, dynamic>;
+            double refundAmount = customerData['refundAmount'] ?? 0.0;
 
-            if (availableBalance >= totalAmount) {
-              await FirebaseCollections.walletTransactionsCollection
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .update({
-                'amount': currentBalance - totalAmount,
-              });
-              await FirebaseCollections.walletTransactionsCollection.add({
-                'customerId': FirebaseAuth.instance.currentUser!.uid,
+            if (refundAmount >= totalAmount) {
+              double newRefundAmount = refundAmount - totalAmount;
+
+              // Cập nhật số tiền hoàn lại của khách hàng
+              await FirebaseFirestore.instance
+                  .collection('customers')
+                  .doc(userId)
+                  .update({'refundAmount': newRefundAmount});
+
+              // Tạo một giao dịch mới trong bộ sưu tập walletTransactions
+              await FirebaseFirestore.instance
+                  .collection('walletTransactions')
+                  .add({
+                'customerId': userId,
                 'amount': -totalAmount,
                 'status': 1,
                 'transactionDate': Timestamp.now(),
                 'transactionId': uuid.v4(),
               });
+
               await submitOrderToFirebase();
               removeAllOrderItems();
 
@@ -298,7 +306,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   'Ops! Insufficient funds in your wallet', Status.error);
             }
           } else {
-            showLoading('Ops! Wallet not found', Status.error);
+            showLoading('Ops! Customer not found', Status.error);
           }
         } catch (e, stacktrace) {
           print("Error: $e");
@@ -322,7 +330,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               children: <Widget>[
                 Card(
                   child: ListTile(
-                    leading: Icon(Icons.credit_card, color: Colors.blue),
+                    leading: const Icon(Icons.credit_card, color: Colors.blue),
                     title: const Text('Using Card',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     onTap: () {

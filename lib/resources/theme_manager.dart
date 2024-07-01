@@ -12,7 +12,6 @@ ThemeData getLightTheme() {
     primaryColorLight: Colors.black,
     primaryColorDark: Colors.white,
     disabledColor: backgroundLite,
-    backgroundColor: backgroundLite,
     scaffoldBackgroundColor: backgroundLite,
 
     // dialog theme
@@ -46,12 +45,7 @@ ThemeData getLightTheme() {
       todayBackgroundColor: MaterialStateProperty.all(primaryColor),
       todayBorder: BorderSide.none,
       shadowColor: primaryColor,
-
     ),
-
-
-
-
 
     // button theme
     buttonTheme: const ButtonThemeData(
@@ -132,22 +126,23 @@ ThemeData getLightTheme() {
 
     // text theme
     textTheme: TextTheme(
-      headline1: getRegularStyle(
+      displayLarge: getRegularStyle(
         color: Colors.black,
         fontSize: FontSize.s16,
       ),
-      caption: getRegularStyle(
+      bodySmall: getRegularStyle(
         color: Colors.black,
         fontSize: FontSize.s12,
       ),
-      bodyText1: getRegularStyle(
+      bodyLarge: getRegularStyle(
         color: Colors.black,
       ),
     ),
-
-    colorScheme: ColorScheme.fromSwatch().copyWith(
-      secondary: Colors.grey,
-    ),
+    colorScheme: ColorScheme.fromSwatch()
+        .copyWith(
+          secondary: Colors.grey,
+        )
+        .copyWith(background: backgroundLite),
   );
 }
 
@@ -266,15 +261,15 @@ ThemeData getDarkTheme() {
 
     // text theme
     textTheme: TextTheme(
-      headline1: getRegularStyle(
+      displayLarge: getRegularStyle(
         color: Colors.white,
         fontSize: FontSize.s16,
       ),
-      caption: getRegularStyle(
+      bodySmall: getRegularStyle(
         color: Colors.white,
         fontSize: FontSize.s12,
       ),
-      bodyText1: getRegularStyle(
+      bodyLarge: getRegularStyle(
         color: Colors.white,
       ),
     ),

@@ -78,6 +78,7 @@ class AuthController {
           'storeNumber': storeRegNo,
           'balanceAvailable': 0.0,
           'isApproved': false,
+          'isBanned': false,
           'isStoreRegistered': isStoreRegistered,
           'storeId': credential.user!.uid,
         });
@@ -89,6 +90,7 @@ class AuthController {
           'authType': 'email',
           'phone': phone,
           'address': '',
+          'refundAmount': 0.0,
           'customerId': credential.user!.uid,
         });
       }
@@ -145,6 +147,7 @@ class AuthController {
         'state': state,
         'city': city,
         'vehicleType': vehicleType,
+        'earnings': 0.0,
         'shipperId': credential.user!.uid,
         'isApproved': false,
       });
@@ -195,6 +198,7 @@ class AuthController {
             'storeNumber': '',
             'balanceAvailable': 0.0,
             'isApproved': false,
+            'isBanned': false,
             'isStoreRegistered': false,
             'storeId': logCredential.user!.uid,
           },
@@ -232,6 +236,7 @@ class AuthController {
             'authType': 'google',
             'phone': '',
             'address': '',
+            'refundAmount': 0.0,
             'customerId': logCredential.user!.uid,
           },
         );

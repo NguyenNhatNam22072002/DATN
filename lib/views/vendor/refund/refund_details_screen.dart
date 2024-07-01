@@ -40,7 +40,6 @@ class _RefundDetailsPageState extends State<RefundDetailsPage> {
 
   @override
   void dispose() {
-    // Dispose controllers
     statusController.dispose();
     customerNameController.dispose();
     amountController.dispose();

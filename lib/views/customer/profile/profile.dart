@@ -30,12 +30,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _userId = _auth.currentUser!.uid;
     _fetchUserDetails();
-    _fetchRefundAmount();
   }
 
   Future<void> _fetchUserDetails() async {
     try {
       _credential = await _firebase.collection('customers').doc(_userId).get();
+      if (_credential != null) {
+        setState(() {
+          refundAmount = _credential!['refundAmount'];
+        });
+      }
     } catch (e) {
       // Handle errors
     } finally {
@@ -45,34 +49,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _fetchRefundAmount() async {
-    try {
-      QuerySnapshot snapshot = await _firebase
-          .collection('walletTransactions')
-          .where('customerId', isEqualTo: _userId)
-          .where('status', isEqualTo: 1)
-          .get();
-
-      double totalRefund = 0.0;
-      for (var doc in snapshot.docs) {
-        totalRefund += doc['amount'];
-      }
-
-      setState(() {
-        refundAmount = totalRefund;
-      });
-    } catch (e) {
-      // Handle errors
-    }
-  }
-
   Future<void> _refresh() async {
     setState(() {
       _isLoading = true;
     });
     await Future.delayed(const Duration(seconds: 2));
     await _fetchUserDetails();
-    await _fetchRefundAmount();
   }
 
   void _showLogoutOptions() {

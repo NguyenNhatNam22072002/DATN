@@ -21,10 +21,7 @@ class Cart {
     required this.price,
   });
 
-
-  void increaseQuantity() =>
-      quantity++;
-
+  void increaseQuantity() => quantity++;
 
   void decreaseQuantity() => quantity--;
 }

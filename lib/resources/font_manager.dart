@@ -5,13 +5,17 @@ class FontConstants {
 }
 
 class FontWeightManager {
+  static const FontWeight thin = FontWeight.w100; // Mỏng nhất
+  static const FontWeight extraLight = FontWeight.w200;
   static const FontWeight light = FontWeight.w300;
   static const FontWeight normal = FontWeight.w500;
   static const FontWeight bold = FontWeight.w900;
   static const FontWeight medium = FontWeight.w700;
+  static const FontWeight extraBold = FontWeight.w800;
+  static const FontWeight black = FontWeight.w900;
 }
 
-class FontSize{
+class FontSize {
   static const double s10 = 10.0;
   static const double s12 = 12.0;
   static const double s13 = 13.0;
@@ -26,6 +30,4 @@ class FontSize{
   static const double s35 = 35.0;
   static const double s40 = 40.0;
   static const double s45 = 45.0;
-
-
 }

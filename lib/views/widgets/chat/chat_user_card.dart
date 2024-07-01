@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/api/apis.dart';
 import 'package:shoes_shop/helpers/my_date_util.dart';
-import 'package:shoes_shop/main.dart';
 import 'package:shoes_shop/models/chat_user.dart';
 import 'package:shoes_shop/models/message.dart';
 import 'package:shoes_shop/views/vendor/chat/chat_screen.dart';

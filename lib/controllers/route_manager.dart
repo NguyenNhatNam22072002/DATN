@@ -7,6 +7,7 @@ import 'package:shoes_shop/views/customer/orders/orders.dart';
 import 'package:shoes_shop/views/customer/orders/orders_management.dart';
 import 'package:shoes_shop/views/shipper/main_screen.dart';
 import 'package:shoes_shop/views/shipper/shipper_entry_screen.dart';
+import 'package:shoes_shop/views/vendor/banned_screen.dart';
 import 'package:shoes_shop/views/vendor/profile/store_data_analysis.dart';
 
 import '../views/auth/account_type.dart';
@@ -20,9 +21,11 @@ import '../views/vendor/main_screen.dart';
 import '../views/vendor/products/create.dart';
 
 class RouteManager {
+  // General routes
   static const String splashScreen = "/splash";
   static const String accountType = "/accountType";
 
+  // Customer routes
   static const String customerAuthScreen = "/customerAuthScreen";
   static const String customerForgotPass = "/customerForgotPass";
   static const String signUpAccountScreen = "/sigUpAccountScreen";
@@ -32,40 +35,51 @@ class RouteManager {
   static const String wishList = '/wishList';
   static const String favoriteList = '/favoriteList';
   static const String editAddress = '/editAddressScreen';
+
+  // Vendor routes
   static const String vendorAuthScreen = "/vendorAuthScreen";
   static const String vendorForgotPass = "/vendorForgotPass";
-  static const String vendorMainScreen = '/vendorMainScreen';
   static const String vendorEntryScreen = '/vendorEntryScreen';
+  static const String vendorMainScreen = '/vendorMainScreen';
   static const String vendorCreatePost = '/vendorCreatePost';
   static const String vendorDataAnalysis = '/vendorDataAnalysis';
+  static const String vendorBannedScreen = '/vendorBanned';
 
+  // Shipper routes
   static const String shipperAuthScreen = "/shipperAuthScreen";
-  static const String shipperEntryScreen = "/shipperEntryScreen";
   static const String shipperForgotPass = "/shipperForgotPass";
+  static const String shipperEntryScreen = "/shipperEntryScreen";
   static const String shipperMainScreen = '/shipperMainScreen';
 }
 
 final routes = {
   RouteManager.splashScreen: (context) => const SplashScreen(),
   RouteManager.accountType: (context) => const AccountTypeScreen(),
+
+  // Customer routes
   RouteManager.customerAuthScreen: (context) => const CustomerAuthScreen(),
+  RouteManager.customerForgotPass: (context) => const CustomerForgotPassword(),
   RouteManager.customerMainScreen: (context) =>
       const CustomerMainScreen(index: 0),
-  RouteManager.customerForgotPass: (context) => const CustomerForgotPassword(),
-  RouteManager.editAddress: (context) => const CustomerForgotPassword(),
   RouteManager.ordersScreen: (context) => const OrdersScreen(),
   RouteManager.orderManageScreen: (context) => const OrdersManagementScreen(),
   RouteManager.wishList: (context) => const WishListProducts(),
   RouteManager.favoriteList: (context) => const FavoriteProducts(),
+  RouteManager.editAddress: (context) => const CustomerForgotPassword(),
+
+  // Vendor routes
   RouteManager.vendorAuthScreen: (context) => const VendorAuthScreen(),
-  RouteManager.vendorMainScreen: (context) => const VendorMainScreen(index: 0),
-  RouteManager.vendorEntryScreen: (context) => const VendorEntryScreen(),
   RouteManager.vendorForgotPass: (context) => const VendorForgotPassword(),
+  RouteManager.vendorEntryScreen: (context) => const VendorEntryScreen(),
+  RouteManager.vendorMainScreen: (context) => const VendorMainScreen(index: 0),
   RouteManager.vendorCreatePost: (context) => const VendorCreateProduct(),
   RouteManager.vendorDataAnalysis: (context) => const StoreDataAnalysis(),
+  RouteManager.vendorBannedScreen: (context) => const VendorBannedScreen(),
+
+  // Shipper routes
   RouteManager.shipperAuthScreen: (context) => const ShipperAuthScreen(),
-  RouteManager.shipperMainScreen: (context) =>
-      const ShipperMainScreen(index: 0),
   RouteManager.shipperForgotPass: (context) => const ShipperForgotPassword(),
   RouteManager.shipperEntryScreen: (context) => const ShipperEntryScreen(),
+  RouteManager.shipperMainScreen: (context) =>
+      const ShipperMainScreen(index: 0),
 };

@@ -61,7 +61,7 @@ class _MediaPickerState extends State<MediaPicker> {
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 5,

@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:confetti/confetti.dart';
+import 'package:shoes_shop/controllers/auth_controller.dart';
 
-import '../../constants/color.dart';
 import '../../constants/firebase_refs/collections.dart';
 import '../../controllers/route_manager.dart';
-import '../../controllers/auth_controller.dart';
 import '../../models/vendor.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/styles_manager.dart';
@@ -15,15 +13,14 @@ import '../widgets/are_you_sure_dialog.dart';
 import '../widgets/loading_widget.dart';
 import 'main_screen.dart';
 
-class VendorEntryScreen extends StatefulWidget {
-  const VendorEntryScreen({Key? key}) : super(key: key);
+class VendorBannedScreen extends StatefulWidget {
+  const VendorBannedScreen({Key? key}) : super(key: key);
 
   @override
-  State<VendorEntryScreen> createState() => _VendorEntryScreenState();
+  State<VendorBannedScreen> createState() => _VendorBannedScreenState();
 }
 
-class _VendorEntryScreenState extends State<VendorEntryScreen> {
-  final ConfettiController confettiController = ConfettiController();
+class _VendorBannedScreenState extends State<VendorBannedScreen> {
   AuthController authController = AuthController();
   final userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -47,16 +44,16 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
     );
   }
 
+  bool showConfetti = true;
+
   @override
   void initState() {
     super.initState();
-    confettiController.play();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    confettiController.dispose();
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        showConfetti = false;
+      });
+    });
   }
 
   @override
@@ -79,7 +76,7 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
           Vendor vendor =
               Vendor.fromJson(snapshot.data!.data() as Map<String, dynamic>);
 
-          if (vendor.isApproved) {
+          if (!vendor.isBanned) {
             return const VendorMainScreen(index: 0);
           }
 
@@ -87,20 +84,14 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: ConfettiWidget(
-                  confettiController: confettiController,
-                  colors: const [
-                    primaryColor,
-                    accentColor,
-                  ],
-                  numberOfParticles: 150,
-                  blastDirectionality: BlastDirectionality.explosive,
-                  gravity: 1,
+              if (showConfetti)
+                AnimatedContainer(
+                  duration: Duration(seconds: 1),
+                  height: 100,
+                  width: 100,
+                  color: Colors.red, // Example color
                 ),
-              ),
-              Image.asset(AssetManager.successCheck),
+              Image.asset(AssetManager.errorIcon),
               const SizedBox(height: 10),
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
@@ -118,16 +109,9 @@ class _VendorEntryScreenState extends State<VendorEntryScreen> {
               Text('Hello ${vendor.storeName},'),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    'Congratulations on creating your store with us! Allow us some time so we can kindly confirm to finalize the setup and ensure the accuracy of your store details.\n\nBest regards!',
-                    style: getRegularStyle(color: Colors.black),
-                  ),
+                child: Text(
+                  'We regret to inform you that your store account has been banned. Please contact support for more information or to resolve any issues.\n\nBest regards!',
+                  style: getRegularStyle(color: Colors.black),
                 ),
               ),
               const SizedBox(height: 10),

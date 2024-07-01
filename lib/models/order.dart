@@ -12,6 +12,4 @@ class OrderItem {
     required this.totalAmount,
     required this.orderDate,
   });
-
-
 }

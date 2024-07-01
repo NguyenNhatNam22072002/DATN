@@ -45,7 +45,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
   final _stateController = TextEditingController();
   final _cityController = TextEditingController();
 
-  var obscure = true; // password obscure value
+  var obscure = true;
   var isLogin = true;
   File? profileImage;
   var isLoading = false;
@@ -173,43 +173,61 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
   // context
   get cxt => context;
 
-  // routing to the main screen or the entry screen based on whether approved or not
-  routingVendor() async {
-    var userId = FirebaseAuth.instance.currentUser!.uid;
+  Future<void> checkIsBanned(String userId) async {
     var data = await FirebaseCollections.vendorsCollection.doc(userId).get();
-
-    if (data['isApproved']) {
-      // account approved
-      Timer(
-        const Duration(seconds: 2),
-        () => Navigator.of(cxt).pushNamedAndRemoveUntil(
-            RouteManager.vendorMainScreen, (route) => false),
-      );
-    } else {
-      // account not approved
-      Timer(
-        const Duration(seconds: 2),
-        () => Navigator.of(cxt).pushNamedAndRemoveUntil(
-          RouteManager.vendorEntryScreen,
-          (route) => false,
-        ),
-      );
+    if (data.exists) {
+      if (data['isBanned'] ?? false) {
+        Timer(
+          const Duration(seconds: 2),
+          () => Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteManager.vendorBannedScreen, (route) => false),
+        );
+      }
     }
   }
 
-  // loading fnc
+  Future<void> checkIsApproved(String userId) async {
+    var data = await FirebaseCollections.vendorsCollection.doc(userId).get();
+    if (data.exists) {
+      if (data['isApproved'] ?? false) {
+        Timer(
+          const Duration(seconds: 2),
+          () => Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteManager.vendorMainScreen, (route) => false),
+        );
+      } else {
+        Timer(
+          const Duration(seconds: 2),
+          () => Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteManager.vendorEntryScreen, (route) => false),
+        );
+      }
+    }
+  }
+
+  routingVendor() async {
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+
+    await checkIsBanned(userId);
+    await checkIsApproved(userId);
+  }
+
   isLoadingFnc() async {
     setState(() {
       isLoading = true;
     });
+
     // routing vendor
-    routingVendor();
+    await routingVendor();
 
     // set account type to vendor
     await setAccountType(accountType: AccountType.vendor);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
-  // called after an action is completed
   void completeAction() {
     setState(() {
       isLoading = false;
@@ -232,7 +250,6 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
     }
 
     if (isLogin) {
-      // TODO: implement sign in
       setState(() {
         isLoading = true;
       });
@@ -253,7 +270,6 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
         isLoadingFnc();
       }
     } else {
-      // TODO: implement sign up
       if (profileImage == null) {
         // store image is empty
         displaySnackBar(
@@ -354,7 +370,6 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _passwordController.addListener(() {
       setState(() {});
     });

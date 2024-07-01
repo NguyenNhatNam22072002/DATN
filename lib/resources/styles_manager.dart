@@ -15,7 +15,6 @@ TextStyle _getTextStyle(
   );
 }
 
-// regular fontstyle
 TextStyle getRegularStyle({
   fontSize = FontSize.s14,
   required Color color,
@@ -46,7 +45,6 @@ TextStyle getHeadingStyle2({fontSize = FontSize.s30, required color}) {
   );
 }
 
-// light fontstyle
 TextStyle getLightStyle({
   fontSize = FontSize.s12,
   required Color color,
@@ -59,7 +57,6 @@ TextStyle getLightStyle({
   );
 }
 
-// bold fontstyle
 TextStyle getBoldStyle({
   fontSize = FontSize.s12,
   required Color color,
@@ -72,7 +69,6 @@ TextStyle getBoldStyle({
   );
 }
 
-// medium fontstyle
 TextStyle getMediumStyle({
   fontSize = FontSize.s12,
   required Color color,

@@ -16,6 +16,7 @@ class Vendor {
   final String authType;
   double balanceAvailable;
   bool isApproved;
+  bool isBanned;
   bool isStoreRegistered;
 
   Vendor({
@@ -32,6 +33,7 @@ class Vendor {
     required this.address,
     required this.authType,
     this.isApproved = false,
+    this.isBanned = false,
     this.isStoreRegistered = false,
     this.balanceAvailable = 0.0,
   });
@@ -67,6 +69,7 @@ class Vendor {
           storeImgUrl: data['storeImgUrl'],
           balanceAvailable: double.parse(data['balanceAvailable'].toString()),
           isApproved: data['isApproved'],
+          isBanned: data['isBanned'],
           isStoreRegistered: data['isStoreRegistered'],
         );
 
@@ -86,6 +89,7 @@ class Vendor {
           storeImgUrl: data['storeImgUrl'],
           balanceAvailable: double.parse(data['balanceAvailable'].toString()),
           isApproved: data['isApproved'],
+          isBanned: data['isBanned'],
           isStoreRegistered: data['isStoreRegistered'],
         );
 
@@ -104,6 +108,7 @@ class Vendor {
         'storeImgUrl': storeImgUrl,
         'isStoreRegistered': isStoreRegistered,
         'isApproved': isApproved,
+        'isBanned': isBanned,
         'balanceAvailable': balanceAvailable,
       };
 }
