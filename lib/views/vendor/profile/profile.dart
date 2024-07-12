@@ -182,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void logoutDialog() {
     areYouSureDialog(
       title: 'Logout Account',
-      content: 'Are you sure you want to logout account',
+      content: 'Are you sure you want to logout account?',
       context: context,
       action: logout,
     );

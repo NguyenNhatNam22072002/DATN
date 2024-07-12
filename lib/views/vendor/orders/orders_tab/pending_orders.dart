@@ -47,8 +47,8 @@ class _PendingOrdersState extends State<PendingOrders> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () => approveOrder(checkedOutItem.orderId),
-            child: const Text('Yes'),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Dismiss'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -57,8 +57,8 @@ class _PendingOrdersState extends State<PendingOrders> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Dismiss'),
+            onPressed: () => approveOrder(checkedOutItem.orderId),
+            child: const Text('Yes'),
           ),
         ],
       ),

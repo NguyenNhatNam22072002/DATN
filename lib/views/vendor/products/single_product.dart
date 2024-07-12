@@ -68,7 +68,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
   void deleteProductDialog() {
     areYouSureDialog(
       title: 'Delete Product',
-      content: 'Are you sure you want to delete ${widget.product.productName}',
+      content: 'Are you sure you want to delete ${widget.product.productName}?',
       context: context,
       action: deleteProduct,
     );
@@ -121,7 +121,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
           Bubble(
             title: isPublished ? "Unpublish Product" : ' Publish Product',
             iconColor: Colors.white,
-            bubbleColor: isPublished ? Colors.black:Colors.green,
+            bubbleColor: isPublished ? Colors.black : Colors.green,
             icon: isPublished ? Icons.cancel : Icons.check_circle,
             titleStyle: const TextStyle(
               fontSize: 16,
