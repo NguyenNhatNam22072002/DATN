@@ -346,7 +346,7 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
                             children: [
                               kTextField(
                                 _emailController,
-                                'doe@gmail.com',
+                                'nam@gmail.com',
                                 'Email Address',
                                 Field.email,
                                 false,
@@ -355,7 +355,7 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
                               !isLogin
                                   ? kTextField(
                                       _fullnameController,
-                                      'John Doe',
+                                      'Nam Nguyen',
                                       'Fullname',
                                       Field.fullname,
                                       false,
@@ -365,7 +365,7 @@ class _CustomerAuthScreenState extends State<CustomerAuthScreen> {
                               !isLogin
                                   ? kTextField(
                                       _phoneController,
-                                      '+234-000-000-000',
+                                      '+84-000-000-000',
                                       'Phone Number',
                                       Field.phone,
                                       false,

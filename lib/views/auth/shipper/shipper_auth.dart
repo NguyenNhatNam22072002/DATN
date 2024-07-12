@@ -329,7 +329,7 @@ class _ShipperAuthScreenState extends State<ShipperAuthScreen> {
                             children: [
                               _buildTextField(
                                 _emailController,
-                                'doe_Shipper@gmail.com',
+                                'nam_Shipper@gmail.com',
                                 'Email Address',
                                 Field.email,
                                 false,
@@ -338,7 +338,7 @@ class _ShipperAuthScreenState extends State<ShipperAuthScreen> {
                               if (!isLogin) ...[
                                 _buildTextField(
                                   _nameController,
-                                  'John Doe',
+                                  'Nam Nguyen',
                                   'Full Name',
                                   Field.fullname,
                                   false,
@@ -346,7 +346,7 @@ class _ShipperAuthScreenState extends State<ShipperAuthScreen> {
                                 const SizedBox(height: 10),
                                 _buildTextField(
                                   _phoneController,
-                                  '+234-000-000-000',
+                                  '+84-000-000-000',
                                   'Phone Number',
                                   Field.phone,
                                   false,

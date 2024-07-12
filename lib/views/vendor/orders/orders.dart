@@ -54,7 +54,6 @@ class _OrdersScreenState extends State<OrdersScreen>
           child: Container(
             padding: const EdgeInsets.only(bottom: 2.0),
             child: TabBar(
-              padding: const EdgeInsets.only(left: 0.0, right: 0.0),
               controller: _tabBarController,
               indicatorColor: accentColor,
               tabs: const [

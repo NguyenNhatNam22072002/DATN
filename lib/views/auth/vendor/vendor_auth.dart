@@ -437,7 +437,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                             children: [
                               kTextField(
                                 _emailController,
-                                'doe_store@gmail.com',
+                                'nam_store@gmail.com',
                                 'Email Address',
                                 Field.email,
                                 false,
@@ -446,7 +446,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                               !isLogin
                                   ? kTextField(
                                       _storeNameController,
-                                      'Doe Store',
+                                      'Nam Store',
                                       'Store name',
                                       Field.fullname,
                                       false,
@@ -456,7 +456,7 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
                               !isLogin
                                   ? kTextField(
                                       _phoneController,
-                                      '+234-000-000-000',
+                                      '+84-000-000-000',
                                       'Phone Number',
                                       Field.phone,
                                       false,

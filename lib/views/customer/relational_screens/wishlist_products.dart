@@ -92,7 +92,13 @@ class _WishListProductsState extends State<WishListProducts> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('WishList'),
+        title: const Text(
+          'WishList',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: Builder(
           builder: (context) {
             return GestureDetector(

@@ -106,7 +106,7 @@ class _CustomerForgotPasswordState extends State<CustomerForgotPassword> {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
-                      hintText: 'doe@gmail.com',
+                      hintText: 'nam@gmail.com',
                       labelText: 'Email Address',
                       labelStyle: const TextStyle(color: accentColor),
                       focusedBorder: OutlineInputBorder(
