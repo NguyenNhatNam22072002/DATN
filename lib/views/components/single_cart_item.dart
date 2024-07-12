@@ -117,8 +117,8 @@ class _SingleCartItemState extends State<SingleCartItem> {
             ),
           ),
           actions: [
-            textAction('Yes', YesNo.yes, context),
             textAction('No', YesNo.no, context),
+            textAction('Yes', YesNo.yes, context),
           ],
         ),
       ),
@@ -154,7 +154,8 @@ class _SingleCartItemState extends State<SingleCartItem> {
             borderRadius: BorderRadius.circular(15),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               children: [
                 KCachedImage(
@@ -174,45 +175,64 @@ class _SingleCartItemState extends State<SingleCartItem> {
                           fontSize: FontSize.s16,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '\$${widget.item.price}',
+                            style: getMediumStyle(
+                              color: accentColor,
+                              fontSize: FontSize.s14,
+                            ),
+                          ),
+                          Text(
+                            'Size: ${widget.item.prodSize}',
+                            style: getMediumStyle(
+                              color: accentColor,
+                              fontSize: FontSize.s14,
+                            ),
+                          ),
+                        ],
+                      ),
                       Text(
-                        '\$${widget.item.price}',
-                        style: getMediumStyle(
+                        'Quantity: ${widget.item.quantity}',
+                        style: getRegularStyle(
                           color: accentColor,
                           fontSize: FontSize.s14,
                         ),
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'Quantity: ${widget.item.quantity}',
-                        style: getRegularStyle(
-                          color: Colors.grey,
-                          fontSize: FontSize.s14,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () => decrementQuantity(),
+                            onTap: () => widget.item.quantity == 1
+                                ? null
+                                : decrementQuantity(),
                             child: Chip(
                               avatar: CircleAvatar(
-                                backgroundColor: accentColor.withOpacity(0.3),
-                                child: Center(
+                                backgroundColor: widget.item.quantity == 1
+                                    ? Colors.grey.withOpacity(0.3)
+                                    : accentColor.withOpacity(0.3),
+                                child: const Center(
                                   child: Text(
                                     '-',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 25,
-                                      color: widget.item.quantity == 1
-                                          ? Colors.grey
-                                          : accentColor,
+                                      fontSize: 12,
+                                      color: accentColor,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
-                              label: const Text('Decrease'),
+                              label: Text(
+                                'Decrease',
+                                style: TextStyle(
+                                  color: widget.item.quantity == 1
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 5),
@@ -227,7 +247,7 @@ class _SingleCartItemState extends State<SingleCartItem> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 25,
+                                      fontSize: 12,
                                       color: accentColor,
                                     ),
                                   ),
