@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:shoes_shop/constants/color.dart';
 import 'package:shoes_shop/constants/firebase_refs/collections.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
 import 'package:shoes_shop/resources/assets_manager.dart';
@@ -37,17 +38,24 @@ class _DeliveredOrdersScreenState extends State<DeliveredOrdersScreen> {
   // Builds the AppBar widget
   AppBar _buildAppBar() {
     return AppBar(
+      automaticallyImplyLeading: false,
       title: const Text(
         'Delivered Orders',
         style: TextStyle(
+          fontSize: 18,
           fontWeight: FontWeight.bold,
-          fontSize: 16,
         ),
       ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.of(context).pop();
+      leading: Builder(
+        builder: (context) {
+          return GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: const Icon(
+              Icons.chevron_left,
+              color: primaryColor,
+              size: 35,
+            ),
+          );
         },
       ),
     );
