@@ -117,11 +117,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         body: ListView(
           children: [
             const BannerComponent(),
-            const SizedBox(height: AppSize.s10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: SearchBox(searchText: searchText),
-            ),
+            // const SizedBox(height: AppSize.s10),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 18),
+            //   child: SearchBox(searchText: searchText),
+            // ),
             const SizedBox(height: AppSize.s10),
             Padding(
               padding: const EdgeInsets.only(left: 10.0),
