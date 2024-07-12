@@ -175,6 +175,7 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
                   ),
                 ),
                 Container(
+                  width: MediaQuery.sizeOf(context).width,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
@@ -204,6 +205,7 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
                 ),
                 // Vendor Information Box
                 Container(
+                  width: MediaQuery.sizeOf(context).width,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
@@ -275,7 +277,6 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
               children: [
                 Text('\$${widget.checkoutItem.prodPrice}'),
                 Text('Quantity: ${widget.checkoutItem.prodQuantity}'),
-                Text(getStatusLabel(widget.checkoutItem.status)),
               ],
             ),
           ),
