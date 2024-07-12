@@ -153,7 +153,7 @@ ThemeData getDarkTheme() {
     primaryColorLight: Colors.white,
     primaryColorDark: textBoxDark,
     disabledColor: backgroundLite,
-    backgroundColor: backgroundDark,
+    // backgroundColor: backgroundDark,
     scaffoldBackgroundColor: backgroundDark,
 
     // dialog theme
