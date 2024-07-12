@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shoes_shop/constants/color.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 
@@ -29,8 +30,14 @@ Future<void> areYouSureDialog({
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: () => isIdInvolved ? action(id) : action(),
-          child: const Text('Yes'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text(
+            'No',
+            style: TextStyle(
+              color: accentColor,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -39,8 +46,14 @@ Future<void> areYouSureDialog({
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Dismiss'),
+          onPressed: () => isIdInvolved ? action(id) : action(),
+          child: const Text(
+            'Yes',
+            style: TextStyle(
+              color: accentColor,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
         ),
       ],
     ),
