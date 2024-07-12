@@ -1055,6 +1055,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             ),
             const SizedBox(height: 20),
             ReviewsWidget(reviewTexts: _reviews),
+            const SizedBox(height: 20),
           ],
         ),
       ),
