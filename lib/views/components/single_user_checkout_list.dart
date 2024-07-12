@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shoes_shop/constants/color.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
 import 'package:shoes_shop/views/customer/refund/refund_screen.dart';
@@ -166,7 +167,10 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
             },
       child: const Text(
         'Refund Product',
-        style: TextStyle(fontWeight: FontWeight.normal),
+        style: TextStyle(
+          fontWeight: FontWeight.normal,
+          color: accentColor,
+        ),
       ),
     );
   }
@@ -186,7 +190,10 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
       },
       child: const Text(
         'Review Product',
-        style: TextStyle(fontWeight: FontWeight.normal),
+        style: TextStyle(
+          color: accentColor,
+          fontWeight: FontWeight.normal,
+        ),
       ),
     );
   }
@@ -200,69 +207,77 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
         builder: (context) => Padding(
           padding: const EdgeInsets.all(8.0),
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                KCachedImage(
-                  image: widget.checkoutItem.prodImg,
-                  height: 100,
-                  width: 120,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  widget.checkoutItem.prodName,
-                  style: getMediumStyle(
-                    color: Colors.black,
-                    fontSize: FontSize.s20,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  KCachedImage(
+                    image: widget.checkoutItem.prodImg,
+                    height: 100,
+                    width: 120,
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ItemRow(
-                      value: widget.checkoutItem.prodPrice.toString(),
-                      title: 'Product Price: ',
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.checkoutItem.prodName,
+                    style: getMediumStyle(
+                      color: Colors.black,
+                      fontSize: FontSize.s20,
                     ),
-                    ItemRow(
-                      value: getStatusLabel(widget.checkoutItem.status),
-                      title: 'Status: ',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ItemRow(
-                      value: widget.checkoutItem.prodSize,
-                      title: 'Selected Size: ',
-                    ),
-                    ItemRow(
-                      value: widget.checkoutItem.prodQuantity.toString(),
-                      title: 'Product Quantity: ',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                ItemRow(
-                  value:
-                      intl.DateFormat.yMMMEd().format(widget.checkoutItem.date),
-                  title: 'Order Date: ',
-                ),
-                const SizedBox(height: 15),
-                if (widget.checkoutItem.status == 5)
-                  ElevatedButton(
-                    onPressed: () async {
-                      await cancelOrder();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Cancel Order',
-                        style: TextStyle(fontWeight: FontWeight.normal)),
                   ),
-                if (widget.checkoutItem.status == 1) showReviewButton(),
-                if (widget.checkoutItem.status == 1) showReturnButton(),
-              ],
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ItemRow(
+                        value: widget.checkoutItem.prodPrice.toString(),
+                        title: 'Product Price: ',
+                      ),
+                      ItemRow(
+                        value: getStatusLabel(widget.checkoutItem.status),
+                        title: 'Status: ',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ItemRow(
+                        value: widget.checkoutItem.prodSize,
+                        title: 'Selected Size: ',
+                      ),
+                      ItemRow(
+                        value: widget.checkoutItem.prodQuantity.toString(),
+                        title: 'Product Quantity: ',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  ItemRow(
+                    value: intl.DateFormat.yMMMEd()
+                        .format(widget.checkoutItem.date),
+                    title: 'Order Date: ',
+                  ),
+                  const SizedBox(height: 15),
+                  if (widget.checkoutItem.status == 5)
+                    ElevatedButton(
+                      onPressed: () async {
+                        await cancelOrder();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel Order',
+                          style: TextStyle(fontWeight: FontWeight.normal)),
+                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (widget.checkoutItem.status == 1) showReviewButton(),
+                      if (widget.checkoutItem.status == 1) showReturnButton(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
