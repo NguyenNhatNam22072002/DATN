@@ -296,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         backgroundColor: backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: label == 'Order'
