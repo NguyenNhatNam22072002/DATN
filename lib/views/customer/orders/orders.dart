@@ -81,15 +81,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Future<void> _fetchRefundAmount() async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('walletTransactions')
+          .collection('customers')
           .where('customerId',
               isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .where('status', isEqualTo: 1)
           .get();
 
       double totalRefund = 0.0;
       for (var doc in snapshot.docs) {
-        totalRefund += doc['amount'];
+        totalRefund += doc['refundAmount'];
       }
 
       setState(() {
