@@ -59,7 +59,6 @@ class _WishListProductsState extends State<WishListProducts> {
     void removeAllWishListItems() async {
       Navigator.pop(cxt);
 
-
       for (var id in prodIds) {
         await FirebaseCollections.productsCollection.doc(id).update(
           {'isFav': false},
@@ -82,7 +81,7 @@ class _WishListProductsState extends State<WishListProducts> {
     void removeAllWishListItemsDialog() {
       areYouSureDialog(
         title: 'Remove all wishlist items',
-        content: 'Are you sure you want to remove all wishlist items',
+        content: 'Are you sure you want to remove all wishlist items?',
         context: context,
         action: removeAllWishListItems,
       );

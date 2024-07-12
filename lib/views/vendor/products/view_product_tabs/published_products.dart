@@ -37,7 +37,7 @@ class _PublishedProductsState extends State<PublishedProducts> {
           ),
         ),
         content: Text(
-            'Are you sure you want to ${product.isApproved ? 'unpublish' : 'publish'} ${product.productName}'),
+            'Are you sure you want to ${product.isApproved ? 'unpublish' : 'publish'} ${product.productName}?'),
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -87,7 +87,7 @@ class _PublishedProductsState extends State<PublishedProducts> {
   void deleteProductDialog(Product product) {
     areYouSureDialog(
       title: 'Delete Product',
-      content: 'Are you sure you want to delete ${product.productName}',
+      content: 'Are you sure you want to delete ${product.productName}?',
       context: context,
       action: deleteProduct,
       isIdInvolved: true,

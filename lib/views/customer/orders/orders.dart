@@ -148,7 +148,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     void removeAllOrderItemsDialog() {
       areYouSureDialog(
         title: 'Remove all cart items',
-        content: 'Are you sure you want to remove all order items',
+        content: 'Are you sure you want to remove all order items?',
         context: context,
         action: removeAllOrderItems,
       );

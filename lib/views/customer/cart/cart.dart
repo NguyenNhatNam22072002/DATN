@@ -34,7 +34,7 @@ class CartScreenState extends State<CartScreen> {
     void removeAllCartItemsDialog() {
       areYouSureDialog(
         title: 'Remove all cart items',
-        content: 'Are you sure you want to remove all cart items',
+        content: 'Are you sure you want to remove all cart items?',
         context: context,
         action: removeAllCartItems,
       );
@@ -60,27 +60,18 @@ class CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'Cart', // Thay 'Your App Title' bằng tiêu đề mong muốn
-          style: TextStyle(
-            color: Colors.black, // Màu chữ cho tiêu đề
-            fontSize: 26, // Kích thước chữ cho tiêu đề
-            fontWeight: FontWeight.bold, // Làm in đậm
+          automaticallyImplyLeading: false,
+          title: const Text(
+            'Cart', // Thay 'Your App Title' bằng tiêu đề mong muốn
+            style: TextStyle(
+              color: Colors.black, // Màu chữ cho tiêu đề
+              fontSize: 26, // Kích thước chữ cho tiêu đề
+              fontWeight: FontWeight.bold, // Làm in đậm
+            ),
           ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        actions: [
-          if (cartData.isItemEmpty()) ...[
-            const SizedBox.shrink()
-          ] else ...[
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          actions: [
             GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(
                 RouteManager.ordersScreen,
@@ -101,45 +92,40 @@ class CartScreenState extends State<CartScreen> {
               ),
             ),
             const SizedBox(width: 18),
-          ]
-        ],
-      ),
+          ]),
       backgroundColor: bodyColor,
-      body: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: cartData.isItemEmpty()
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(AssetManager.empty),
-                    const SizedBox(height: 20),
-                    const Text('Ops! Cart is empty'),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
+      body: cartData.isItemEmpty()
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(AssetManager.empty),
+                  const SizedBox(height: 20),
+                  const Text('Ops! Cart is empty'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accentColor,
+                    ),
+                    onPressed: () => Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const CustomerMainScreen(index: 0),
                       ),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const CustomerMainScreen(index: 0),
-                        ),
-                      ),
-                      child: const Text('Continue shopping'),
-                    )
-                  ],
-                ),
-              )
-            : ListView.builder(
-                itemCount: cartData.getCartQuantity,
-                itemBuilder: (context, index) {
-                  var item = cartData.getCartItems.values.toList()[index];
-
-                  return SingleCartItem(item: item, cartData: cartData);
-                },
+                    ),
+                    child: const Text('Continue shopping'),
+                  )
+                ],
               ),
-      ),
+            )
+          : ListView.builder(
+              itemCount: cartData.getCartQuantity,
+              itemBuilder: (context, index) {
+                var item = cartData.getCartItems.values.toList()[index];
+
+                return SingleCartItem(item: item, cartData: cartData);
+              },
+            ),
       bottomSheet: cartData.isItemEmpty()
           ? const SizedBox.shrink()
           : Container(

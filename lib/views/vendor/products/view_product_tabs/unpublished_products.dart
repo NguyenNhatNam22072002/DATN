@@ -87,7 +87,7 @@ class _UnPublishedProductsState extends State<UnPublishedProducts> {
   void deleteProductDialog(Product product) {
     areYouSureDialog(
       title: 'Delete Product',
-      content: 'Are you sure you want to delete ${product.productName}',
+      content: 'Are you sure you want to delete ${product.productName}?',
       context: context,
       action: deleteProduct,
       isIdInvolved: true,

@@ -29,7 +29,7 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
   void deleteProductDialog(CheckedOutItem checkOutItem) {
     areYouSureDialog(
       title: 'Delete Product',
-      content: 'Are you sure you want to delete ${checkOutItem.prodName}',
+      content: 'Are you sure you want to delete ${checkOutItem.prodName}?',
       context: context,
       action: deleteProduct,
       isIdInvolved: true,
