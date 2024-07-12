@@ -5,6 +5,8 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/api/apis.dart';
+import 'package:shoes_shop/views/widgets/are_you_sure_dialog.dart';
+import 'package:shoes_shop/views/widgets/chat/dialogs/banned_dialog.dart';
 import 'package:shoes_shop/views/widgets/kcool_alert.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/account_type.dart';
@@ -173,17 +175,24 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
   // context
   get cxt => context;
 
-  Future<void> checkIsBanned(String userId) async {
+  Future<bool> checkIsBanned(String userId) async {
+    bool check = false;
     var data = await FirebaseCollections.vendorsCollection.doc(userId).get();
     if (data.exists) {
-      if (data['isBanned'] ?? false) {
-        Timer(
-          const Duration(seconds: 2),
-          () => Navigator.of(context).pushNamedAndRemoveUntil(
-              RouteManager.vendorBannedScreen, (route) => false),
+      check = data['isBanned'];
+      if (check) {
+        BannedDialog(
+          title: 'Your store has been banned',
+          content:
+              'We regret to inform you that your store account has been banned.',
+          context: context,
+          action: () {
+            Navigator.pop(context);
+          },
         );
       }
     }
+    return check;
   }
 
   Future<void> checkIsApproved(String userId) async {
@@ -208,8 +217,14 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
   routingVendor() async {
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
-    await checkIsBanned(userId);
-    await checkIsApproved(userId);
+    try {
+      bool check = await checkIsBanned(userId);
+      if (!check) {
+        await checkIsApproved(userId);
+      }
+    } catch (e) {
+      //
+    }
   }
 
   isLoadingFnc() async {
