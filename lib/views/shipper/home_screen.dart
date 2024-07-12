@@ -84,13 +84,25 @@ class _ShipperHomeScreenState extends State<ShipperHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Shipper Home',
+        backgroundColor: Colors.white,
+        title: Text(
+          'Home',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 24,
           ),
         ),
+        actions: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(
+                'http://i.pravatar.cc/300', // Thay thế bằng URL của ảnh đại diện
+              ),
+              radius: 20,
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
