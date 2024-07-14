@@ -231,16 +231,17 @@ class _RefundDetailsPageState extends State<RefundDetailsPage> {
   DropdownButton<int> buildStatusDropdown() {
     return DropdownButton<int>(
       value: currentStatus,
-      items: <int>[0, 1, 2]
-          .where((status) => status != currentStatus) // Exclude current status
-          .map((int value) {
+      items: <int>[0, 1, 2].map((int value) {
         return DropdownMenuItem<int>(
           value: value,
           child: Text(getStatusText(value)),
         );
       }).toList(),
       onChanged: (int? newValue) {
-        Navigator.of(context).pop(newValue);
+        if (newValue != null) {
+          updateRefundStatus(context,
+              newValue); // Gọi hàm cập nhật trạng thái refund khi có sự thay đổi
+        }
       },
     );
   }
