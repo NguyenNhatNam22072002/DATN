@@ -61,7 +61,7 @@ class _StoreDataAnalysisState extends State<StoreDataAnalysis> {
             for (var doc in data.docs)
               {
                 // handling checkouts
-                if (!doc['status == 1'])
+                if (doc['status'] != 1)
                   {
                     setState(() {
                       availableFunds += doc['prodPrice'] * doc['prodQuantity'];
