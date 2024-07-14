@@ -36,17 +36,15 @@ class _VendorCreateProductState extends State<VendorCreateProduct>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title:
-            Text(
-              'Create a product',
-              textAlign: TextAlign.center, // Căn giữa
-              style: getRegularStyle(
-                color: Colors.black,
-                fontSize: 24.0, // Tăng kích thước
-                fontWeight: FontWeight.bold, // Làm đậm
-              ),
-            ),
-
+        title: Text(
+          'Create a product',
+          textAlign: TextAlign.center, // Căn giữa
+          style: getRegularStyle(
+            color: Colors.black,
+            fontSize: 24.0, // Tăng kích thước
+            fontWeight: FontWeight.bold, // Làm đậm
+          ),
+        ),
         leading: Builder(builder: (context) {
           return IconButton(
             onPressed: () => Navigator.of(context).push(
@@ -62,6 +60,8 @@ class _VendorCreateProductState extends State<VendorCreateProduct>
         }),
         backgroundColor: primaryColor,
         bottom: TabBar(
+          tabAlignment: TabAlignment.start,
+          isScrollable: true,
           controller: _tabBarController,
           indicatorColor: accentColor,
           tabs: const [
@@ -74,15 +74,15 @@ class _VendorCreateProductState extends State<VendorCreateProduct>
       ),
       body: TabBarView(
         controller: _tabBarController,
-        children:  [
-          GeneralTab(showAlert: true,),
+        children: [
+          GeneralTab(
+            showAlert: true,
+          ),
           const ShippingTab(),
           const AttributesTab(),
           const ImageUploadTab(),
         ],
       ),
-
-
     );
   }
 }

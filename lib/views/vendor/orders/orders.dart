@@ -50,10 +50,12 @@ class _OrdersScreenState extends State<OrdersScreen>
         ),
         backgroundColor: primaryColor,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(60.0),
+          preferredSize: Size.fromHeight(50.0),
           child: Container(
             padding: const EdgeInsets.only(bottom: 2.0),
             child: TabBar(
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
               controller: _tabBarController,
               indicatorColor: accentColor,
               tabs: const [
