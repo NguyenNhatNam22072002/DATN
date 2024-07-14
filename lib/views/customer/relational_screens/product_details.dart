@@ -103,7 +103,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           vendorName = data['storeName'];
           vendorImage = data['storeImgUrl'];
           vendorAddress =
-              'Located in: ${data['city']} ${data['state']} ${reversedWord(data['country'])}';
+              '${data['city']} ${data['state']} ${reversedWord(data['country'])}';
           isLoadingVendor = false;
         });
       } else {
@@ -232,6 +232,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             'reviewText': reviewData['reviewText'],
             'date': (reviewData['date'] as Timestamp).toDate(),
             'fullname': fullname,
+            'rating': reviewData['rating'] ?? 0,
           };
         },
       ));
@@ -243,12 +244,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
       if (kDebugMode) {
         print('Firebase Error getting reviews: ${e.code}: ${e.message}');
       }
-      // Hiển thị thông báo lỗi cho người dùng (ví dụ: dùng SnackBar)
     } catch (e) {
       if (kDebugMode) {
         print('General Error getting reviews: $e');
       }
-      // Hiển thị thông báo lỗi cho người dùng (ví dụ: dùng SnackBar)
     }
   }
 
@@ -636,9 +635,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     '\$${widget.product.price}',
                     style: getRegularStyle(
                       color: Colors.black,
-                      fontSize: FontSize.s16,
+                      fontWeight: FontWeight.bold,
+                      fontSize: FontSize.s25,
                     ),
                   ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -700,7 +701,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           const SizedBox(height: 5),
                           Text(
                             'Scheduled:  ${intl.DateFormat.yMMMEd().format(widget.product.scheduleDate)}',
-                            style: getLightStyle(color: Colors.black),
+                            style: getRegularStyle(color: Colors.black),
                           )
                         ],
                       ),
@@ -757,11 +758,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     'Sold by:',
                     style: getRegularStyle(
                       color: Colors.black,
+                      fontWeight: FontWeight.bold,
                       fontSize: FontSize.s16,
                     ),
                   ),
                   const SizedBox(height: 10),
-
                   // store
                   !isLoadingVendor
                       ? SizedBox(
@@ -870,7 +871,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           ),
                         )
                       : const LoadingWidget(size: 20),
-
+                  Text(
+                    'Description:',
+                    style: getRegularStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: FontSize.s16,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   ReadMoreText(
                     widget.product.description,
@@ -900,8 +908,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     style: getRegularStyle(
                       color: Colors.black,
                       fontSize: FontSize.s16,
-                      fontWeight:
-                          FontWeight.bold, // Thêm dòng này để làm in đậm
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -945,10 +952,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index, i) {
                         final item = snapshot.data!.docs[index];
-
-                        // modeling the item
                         Product product = Product.fromJson(item);
-
                         return Padding(
                           padding: const EdgeInsets.only(right: 10.0),
                           child: GestureDetector(
@@ -1053,8 +1057,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            ReviewsWidget(reviewTexts: _reviews),
+            ReviewsWidget(
+              reviews: _reviews,
+            ),
             const SizedBox(height: 20),
           ],
         ),

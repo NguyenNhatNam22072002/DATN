@@ -74,6 +74,7 @@ class _RefundScreenState extends State<RefundScreen> {
         requestDate: DateTime.now(),
         reason: _reasonController.text,
         comment: _commentController.text,
+        isVendorCheck: false,
       );
       String mediaUrl = await uploadMediaFile(
           selectedMediaFile!, refundId, selectedMediaType!);
@@ -102,47 +103,95 @@ class _RefundScreenState extends State<RefundScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request Refund'),
+        title: const Text(
+          'Request Refund',
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
       ),
-      body: Center(
+      body: SafeArea(
         child: isLoading
-            ? const CircularProgressIndicator()
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      MediaPicker(
-                        selectMedia: (File file, String mediaType) {
-                          setState(() {
-                            selectedMediaFile = file;
-                            selectedMediaType = mediaType;
-                          });
-                        },
+                      const SizedBox(height: 14),
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Upload Evidence',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              MediaPicker(
+                                selectMedia: (File file, String mediaType) {
+                                  setState(() {
+                                    selectedMediaFile = file;
+                                    selectedMediaType = mediaType;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       TextField(
                         controller: _reasonController,
-                        decoration: const InputDecoration(
-                          labelText: 'Reason',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: 'Reason for Refund',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
                         ),
                         maxLines: 3,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       TextField(
                         controller: _commentController,
-                        decoration: const InputDecoration(
-                          labelText: 'Comment',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: 'Additional Comments',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
                         ),
                         maxLines: 3,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 32),
                       ElevatedButton(
                         onPressed: requestRefund,
-                        child: const Text('Request Refund'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Submit Refund Request',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
                       ),
                     ],
                   ),

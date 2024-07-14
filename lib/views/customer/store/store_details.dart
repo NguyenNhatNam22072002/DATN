@@ -15,7 +15,6 @@ import '../relational_screens/product_details.dart';
 
 class StoreDetailsScreen extends StatefulWidget {
   const StoreDetailsScreen({super.key, required this.vendor});
-
   final Vendor vendor;
 
   @override
@@ -29,7 +28,6 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
 
     Stream<QuerySnapshot> productsStream = FirebaseFirestore.instance
         .collection('products')
-        .orderBy('uploadDate', descending: true)
         .where('isApproved', isEqualTo: true)
         .where('vendorId', isEqualTo: widget.vendor.storeId)
         .snapshots();
@@ -94,9 +92,10 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Products sold by ${widget.vendor.storeName}',
+                    'Products',
                     style: getRegularStyle(
-                      color: greyFontColor,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                       fontSize: FontSize.s16,
                     ),
                   ),

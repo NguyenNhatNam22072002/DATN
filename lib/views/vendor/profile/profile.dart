@@ -128,30 +128,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var id = const Uuid().v4();
     double totalAmount = 0.0;
 
-    await FirebaseCollections.ordersCollection
-        .where('status', isNotEqualTo: 1)
-        .get()
-        .then((QuerySnapshot data) {
-      for (var doc in data.docs) {
-        // update totalAmount
-        totalAmount += doc['prodPrice'] * doc['prodQuantity'];
+    QuerySnapshot orderSnapshot = await FirebaseCollections.ordersCollection
+        .where('vendorId', isEqualTo: userId)
+        .get();
 
-        FirebaseCollections.ordersCollection.doc(doc['orderId']).update({
-          'status': 1,
-        });
-      }
+    for (var doc in orderSnapshot.docs) {
+      totalAmount += doc['prodPrice'] * doc['prodQuantity'];
+    }
 
-      // updating vendor's balance
-      FirebaseCollections.vendorsCollection
-          .doc(userId)
-          .get()
-          .then((DocumentSnapshot data) {
-        FirebaseCollections.vendorsCollection.doc(userId).update({
-          'balanceAvailable': data['balanceAvailable'] + totalAmount,
-        });
-      });
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentReference vendorRef =
+          FirebaseCollections.vendorsCollection.doc(userId);
+      DocumentSnapshot vendorSnapshot = await transaction.get(vendorRef);
+      double currentBalance = vendorSnapshot['balanceAvailable'] ?? 0.0;
+      transaction.update(
+          vendorRef, {'balanceAvailable': currentBalance + totalAmount});
 
-      FirebaseCollections.cashOutCollection.doc(id).set({
+      DocumentReference cashOutRef =
+          FirebaseCollections.cashOutCollection.doc(id);
+      transaction.set(cashOutRef, {
         'id': id,
         'vendorId': userId,
         'amount': totalAmount,

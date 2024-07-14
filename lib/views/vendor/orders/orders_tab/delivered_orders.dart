@@ -115,7 +115,7 @@ class _DeliveredOrdersState extends State<DeliveredOrders> {
                   if (refundSnapshot.hasError) {
                     return ListTile(
                       title: Text(checkedOutItem.prodName),
-                      subtitle: Text('Error checking refund status'),
+                      subtitle: const Text('Error checking refund status'),
                     );
                   }
 

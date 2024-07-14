@@ -119,14 +119,13 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
     }
   }
 
-  // Method to show the return button only after delivery and within 7 days
   Widget showReturnButton() {
     DateTime deliveryDate = widget.checkoutItem.date;
     DateTime currentDate = DateTime.now();
     Duration difference = currentDate.difference(deliveryDate);
 
     return ElevatedButton(
-      onPressed: isRefunded || widget.checkoutItem.status == 4
+      onPressed: isRefunded || widget.checkoutItem.status != 1
           ? null
           : () {
               if (difference.inDays <= 7) {
@@ -165,11 +164,14 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
                 }
               }
             },
-      child: const Text(
-        'Refund Product',
+      style: ElevatedButton.styleFrom(
+        disabledBackgroundColor: Colors.grey,
+      ),
+      child: Text(
+        isRefunded ? 'Refunded' : 'Refund Product',
         style: TextStyle(
           fontWeight: FontWeight.normal,
-          color: accentColor,
+          color: isRefunded ? Colors.white : accentColor,
         ),
       ),
     );

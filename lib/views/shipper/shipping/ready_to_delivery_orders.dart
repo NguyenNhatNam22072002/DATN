@@ -144,54 +144,43 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
 
   void markAsDelivered(CheckedOutItem item, String shipperId) async {
     try {
-      // Start a batch write to ensure atomic updates
-      WriteBatch batch = FirebaseFirestore.instance.batch();
-
-      // Reference to the order document
-      DocumentReference orderRef =
-          FirebaseCollections.ordersCollection.doc(item.orderId);
-
-      // Update the order status and shipperId
-      batch.update(orderRef, {
-        'status': 1,
-        'shipperId': shipperId,
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentReference orderRef =
+            FirebaseCollections.ordersCollection.doc(item.orderId);
+        DocumentSnapshot orderSnapshot = await transaction.get(orderRef);
+        DocumentReference shipperRef =
+            FirebaseCollections.shippersCollection.doc(shipperId);
+        transaction.update(orderRef, {
+          'status': 1,
+          'shipperId': shipperId,
+        });
+        Map<String, dynamic>? shipperData =
+            orderSnapshot.data() as Map<String, dynamic>?;
+        double currentEarnings =
+            shipperData != null && shipperData.containsKey('earnings')
+                ? shipperData['earnings'] as double
+                : 0.0;
+        double newEarnings = currentEarnings + 1.0;
+        transaction.update(shipperRef, {'earnings': newEarnings});
+        String vendorId = orderSnapshot.get('vendorId');
+        DocumentReference vendorRef =
+            FirebaseCollections.vendorsCollection.doc(vendorId);
+        double totalAmount =
+            orderSnapshot['prodPrice'] * orderSnapshot['prodQuantity'];
+        DocumentSnapshot vendorSnapshot = await transaction.get(vendorRef);
+        double currentBalance = vendorSnapshot['balanceAvailable'] ?? 0.0;
+        transaction.update(
+            vendorRef, {'balanceAvailable': currentBalance + totalAmount});
       });
-
-      // Reference to the shipper document
-      DocumentReference shipperRef =
-          FirebaseCollections.shippersCollection.doc(shipperId);
-
-      // Get the current earnings of the shipper
-      DocumentSnapshot shipperSnapshot = await shipperRef.get();
-      Map<String, dynamic>? shipperData =
-          shipperSnapshot.data() as Map<String, dynamic>?;
-
-      // Check if earnings field exists, otherwise default to 0.0
-      double currentEarnings =
-          shipperData != null && shipperData.containsKey('earnings')
-              ? shipperData['earnings'] as double
-              : 0.0;
-
-      // Increment the earnings by $1.0
-      double newEarnings = currentEarnings + 1.0;
-
-      // Update the shipper's earnings in the batch
-      batch.update(shipperRef, {
-        'earnings': newEarnings,
-      });
-
-      // Commit the batch
-      await batch.commit();
-
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Order marked as delivered and earnings updated')),
+            content: Text(
+                'Order delivered, earnings updated, and vendor balance incremented')),
       );
     } catch (error) {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to mark as delivered: $error')),
+        SnackBar(content: Text('Error: $error')),
       );
     }
   }

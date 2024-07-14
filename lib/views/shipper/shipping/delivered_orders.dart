@@ -14,7 +14,7 @@ class DeliveredOrdersScreen extends StatefulWidget {
   const DeliveredOrdersScreen({Key? key}) : super(key: key);
 
   @override
-  _DeliveredOrdersScreenState createState() => _DeliveredOrdersScreenState();
+  State<DeliveredOrdersScreen> createState() => _DeliveredOrdersScreenState();
 }
 
 class _DeliveredOrdersScreenState extends State<DeliveredOrdersScreen> {

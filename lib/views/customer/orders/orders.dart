@@ -264,7 +264,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
         String userId = FirebaseAuth.instance.currentUser!.uid;
 
         try {
-          // Lấy thông tin khách hàng
           DocumentSnapshot customerSnapshot = await FirebaseFirestore.instance
               .collection('customers')
               .doc(userId)
@@ -278,23 +277,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
             if (refundAmount >= totalAmount) {
               double newRefundAmount = refundAmount - totalAmount;
 
-              // Cập nhật số tiền hoàn lại của khách hàng
+              // Cập nhật refundAmount
               await FirebaseFirestore.instance
                   .collection('customers')
                   .doc(userId)
                   .update({'refundAmount': newRefundAmount});
 
-              // Tạo một giao dịch mới trong bộ sưu tập walletTransactions
-              await FirebaseFirestore.instance
-                  .collection('walletTransactions')
-                  .add({
-                'customerId': userId,
-                'amount': -totalAmount,
-                'status': 1,
-                'transactionDate': Timestamp.now(),
-                'transactionId': uuid.v4(),
-              });
-
+              // Tiến hành đặt hàng
               await submitOrderToFirebase();
               removeAllOrderItems();
 

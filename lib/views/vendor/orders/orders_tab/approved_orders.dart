@@ -345,7 +345,7 @@ class _ApprovedOrdersState extends State<ApprovedOrders> {
                           ),
                           child: Center(
                             child: Text(
-                              'Move All To Process',
+                              'Move To Process',
                               style: getMediumStyle(
                                 color: Colors.white,
                               ),

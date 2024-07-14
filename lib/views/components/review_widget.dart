@@ -3,9 +3,12 @@ import 'package:shoes_shop/resources/font_manager.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
 
 class ReviewsWidget extends StatelessWidget {
-  final List<Map<String, dynamic>> reviewTexts;
+  final List<Map<String, dynamic>> reviews;
 
-  const ReviewsWidget({super.key, required this.reviewTexts});
+  const ReviewsWidget({
+    Key? key,
+    required this.reviews,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +25,13 @@ class ReviewsWidget extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
-          ///const SizedBox(height: 10),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: reviewTexts.length,
+            itemCount: reviews.length,
             padding: const EdgeInsets.only(top: 8.0),
             itemBuilder: (context, index) {
+              final review = reviews[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
                 child: Card(
@@ -42,19 +44,22 @@ class ReviewsWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          reviewTexts[index]['fullname'],
-                          style: getRegularStyle(
-                            color: Colors.black,
-                            fontSize: FontSize.s14,
-                            fontWeight: FontWeight
-                                .bold, // hoặc có thể dùng FontWeight.w500
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              review['fullname'] ?? 'Anonymous',
+                              style: getRegularStyle(
+                                color: Colors.black,
+                                fontSize: FontSize.s14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            _buildStarRating(review['rating'] ?? 0),
+                          ],
                         ),
                         Text(
-                          reviewTexts[index]['date']
-                              .toString()
-                              .substring(0, 10),
+                          _formatDate(review['date']),
                           style: getRegularStyle(
                             color: Colors.grey,
                             fontSize: FontSize.s12,
@@ -62,7 +67,7 @@ class ReviewsWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          reviewTexts[index]['reviewText'],
+                          review['reviewText'] ?? '',
                           style: getRegularStyle(
                             color: Colors.black,
                             fontSize: FontSize.s14,
@@ -78,5 +83,33 @@ class ReviewsWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildStarRating(num rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...List.generate(5, (index) {
+          return Icon(
+            index < rating ? Icons.star : Icons.star_border,
+            color: Colors.amber,
+            size: 18,
+          );
+        }),
+        const SizedBox(width: 5),
+        Text(
+          rating.toStringAsFixed(1),
+          style: getRegularStyle(
+            color: Colors.black,
+            fontSize: FontSize.s14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }

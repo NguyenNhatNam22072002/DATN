@@ -10,6 +10,7 @@ class Refund {
   final double amount;
   final DateTime requestDate;
   final int status; // 0: Requested, 1: Approved, 2: Denied, 3: Processed
+  final bool isVendorCheck;
 
   Refund({
     required this.refundId,
@@ -21,6 +22,7 @@ class Refund {
     required this.amount,
     required this.requestDate,
     required this.status,
+    this.isVendorCheck = false,
   });
 
   Refund.fromJson(QueryDocumentSnapshot item)
@@ -34,6 +36,7 @@ class Refund {
           amount: double.parse(item['amount'].toString()),
           requestDate: item['requestDate'].toDate(),
           status: item['status'],
+          isVendorCheck: item['isVendorCheck'],
         );
 
   Map<String, dynamic> toJson() {
@@ -47,6 +50,7 @@ class Refund {
       'amount': amount,
       'requestDate': requestDate,
       'status': status,
+      'isVendorCheck': isVendorCheck,
     };
   }
 }

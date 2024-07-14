@@ -79,63 +79,119 @@ class _ReviewScreenState extends State<ReviewScreen> {
         title: const Text(
           'Submit Review',
           style: TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
         ),
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                controller: _reviewTextController,
-                decoration: const InputDecoration(labelText: 'Review'),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your review';
-                  }
-                  return null;
-                },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Your Opinion Matters!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Please share your thoughts about the product.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  TextFormField(
+                    controller: _reviewTextController,
+                    decoration: InputDecoration(
+                      labelText: 'Your Review',
+                      hintText: 'Tell us what you think...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                    ),
+                    maxLines: 5,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your review';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Rate Your Experience:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: RatingBar.builder(
+                      initialRating: 0,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      unratedColor: Colors.grey[300],
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemSize: 40,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (rating) {
+                        setState(() {
+                          _rating = rating;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submitReview,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Submit Review',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Rating:',
-                style: const TextStyle(fontSize: 18),
-              ),
-              RatingBar.builder(
-                initialRating: 0,
-                minRating: 1,
-                direction: Axis.horizontal,
-                unratedColor: Colors.grey[300],
-                allowHalfRating: true,
-                itemCount: 5,
-                itemPadding:
-                    const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                onRatingUpdate: (rating) {
-                  setState(() {
-                    _rating = rating;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _isSubmitting ? null : _submitReview,
-                child: _isSubmitting
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      )
-                    : const Text('Submit Review'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

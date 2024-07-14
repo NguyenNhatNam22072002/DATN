@@ -275,10 +275,28 @@ class _ProcessingOrdersState extends State<ProcessingOrders> {
                           ),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: updateReadyDelivery,
-                        child: const Text('Ready to Delivery'),
-                      ),
+                      GestureDetector(
+                        onTap: updateReadyDelivery,
+                        child: Container(
+                          height: 50,
+                          width: 80,
+                          decoration: const BoxDecoration(
+                            color: accentColor,
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(5),
+                              topRight: Radius.circular(5),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Push',
+                              style: getRegularStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   )
                 ],
