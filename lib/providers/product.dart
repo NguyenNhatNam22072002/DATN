@@ -68,7 +68,9 @@ class ProductData extends ChangeNotifier {
     productData['description'] = description;
     productData['scheduleDate'] = scheduleDate;
 
-    notifyListeners();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   // update product shipping info
@@ -90,7 +92,9 @@ class ProductData extends ChangeNotifier {
   // update product images
   updateProductImg({List<String>? imgUrls}) {
     productData['imgUrls'] = imgUrls;
-    notifyListeners();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   // clear product images
