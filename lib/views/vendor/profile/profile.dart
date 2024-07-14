@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // checkouts
             for (var doc in data.docs)
               {
-                if (!doc['status'] == 1)
+                if (doc['status'] != 1)
                   {
                     setState(() {
                       availableFunds += doc['prodPrice'] * doc['prodQuantity'];
@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double totalAmount = 0.0;
 
     await FirebaseCollections.ordersCollection
-        .where('isDelivered', isEqualTo: false)
+        .where('status', isNotEqualTo: 1)
         .get()
         .then((QuerySnapshot data) {
       for (var doc in data.docs) {
@@ -137,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         totalAmount += doc['prodPrice'] * doc['prodQuantity'];
 
         FirebaseCollections.ordersCollection.doc(doc['orderId']).update({
-          'isDelivered': true,
+          'status': 1,
         });
       }
 
@@ -293,7 +293,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           showSubtitle: false,
                         ),
                         const Padding(
-                          padding: EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(5.0),
                           child: Divider(thickness: 1),
                         ),
                         KListTile(
@@ -303,7 +303,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           showSubtitle: false,
                         ),
                         const Padding(
-                          padding: EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(5.0),
                           child: Divider(thickness: 1),
                         ),
                         KListTile(
@@ -313,7 +313,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           showSubtitle: false,
                         ),
                         const Padding(
-                          padding: EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(5.0),
                           child: Divider(thickness: 1),
                         ),
                         KListTile(
