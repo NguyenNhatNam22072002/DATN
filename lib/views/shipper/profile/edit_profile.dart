@@ -50,7 +50,7 @@ class _EditProfileState extends State<EditProfile> {
     _cityController.text = credential!['city'];
     _stateController.text = credential!['state'];
     _countryController.text = credential!['country'];
-    _vehicleTypeController.text = credential!['vehicalType'];
+    _vehicleTypeController.text = credential!['vehicleType'];
     setState(() {
       isLoading = false;
     });
