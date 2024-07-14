@@ -193,7 +193,7 @@ class _GeneralTabState extends State<GeneralTab>
                           ? DropdownButtonFormField(
                               hint: const Text('Select Category'),
                               validator: (value) {
-                                if (value!.isEmpty) {
+                                if (value == null) {
                                   return 'Please select category';
                                 }
                                 return null;
@@ -239,19 +239,21 @@ class _GeneralTabState extends State<GeneralTab>
                           TextButton(
                             onPressed: () => pickDate(),
                             child: Text(
-                              'Schedule date',
+                              'Schedule date:',
                               style: getRegularStyle(color: accentColor),
                             ),
                           ),
                           isDateSelected
                               ? Text(
-                            'Selected Date:  ${intl.DateFormat.yMMMEd().format(selectedDate)}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.grey[800], // Chọn một màu xám nhạt, có thể điều chỉnh giá trị
-                            ),
-                          )
-
+                                  '${intl.DateFormat.yMMMEd().format(selectedDate)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.grey[800],
+                                  ),
+                                  maxLines: 2, // Giới hạn số dòng hiển thị
+                                  overflow: TextOverflow
+                                      .ellipsis, // Hiển thị dấu ba chấm khi vượt quá số dòng
+                                )
                               : const SizedBox.shrink(),
                         ],
                       ),

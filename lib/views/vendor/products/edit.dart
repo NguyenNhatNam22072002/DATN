@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shoes_shop/resources/font_manager.dart';
 import '../../../models/product.dart';
 import '../../../providers/product.dart';
 import '../../../resources/styles_manager.dart';
@@ -39,52 +40,65 @@ class _VendorEditProductState extends State<VendorEditProduct>
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductData>(context);
 
-
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Editing ${widget.product.productName}',
-          style: getRegularStyle(
-            color: Colors.white,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(
+            'Editing ${widget.product.productName}',
+            style: getMediumStyle(
+              color: Colors.black,
+              fontSize: FontSize.s16,
+            ),
+          ),
+          leading: Builder(builder: (context) {
+            return IconButton(
+              onPressed: () => {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const VendorMainScreen(index: 2),
+                  ),
+                ),
+              },
+              icon: const Icon(
+                Icons.chevron_left,
+                color: accentColor,
+              ),
+            );
+          }),
+          backgroundColor: primaryColor,
+          bottom: TabBar(
+            tabAlignment: TabAlignment.start,
+            isScrollable: true,
+            controller: _tabBarController,
+            indicatorColor: accentColor,
+            tabs: const [
+              Tab(child: Text('General')),
+              Tab(child: Text('Shipping')),
+              Tab(child: Text('Attributes')),
+              Tab(child: Text('Image Uploads')),
+            ],
           ),
         ),
-        leading: Builder(builder: (context) {
-          return IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const VendorMainScreen(index: 2),
-              ),
-            ),
-            icon: const Icon(
-              Icons.chevron_left,
-              color: accentColor,
-            ),
-          );
-        }),
-        backgroundColor: primaryColor,
-        bottom: TabBar(
+        body: TabBarView(
           controller: _tabBarController,
-          indicatorColor: accentColor,
-          tabs: const [
-            Tab(child: Text('Edit General')),
-            Tab(child: Text('Edit Shipping')),
-            Tab(child: Text('Edit Attributes')),
-            Tab(child: Text('Edit Image Uploads')),
+          children: [
+            EditGeneralTab(
+              showAlert: true,
+              product: widget.product,
+            ),
+            EditShippingTab(product: widget.product),
+            EditAttributesTab(product: widget.product),
+            EditImageUploadTab(
+              product: widget.product,
+              productProvider: productProvider,
+            ),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabBarController,
-        children: [
-          EditGeneralTab(
-            showAlert: true,
-            product: widget.product,
-          ),
-          EditShippingTab(product: widget.product),
-          EditAttributesTab(product: widget.product),
-          EditImageUploadTab(product: widget.product,productProvider: productProvider,),
-        ],
       ),
     );
   }
