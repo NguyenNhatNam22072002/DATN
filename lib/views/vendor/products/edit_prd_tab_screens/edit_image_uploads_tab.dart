@@ -409,15 +409,11 @@ class _EditImageUploadTabState extends State<EditImageUploadTab>
                       // not editing images
                       Center(
                         child: Center(
-                          child:
-
-                          KCachedImage(
+                          child: KCachedImage(
                             image: widget.product.imgUrls[currentImage],
-                            radius:80,
-                            isCircleAvatar:true,
+                            radius: 80,
+                            isCircleAvatar: true,
                           ),
-
-
                         ),
                       ),
                       const SizedBox(height: 15),

@@ -11,11 +11,8 @@ import '../../../widgets/message_alert.dart';
 
 // ignore: must_be_immutable
 class EditGeneralTab extends StatefulWidget {
-  EditGeneralTab({
-    Key? key,
-    this.showAlert = false,
-    required this.product
-  }) : super(key: key);
+  EditGeneralTab({Key? key, this.showAlert = false, required this.product})
+      : super(key: key);
   bool showAlert;
   final Product product;
 
@@ -45,9 +42,8 @@ class _EditGeneralTabState extends State<EditGeneralTab>
 
   bool dateSelected = false;
 
-
   // assign data from product
-  void assignData(){
+  void assignData() {
     setState(() {
       productName.text = widget.product.productName;
       productPrice.text = widget.product.price.toString();
@@ -58,8 +54,6 @@ class _EditGeneralTabState extends State<EditGeneralTab>
       currentCategory = widget.product.category;
     });
   }
-
-
 
   // pick date
   Future pickDate() async {
@@ -117,7 +111,6 @@ class _EditGeneralTabState extends State<EditGeneralTab>
         });
       }
     });
-
   }
 
   @override
@@ -261,16 +254,20 @@ class _EditGeneralTabState extends State<EditGeneralTab>
                           TextButton(
                             onPressed: () => pickDate(),
                             child: Text(
-                              'Schedule date',
+                              'Schedule date:',
                               style: getRegularStyle(color: accentColor),
                             ),
                           ),
                           isDateSelected
                               ? Text(
-                                  'Selected Date:  ${intl.DateFormat.yMMMEd().format(selectedDate)}',
-                                  style: const TextStyle(
+                                  ' ${intl.DateFormat.yMMMEd().format(selectedDate)}',
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w700,
+                                    color: Colors.grey[800],
                                   ),
+                                  maxLines: 2, // Giới hạn số dòng hiển thị
+                                  overflow: TextOverflow
+                                      .ellipsis, // Hiển thị dấu ba chấm khi vượt quá số dòng
                                 )
                               : const SizedBox.shrink(),
                         ],
