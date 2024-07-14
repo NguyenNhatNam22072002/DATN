@@ -199,17 +199,11 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
     var data = await FirebaseCollections.vendorsCollection.doc(userId).get();
     if (data.exists) {
       if (data['isApproved'] ?? false) {
-        Timer(
-          const Duration(seconds: 2),
-          () => Navigator.of(context).pushNamedAndRemoveUntil(
-              RouteManager.vendorMainScreen, (route) => false),
-        );
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            RouteManager.vendorMainScreen, (route) => false);
       } else {
-        Timer(
-          const Duration(seconds: 2),
-          () => Navigator.of(context).pushNamedAndRemoveUntil(
-              RouteManager.vendorEntryScreen, (route) => false),
-        );
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            RouteManager.vendorEntryScreen, (route) => false);
       }
     }
   }
@@ -227,7 +221,11 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
     }
   }
 
-  isLoadingFnc() async {
+  bool _isProcessing = false;
+
+  Future<void> isLoadingFnc() async {
+    if (_isProcessing) return; // Nếu đang xử lý thì không thực hiện lại hàm
+    _isProcessing = true; // Đánh dấu đang xử lý
     setState(() {
       isLoading = true;
     });
@@ -238,9 +236,15 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
     // set account type to vendor
     await setAccountType(accountType: AccountType.vendor);
 
-    setState(() {
-      isLoading = false;
-    });
+    // Đợi 2 giây trước khi tắt trạng thái isLoading
+    await Future.delayed(Duration(seconds: 2));
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+    _isProcessing = false; // Hoàn tất xử lý
   }
 
   void completeAction() {
