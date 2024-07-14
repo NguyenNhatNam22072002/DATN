@@ -91,43 +91,76 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(18.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  const Icon(Icons.person_outline, color: accentColor),
-                  Text(
-                    'Select account type',
-                    style: getMediumStyle(
-                      color: accentColor,
-                      fontSize: FontSize.s18,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 60,
+            ),
+            Image.asset(
+              AssetManager.logoTransparent,
+              width: 200,
+              height: 200,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Icon(Icons.person_outline, color: accentColor),
+                Text(
+                  'Select account type',
+                  style: getMediumStyle(
+                    color: accentColor,
+                    fontSize: FontSize.s18,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSize.s30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                authWidget(
+                  title: 'Customer',
+                  routeName: RouteManager.customerAuthScreen,
+                ),
+                authWidget(
+                  title: 'Vendor',
+                  routeName: RouteManager.vendorAuthScreen,
+                ),
+                authWidget(
+                  title: 'Shipper',
+                  routeName: RouteManager.shipperAuthScreen,
+                ),
+              ],
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: RichText(
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Organized by: ',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                    TextSpan(
+                      text: 'namnguyen@hitek.com.vn',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: AppSize.s30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  authWidget(
-                    title: 'Customer',
-                    routeName: RouteManager.customerAuthScreen,
-                  ),
-                  authWidget(
-                    title: 'Vendor',
-                    routeName: RouteManager.vendorAuthScreen,
-                  ),
-                  authWidget(
-                    title: 'Shipper',
-                    routeName: RouteManager.shipperAuthScreen,
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
