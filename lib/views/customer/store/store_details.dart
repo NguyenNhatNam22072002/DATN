@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../constants/color.dart';
 import '../../../helpers/word_reverse.dart';
 import '../../../models/product.dart';
@@ -14,22 +15,35 @@ import '../../widgets/loading_widget.dart';
 import '../relational_screens/product_details.dart';
 
 class StoreDetailsScreen extends StatefulWidget {
-  const StoreDetailsScreen({super.key, required this.vendor});
+  const StoreDetailsScreen({Key? key, required this.vendor}) : super(key: key);
+
   final Vendor vendor;
 
   @override
-  State<StoreDetailsScreen> createState() => _StoreDetailsScreenState();
+  _StoreDetailsScreenState createState() => _StoreDetailsScreenState();
 }
 
 class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
+  int _productLimit = 6; // Initial limit of products to load
+  DocumentSnapshot? _lastDocument; // To store the last document snapshot
+
+  // Function to load more products
+  void _loadMoreProducts() {
+    setState(() {
+      _productLimit += 2; // Increase the product limit
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
+    Size size = MediaQuery.of(context).size;
 
+    // Stream to fetch products based on vendorId and limit
     Stream<QuerySnapshot> productsStream = FirebaseFirestore.instance
         .collection('products')
         .where('isApproved', isEqualTo: true)
         .where('vendorId', isEqualTo: widget.vendor.storeId)
+        .limit(_productLimit) // Limit number of products fetched
         .snapshots();
 
     return Scaffold(
@@ -38,17 +52,13 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
-        leading: Builder(
-          builder: (context) {
-            return GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: const Icon(
-                Icons.chevron_left,
-                color: primaryColor,
-                size: 35,
-              ),
-            );
-          },
+        leading: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: const Icon(
+            Icons.chevron_left,
+            color: primaryColor,
+            size: 35,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -153,43 +163,52 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
                         );
                       }
 
-                      return SizedBox(
-                        height: size.height / 3,
-                        child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                      List<Widget> productWidgets =
+                          snapshot.data!.docs.map((doc) {
+                        final item = doc;
+                        Product product = Product.fromJson(item);
+
+                        return InkWell(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailsScreen(
+                                product: product,
+                              ),
+                            ),
+                          ),
+                          child: SingleProductGridItem(
+                            product: product,
+                            size: size,
+                          ),
+                        );
+                      }).toList();
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GridView.count(
                             crossAxisCount: 2,
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            children: productWidgets,
                           ),
-                          padding: const EdgeInsets.only(
-                            top: 0,
-                          ),
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            final item = snapshot.data!.docs[index];
-
-                            Product product = Product.fromJson(item);
-
-                            return InkWell(
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetailsScreen(
-                                    product: product,
-                                  ),
-                                ),
+                          if (snapshot.data!.docs.length >= _productLimit)
+                            // Show load more button if more products can be loaded
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: _loadMoreProducts,
+                                child: Text('Load More'),
                               ),
-                              child: SingleProductGridItem(
-                                product: product,
-                                size: size,
-                              ),
-                            );
-                          },
-                        ),
+                            ),
+                        ],
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
+
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
