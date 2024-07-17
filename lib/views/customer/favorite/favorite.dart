@@ -1,16 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:shoes_shop/views/customer/relational_screens/product_details.dart';
-import 'package:shoes_shop/views/widgets/msg_snackbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../../constants/color.dart';
-import '../../../constants/enums/status.dart';
-import '../../../constants/firebase_refs/collections.dart';
 import '../../../models/product.dart';
 import '../../../resources/assets_manager.dart';
 import '../../components/single_product_grid.dart';
 import '../../widgets/loading_widget.dart';
+import '../relational_screens/product_details.dart';
+import '../../widgets/msg_snackbar.dart';
+import '../../../constants/enums/status.dart';
+import '../../../constants/firebase_refs/collections.dart';
 
 class FavoriteProducts extends StatefulWidget {
   const FavoriteProducts({Key? key}) : super(key: key);
@@ -24,6 +24,7 @@ class _FavoriteProductsState extends State<FavoriteProducts> {
   bool isEmpty = false;
   List<String> prodIds = [];
   var isEnableSke = false;
+  int _productLimit = 6; // Initial limit of products to load
 
   Future<void> fetchWishListProdIds() async {
     await FirebaseFirestore.instance
@@ -107,25 +108,32 @@ class _FavoriteProductsState extends State<FavoriteProducts> {
     );
   }
 
+  void _loadMoreProducts() {
+    setState(() {
+      _productLimit += 6; // Increase the product limit by 6
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> searchProductsStream = FirebaseFirestore.instance
         .collection('products')
         .where('isApproved', isEqualTo: true)
         .where('isFav', isEqualTo: true)
+        .limit(_productLimit) // Limit number of products fetched
         .snapshots();
 
-    Size size = MediaQuery.sizeOf(context);
+    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'Favorite Products', // Thay 'Your App Title' bằng tiêu đề mong muốn
+          'Favorite Products',
           style: TextStyle(
-            color: Colors.black, // Màu chữ cho tiêu đề
-            fontSize: 26, // Kích thước chữ cho tiêu đề
-            fontWeight: FontWeight.bold, // Làm in đậm
+            color: Colors.black,
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
@@ -209,38 +217,53 @@ class _FavoriteProductsState extends State<FavoriteProducts> {
               );
             }
 
-            return Skeletonizer(
-              enabled: isEnableSke,
-              child: MasonryGridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                padding: const EdgeInsets.only(
-                  top: 0,
-                  right: 18,
-                  left: 18,
-                ),
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  final item = snapshot.data!.docs[index];
+            return Column(
+              children: [
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    padding: const EdgeInsets.only(
+                      top: 0,
+                      right: 18,
+                      left: 18,
+                    ),
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final item = snapshot.data!.docs[index];
 
-                  Product product = Product.fromJson(item);
+                      Product product = Product.fromJson(item);
 
-                  return InkWell(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetailsScreen(
-                          product: product,
+                      return InkWell(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailsScreen(
+                              product: product,
+                            ),
+                          ),
                         ),
-                      ),
+                        child: SingleProductGridItem(
+                          product: product,
+                          size: size,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                if (snapshot.data!.docs.length >= _productLimit)
+                  // Show load more button if more products can be loaded
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _loadMoreProducts,
+                      child: Text('Load More'),
                     ),
-                    child: SingleProductGridItem(
-                      product: product,
-                      size: size,
-                    ),
-                  );
-                },
-              ),
+                  ),
+                const SizedBox(height: 10),
+              ],
             );
           },
         ),
