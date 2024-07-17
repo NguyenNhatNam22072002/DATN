@@ -70,6 +70,7 @@ class _EditProfileState extends State<EditProfile> {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
+      enabled: field != Field.email, // Disable editing for email field
       keyboardType: field == Field.email
           ? TextInputType.emailAddress
           : field == Field.phone
@@ -272,9 +273,7 @@ class _EditProfileState extends State<EditProfile> {
         var downloadUrl = await storageRef.getDownloadURL();
 
         // Persist new details to Firebase
-        await _auth.currentUser!.updateEmail(_emailController.text.trim());
         await firebase.collection('customers').doc(userId).update({
-          "email": _emailController.text.trim(),
           "fullname": _fullnameController.text.trim(),
           "phone": _phoneController.text.trim(),
           "address": _addressController.text.trim(),
