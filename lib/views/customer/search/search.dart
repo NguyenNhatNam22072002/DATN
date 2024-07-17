@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../models/product.dart';
 import '../../../resources/assets_manager.dart';
@@ -18,6 +17,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchText = TextEditingController();
+  int _productLimit = 20; // Initial limit of products to load
 
   @override
   void initState() {
@@ -28,6 +28,12 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void _loadMoreProducts() {
+    setState(() {
+      _productLimit += 10; // Increase the product limit by 6
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> searchProductsStream = FirebaseFirestore.instance
@@ -35,7 +41,7 @@ class _SearchScreenState extends State<SearchScreen> {
         .where('isApproved', isEqualTo: true)
         .snapshots();
 
-    Size size = MediaQuery.sizeOf(context);
+    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
@@ -109,35 +115,70 @@ class _SearchScreenState extends State<SearchScreen> {
                 description.contains(searchText.text.toLowerCase());
           }).toList();
 
-          return MasonryGridView.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            padding: const EdgeInsets.only(
-              top: 0,
-              right: 18,
-              left: 18,
-            ),
-            itemCount: searchedData.length,
-            itemBuilder: (context, index) {
-              final item = searchedData[index];
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.only(
+                    top: 10,
+                    right: 18,
+                    left: 18,
+                    bottom: 18, // Bottom padding for load more button
+                  ),
+                  itemCount: _productLimit <= searchedData.length
+                      ? _productLimit
+                      : searchedData.length,
+                  itemBuilder: (context, index) {
+                    final item = searchedData[index];
 
-              Product product = Product.fromJson(item);
+                    Product product = Product.fromJson(item);
 
-              return InkWell(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ProductDetailsScreen(
-                      product: product,
-                    ),
+                    return InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailsScreen(
+                            product: product,
+                          ),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(
+                                  0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SingleProductGridItem(
+                            product: product,
+                            size: size,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return SizedBox(height: 12); // Space between items
+                  },
+                ),
+              ),
+              if (_productLimit < searchedData.length)
+                // Show load more button if more products can be loaded
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _loadMoreProducts,
+                    child: Text('Load More'),
                   ),
                 ),
-                child: SingleProductGridItem(
-                  product: product,
-                  size: size,
-                ),
-              );
-            },
+            ],
           );
         },
       ),
