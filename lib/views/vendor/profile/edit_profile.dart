@@ -36,6 +36,7 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
   final _cityController = TextEditingController();
 
   final _passwordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
   var obscure = true; // password obscure value
   File? profileImage;
   final _auth = FirebaseAuth.instance;
@@ -83,6 +84,7 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
+      enabled: field != Field.email,
       keyboardType: field == Field.email
           ? TextInputType.emailAddress
           : field == Field.phone
@@ -194,6 +196,9 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
     _passwordController.addListener(() {
       setState(() {});
     });
+    _newPasswordController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -229,6 +234,31 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
     );
   }
 
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Icon(
+          Icons.error_outline,
+          color: Colors.red,
+          size: 100,
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future _saveDetails() async {
     var valid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
@@ -238,9 +268,23 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
     }
 
     if (widget.editPasswordOnly || changePassword) {
-      // TODO: Implement password change
-      _auth.currentUser!.updatePassword(_passwordController.text.trim());
-      isLoadingFnc();
+      try {
+        User? user = _auth.currentUser;
+        String email = user!.email!;
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: email,
+          password: _passwordController.text.trim(),
+        );
+
+        await user.reauthenticateWithCredential(credential);
+
+        // Update to new password
+        await user.updatePassword(_newPasswordController.text.trim());
+        isLoadingFnc();
+      } on FirebaseAuthException catch (e) {
+        _showErrorDialog(
+            'Your password incorrect.\nPlease enter your password again.');
+      }
     } else {
       // TODO: Implement profile edit
       // Image
@@ -459,12 +503,24 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
                                   ],
                                 ),
                           changePassword || widget.editPasswordOnly
-                              ? kTextField(
-                                  _passwordController,
-                                  '********',
-                                  'Password',
-                                  Field.password,
-                                  obscure,
+                              ? Column(
+                                  children: [
+                                    kTextField(
+                                      _passwordController,
+                                      '********',
+                                      'Enter your password',
+                                      Field.password,
+                                      obscure,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    kTextField(
+                                      _newPasswordController,
+                                      '********',
+                                      'Enter your new password',
+                                      Field.password,
+                                      obscure,
+                                    ),
+                                  ],
                                 )
                               : const SizedBox.shrink(),
                           const SizedBox(height: 30),
