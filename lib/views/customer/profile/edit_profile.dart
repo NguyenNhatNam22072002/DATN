@@ -28,6 +28,8 @@ class _EditProfileState extends State<EditProfile> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+
   var obscure = true; // password obscure value
   File? profileImage;
   final _auth = FirebaseAuth.instance;
@@ -181,6 +183,9 @@ class _EditProfileState extends State<EditProfile> {
     _passwordController.addListener(() {
       setState(() {});
     });
+    _newPasswordController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -196,22 +201,28 @@ class _EditProfileState extends State<EditProfile> {
     super.didChangeDependencies();
   }
 
-  // snackbar for error message
-  showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+  // dialog for error message
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Icon(
+          Icons.error_outline,
+          color: Colors.red,
+          size: 100,
+        ),
         content: Text(
           message,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
-        backgroundColor: primaryColor,
-        action: SnackBarAction(
-          onPressed: () => Navigator.of(context).pop(),
-          label: 'Dismiss',
-          textColor: Colors.white,
-        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
@@ -225,12 +236,26 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     if (widget.editPasswordOnly || changePassword) {
-      // TODO: Implement password change
-      _auth.currentUser!.updatePassword(_passwordController.text.trim());
-      isLoadingFnc();
+      // Reauthenticate user with old password
+      try {
+        User? user = _auth.currentUser;
+        String email = user!.email!;
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: email,
+          password: _passwordController.text.trim(),
+        );
+
+        await user.reauthenticateWithCredential(credential);
+
+        // Update to new password
+        await user.updatePassword(_newPasswordController.text.trim());
+        isLoadingFnc();
+      } on FirebaseAuthException catch (e) {
+        _showErrorDialog(
+            'Your password incorrect.\nPlease enter your password again.');
+      }
     } else {
-      // TODO: Implement profile edit
-      // Image
+      // Update profile details
       var storageRef = FirebaseStorage.instance
           .ref()
           .child('user-images')
@@ -244,12 +269,11 @@ class _EditProfileState extends State<EditProfile> {
         if (profileImage != null) {
           await storageRef.putFile(file!);
         }
-        //  obtain image download url
         var downloadUrl = await storageRef.getDownloadURL();
 
-        // TODO: persisting new details to firebase
-        _auth.currentUser!.updateEmail(_emailController.text.trim());
-        firebase.collection('customers').doc(userId).update({
+        // Persist new details to Firebase
+        await _auth.currentUser!.updateEmail(_emailController.text.trim());
+        await firebase.collection('customers').doc(userId).update({
           "email": _emailController.text.trim(),
           "fullname": _fullnameController.text.trim(),
           "phone": _phoneController.text.trim(),
@@ -258,7 +282,7 @@ class _EditProfileState extends State<EditProfile> {
         });
         isLoadingFnc();
       } on FirebaseException catch (e) {
-        showSnackBar('Error occurred! ${e.message}');
+        _showErrorDialog('Edit profile not successful!');
       } catch (e) {
         if (kDebugMode) {
           print(e);
@@ -404,12 +428,24 @@ class _EditProfileState extends State<EditProfile> {
                                   ],
                                 ),
                           changePassword || widget.editPasswordOnly
-                              ? kTextField(
-                                  _passwordController,
-                                  '********',
-                                  'Password',
-                                  Field.password,
-                                  obscure,
+                              ? Column(
+                                  children: [
+                                    kTextField(
+                                      _passwordController,
+                                      '********',
+                                      'Enter your password',
+                                      Field.password,
+                                      obscure,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    kTextField(
+                                      _newPasswordController,
+                                      '********',
+                                      'Enter your new password',
+                                      Field.password,
+                                      obscure,
+                                    ),
+                                  ],
                                 )
                               : const SizedBox.shrink(),
                           const SizedBox(height: 30),
