@@ -99,8 +99,6 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
         return 'Approved';
       case 5:
         return 'Pending';
-      case 7:
-        return 'Received';
       default:
         return 'Unknown';
     }
