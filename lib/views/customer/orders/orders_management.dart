@@ -20,14 +20,27 @@ class OrdersManagementScreen extends StatefulWidget {
 class _OrdersManagementScreenState extends State<OrdersManagementScreen> {
   var userId = FirebaseAuth.instance.currentUser!.uid;
   Uuid uid = const Uuid();
-  int _orderLimit = 6; // Initial limit of orders to load
-
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
         .where('customerId', isEqualTo: userId)
         //.orderBy('date', descending: true) // Order by date descending
         .snapshots();
+    void markAsReceived(String orderId) async {
+      try {
+        await FirebaseCollections.ordersCollection.doc(orderId).update({
+          'isReceived': true,
+          'receivedAt': FieldValue.serverTimestamp(),
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Order marked as received')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to mark order as received: $e')),
+        );
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -124,41 +137,28 @@ class _OrdersManagementScreenState extends State<OrdersManagementScreen> {
 
               CheckedOutItem checkedOutItem = CheckedOutItem.fromJson(item);
 
-                    return Slidable(
-                      key: Key(item.id),
-                      endActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            borderRadius: BorderRadius.circular(10),
-                            onPressed: (context) {},
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            icon: Icons.info,
-                            label: 'Details',
-                          ),
-                        ],
-                      ),
-                      child: SingleUserCheckOutList(
-                        checkoutItem: checkedOutItem,
-                      ),
-                    );
-                  },
+              return Slidable(
+                key: const ValueKey(0),
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      borderRadius: BorderRadius.circular(10),
+                      onPressed: (context) {
+                        markAsReceived(checkedOutItem.orderId);
+                      },
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      icon: Icons.check,
+                      label: 'Received',
+                    ),
+                  ],
                 ),
-              ),
-              if (_orderLimit < snapshot.data!.docs.length)
-                // Show load more button if more orders can be loaded
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _orderLimit += 6; // Increase the order limit by 6
-                      });
-                    },
-                    child: Text('Load More'),
-                  ),
+                child: SingleUserCheckOutList(
+                  checkoutItem: checkedOutItem,
                 ),
-            ],
+              );
+            },
           );
         },
       ),
