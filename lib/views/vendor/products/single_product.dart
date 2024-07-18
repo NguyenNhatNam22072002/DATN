@@ -313,7 +313,7 @@ class _VendorProductDetailsScreenState extends State<VendorProductDetailsScreen>
                     colorClickableText: accentColor,
                     trimMode: TrimMode.Line,
                     trimCollapsedText: 'Show more ⌄',
-                    trimExpandedText: 'Show less ^',
+                    trimExpandedText: '\nShow less ^',
                     style: getRegularStyle(
                       color: Colors.black,
                       fontSize: FontSize.s16,

@@ -894,7 +894,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                         colorClickableText: accentColor,
                         trimMode: TrimMode.Line,
                         trimCollapsedText: 'Show more ⌄',
-                        trimExpandedText: 'Show less ^',
+                        trimExpandedText: '\nShow less ^',
                         style: getRegularStyle(
                           color: Colors.black,
                           fontSize: FontSize.s16,
