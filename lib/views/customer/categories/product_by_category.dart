@@ -174,8 +174,8 @@ class _ProductByCategoryScreenState extends State<ProductByCategoryScreen> {
                         imgUrls: List<String>.from(document['imgUrls']),
                         uploadDate: document['uploadDate'].toDate(),
                         isFav: document['isFav'] ?? false,
-                        isApproved: document['isApproved'] ?? false,
-// Additional field
+                        isApproved:
+                            document['isApproved'] ?? false, // Additional field
                       );
 
                       return InkWell(
