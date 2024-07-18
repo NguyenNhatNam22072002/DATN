@@ -22,6 +22,23 @@ class _OrdersManagementScreenState extends State<OrdersManagementScreen> {
   Uuid uid = const Uuid();
   int _orderLimit = 6; // Initial limit of orders to load
 
+  void markAsReceived(String orderId) async {
+    try {
+      await FirebaseCollections.ordersCollection.doc(orderId).update({
+        'isReceived': true,
+        'receivedAt': FieldValue.serverTimestamp(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Order marked as received')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to mark order as received: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
@@ -135,11 +152,13 @@ class _OrdersManagementScreenState extends State<OrdersManagementScreen> {
                         children: [
                           SlidableAction(
                             borderRadius: BorderRadius.circular(10),
-                            onPressed: (context) {},
-                            backgroundColor: Colors.blue,
+                            onPressed: (context) {
+                              markAsReceived(checkedOutItem.orderId);
+                            },
+                            backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
-                            icon: Icons.info,
-                            label: 'Details',
+                            icon: Icons.check,
+                            label: 'Received',
                           ),
                         ],
                       ),

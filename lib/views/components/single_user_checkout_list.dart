@@ -99,6 +99,8 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
         return 'Approved';
       case 5:
         return 'Pending';
+      case 7:
+        return 'Received';
       default:
         return 'Unknown';
     }
@@ -280,7 +282,9 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
                         Navigator.of(context).pop();
                       },
                       child: const Text('Cancel Order',
-                          style: TextStyle(fontWeight: FontWeight.normal)),
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black)),
                     ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
