@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
@@ -297,8 +298,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
             showLoading('Ops! Customer not found', Status.error);
           }
         } catch (e, stacktrace) {
-          print("Error: $e");
-          print("Stacktrace: $stacktrace");
+          if (kDebugMode) {
+            print("Error: $e");
+          }
+          if (kDebugMode) {
+            print("Stacktrace: $stacktrace");
+          }
           showLoading('Ops! An error occurred while processing your order',
               Status.error);
         }

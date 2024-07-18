@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/constants/color.dart';
 import 'package:shoes_shop/models/checked_out_item.dart';
@@ -53,7 +54,9 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
       setState(() {
         isLoading = false;
       });
-      print('Failed to fetch customer details: $e');
+      if (kDebugMode) {
+        print('Failed to fetch customer details: $e');
+      }
     }
   }
 

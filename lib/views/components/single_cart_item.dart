@@ -29,6 +29,7 @@ class SingleCartItem extends StatefulWidget {
 
 class _SingleCartItemState extends State<SingleCartItem> {
   Product product = Product.initial();
+  late TextEditingController _quantityController;
 
   Future<Product> fetchProduct() async {
     await FirebaseFirestore.instance
@@ -63,9 +64,16 @@ class _SingleCartItemState extends State<SingleCartItem> {
   void initState() {
     super.initState();
     fetchProduct();
+    _quantityController =
+        TextEditingController(text: widget.item.quantity.toString());
   }
 
-  // Snack bar warning message
+  @override
+  void dispose() {
+    _quantityController.dispose();
+    super.dispose();
+  }
+
   void showWarningMsg({required String message}) {
     displaySnackBar(
       status: Status.error,
@@ -74,21 +82,40 @@ class _SingleCartItemState extends State<SingleCartItem> {
     );
   }
 
-  // Increment product cart quantity
+  void updateQuantity(String value) {
+    int? newQuantity = int.tryParse(value);
+    if (newQuantity != null && newQuantity > 0) {
+      if (newQuantity <= product.quantity) {
+        widget.cartData.updateQuantity(widget.item.prodId, newQuantity);
+      } else {
+        showWarningMsg(
+            message: 'Ops! You can\'t exceed available product quantity!');
+        _quantityController.text = widget.item.quantity.toString();
+      }
+    } else {
+      showWarningMsg(message: 'Please enter a valid quantity');
+      _quantityController.text = widget.item.quantity.toString();
+    }
+  }
+
   void incrementQuantity() {
-    if (widget.cartData.getProductQuantityOnCart(widget.item.prodId) <
-        product.quantity) {
-      widget.cartData.increaseQuantity(widget.item.prodId);
+    int currentQuantity = int.parse(_quantityController.text);
+    if (currentQuantity < product.quantity) {
+      currentQuantity++;
+      _quantityController.text = currentQuantity.toString();
+      widget.cartData.updateQuantity(widget.item.prodId, currentQuantity);
     } else {
       showWarningMsg(
           message: 'Ops! You can\'t exceed available product quantity!');
     }
   }
 
-  // Decrement product cart quantity
   void decrementQuantity() {
-    if (widget.item.quantity > 1) {
-      widget.cartData.decreaseQuantity(widget.item.prodId);
+    int currentQuantity = int.parse(_quantityController.text);
+    if (currentQuantity > 1) {
+      currentQuantity--;
+      _quantityController.text = currentQuantity.toString();
+      widget.cartData.updateQuantity(widget.item.prodId, currentQuantity);
     } else {
       showWarningMsg(message: 'Ops! Item quantity can\'t go any lower');
     }
@@ -194,68 +221,50 @@ class _SingleCartItemState extends State<SingleCartItem> {
                           ),
                         ],
                       ),
-                      Text(
-                        'Quantity: ${widget.item.quantity}',
-                        style: getRegularStyle(
-                          color: accentColor,
-                          fontSize: FontSize.s14,
-                        ),
-                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GestureDetector(
-                            onTap: () => widget.item.quantity == 1
-                                ? null
-                                : decrementQuantity(),
-                            child: Chip(
-                              avatar: CircleAvatar(
-                                backgroundColor: widget.item.quantity == 1
-                                    ? Colors.grey.withOpacity(0.3)
-                                    : accentColor.withOpacity(0.3),
-                                child: const Center(
-                                  child: Text(
-                                    '-',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: accentColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                              label: Text(
-                                'Decrease',
-                                style: TextStyle(
-                                  color: widget.item.quantity == 1
-                                      ? Colors.grey
-                                      : Colors.black,
-                                ),
-                              ),
+                          Text(
+                            'Quantity:',
+                            style: getRegularStyle(
+                              color: accentColor,
+                              fontSize: FontSize.s14,
                             ),
                           ),
-                          const SizedBox(width: 5),
-                          GestureDetector(
-                            onTap: () => incrementQuantity(),
-                            child: Chip(
-                              avatar: CircleAvatar(
-                                backgroundColor: accentColor.withOpacity(0.3),
-                                child: const Center(
-                                  child: Text(
-                                    '+',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: accentColor,
-                                    ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: decrementQuantity,
+                              ),
+                              SizedBox(
+                                width: 40,
+                                child: TextField(
+                                  controller: _quantityController,
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  onChanged: (value) {
+                                    // Delay the update to allow for multi-digit input
+                                    Future.delayed(
+                                        const Duration(milliseconds: 500), () {
+                                      if (_quantityController.text == value) {
+                                        updateQuantity(value);
+                                      }
+                                    });
+                                  },
+                                  decoration: const InputDecoration(
+                                    contentPadding:
+                                        EdgeInsets.symmetric(horizontal: 5),
+                                    border: OutlineInputBorder(),
                                   ),
                                 ),
                               ),
-                              label: const Text('Increase'),
-                            ),
-                          )
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: incrementQuantity,
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ],

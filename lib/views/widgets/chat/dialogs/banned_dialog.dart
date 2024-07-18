@@ -3,6 +3,7 @@ import 'package:shoes_shop/constants/color.dart';
 import 'package:shoes_shop/resources/font_manager.dart';
 import 'package:shoes_shop/resources/styles_manager.dart';
 
+// ignore: non_constant_identifier_names
 Future<void> BannedDialog({
   required String title,
   required String content,

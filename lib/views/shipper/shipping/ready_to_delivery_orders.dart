@@ -121,7 +121,6 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
                     SlidableAction(
                       borderRadius: BorderRadius.circular(10),
                       onPressed: (context) {
-                        // Handle the delivery action here
                         markAsDelivered(checkedOutItem, userId);
                       },
                       backgroundColor: Colors.green,

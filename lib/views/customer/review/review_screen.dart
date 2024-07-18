@@ -50,6 +50,26 @@ class _ReviewScreenState extends State<ReviewScreen> {
         'date': review.date,
       });
 
+      // Retrieve current product data
+      final productDoc =
+          await FirebaseCollections.productsCollection.doc(widget.prodId).get();
+      if (productDoc.exists) {
+        final productData = productDoc.data()!;
+        final currentRating = productData['productRating'] ?? 0.0;
+        final currentReviewsCount = productData['reviewsCount'] ?? 0;
+
+        // Calculate new rating
+        final newReviewsCount = currentReviewsCount + 1;
+        final newRating =
+            ((currentRating * currentReviewsCount) + _rating) / newReviewsCount;
+
+        // Update product rating and reviews count
+        await FirebaseCollections.productsCollection.doc(widget.prodId).update({
+          'productRating': newRating,
+          'reviewsCount': newReviewsCount,
+        });
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Review submitted successfully!')),
       );

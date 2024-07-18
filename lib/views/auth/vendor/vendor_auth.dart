@@ -5,7 +5,6 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/api/apis.dart';
-import 'package:shoes_shop/views/widgets/are_you_sure_dialog.dart';
 import 'package:shoes_shop/views/widgets/chat/dialogs/banned_dialog.dart';
 import 'package:shoes_shop/views/widgets/kcool_alert.dart';
 import '../../../constants/color.dart';
@@ -224,27 +223,21 @@ class _VendorAuthScreenState extends State<VendorAuthScreen> {
   bool _isProcessing = false;
 
   Future<void> isLoadingFnc() async {
-    if (_isProcessing) return; // Nếu đang xử lý thì không thực hiện lại hàm
-    _isProcessing = true; // Đánh dấu đang xử lý
+    if (_isProcessing) return;
+    _isProcessing = true;
     setState(() {
       isLoading = true;
     });
-
-    // routing vendor
     await routingVendor();
-
-    // set account type to vendor
     await setAccountType(accountType: AccountType.vendor);
-
-    // Đợi 2 giây trước khi tắt trạng thái isLoading
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       setState(() {
         isLoading = false;
       });
     }
-    _isProcessing = false; // Hoàn tất xử lý
+    _isProcessing = false;
   }
 
   void completeAction() {

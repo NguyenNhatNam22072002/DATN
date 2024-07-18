@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/color.dart';
@@ -12,7 +13,9 @@ class SearchBox extends StatelessWidget {
   final TextEditingController searchText;
 
   void handleSearch() {
-    print(searchText);
+    if (kDebugMode) {
+      print(searchText);
+    }
   }
 
   @override

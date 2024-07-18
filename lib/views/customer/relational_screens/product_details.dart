@@ -6,15 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
-import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shoes_shop/api/apis.dart';
 import 'package:shoes_shop/helpers/dialogs.dart';
-import 'package:shoes_shop/models/buyer.dart';
 import 'package:shoes_shop/models/chat_user.dart';
-import 'package:shoes_shop/models/review.dart';
 import 'package:shoes_shop/providers/cart.dart';
 import 'package:shoes_shop/views/components/review_widget.dart';
 import 'package:shoes_shop/views/customer/store/store_details.dart';
@@ -111,8 +108,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Error'),
-            content: Text('Vendor details not found.'),
+            title: const Text('Error'),
+            content: const Text('Vendor details not found.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -262,9 +259,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           .toList();
       if (ratings.isEmpty) return;
       double averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
+
       setState(() {
         _averageRating = averageRating;
         _ratingCount = ratings.length;
+      });
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(widget.product.prodId)
+          .update({
+        'averageRating': averageRating,
+        'ratingCount': ratings.length,
       });
     } catch (e) {
       if (kDebugMode) {
@@ -871,36 +876,42 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           ),
                         )
                       : const LoadingWidget(size: 20),
-                  Text(
-                    'Description:',
-                    style: getRegularStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: FontSize.s16,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ReadMoreText(
-                    widget.product.description,
-                    trimLines: 2,
-                    colorClickableText: accentColor,
-                    trimMode: TrimMode.Line,
-                    trimCollapsedText: 'Show more ⌄',
-                    trimExpandedText: 'Show less ^',
-                    style: getRegularStyle(
-                      color: Colors.black,
-                      fontSize: FontSize.s16,
-                    ),
-                    lessStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: accentColor,
-                    ),
-                    moreStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: accentColor,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Description:',
+                        style: getRegularStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: FontSize.s16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ReadMoreText(
+                        widget.product.description,
+                        trimLines: 2,
+                        colorClickableText: accentColor,
+                        trimMode: TrimMode.Line,
+                        trimCollapsedText: 'Show more ⌄',
+                        trimExpandedText: 'Show less ^',
+                        style: getRegularStyle(
+                          color: Colors.black,
+                          fontSize: FontSize.s16,
+                        ),
+                        lessStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
+                        delimiter: '\n',
+                        moreStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Text(

@@ -192,7 +192,6 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _passwordController.addListener(() {
       setState(() {});
     });
@@ -204,7 +203,6 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     if (isInit) {
       _fetchUserDetails();
     }
@@ -286,8 +284,6 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
             'Your password incorrect.\nPlease enter your password again.');
       }
     } else {
-      // TODO: Implement profile edit
-      // Image
       var storageRef = FirebaseStorage.instance
           .ref()
           .child('vendor-images')
@@ -303,8 +299,6 @@ class _VendorEditProfileState extends State<VendorEditProfile> {
         }
         //  obtain image download url
         var downloadUrl = await storageRef.getDownloadURL();
-
-        // TODO: persisting new details to firebase
         _auth.currentUser!.updateEmail(_emailController.text.trim());
         firebase.collection('vendors').doc(userId).update({
           "email": _emailController.text.trim(),

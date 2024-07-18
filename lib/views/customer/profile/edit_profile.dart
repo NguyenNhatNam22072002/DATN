@@ -180,7 +180,6 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _passwordController.addListener(() {
       setState(() {});
     });
@@ -192,7 +191,6 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     if (isInit) {
       _fetchUserDetails();
     }
@@ -237,26 +235,12 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     if (widget.editPasswordOnly || changePassword) {
-      // Reauthenticate user with old password
-      try {
-        User? user = _auth.currentUser;
-        String email = user!.email!;
-        AuthCredential credential = EmailAuthProvider.credential(
-          email: email,
-          password: _passwordController.text.trim(),
-        );
-
-        await user.reauthenticateWithCredential(credential);
-
-        // Update to new password
-        await user.updatePassword(_newPasswordController.text.trim());
-        isLoadingFnc();
-      } on FirebaseAuthException catch (e) {
-        _showErrorDialog(
-            'Your password incorrect.\nPlease enter your password again.');
-      }
+      // TODO: Implement password change
+      _auth.currentUser!.updatePassword(_passwordController.text.trim());
+      isLoadingFnc();
     } else {
-      // Update profile details
+      // TODO: Implement profile edit
+      // Image
       var storageRef = FirebaseStorage.instance
           .ref()
           .child('user-images')
@@ -272,8 +256,10 @@ class _EditProfileState extends State<EditProfile> {
         }
         var downloadUrl = await storageRef.getDownloadURL();
 
-        // Persist new details to Firebase
-        await firebase.collection('customers').doc(userId).update({
+        // TODO: persisting new details to firebase
+        _auth.currentUser!.updateEmail(_emailController.text.trim());
+        firebase.collection('customers').doc(userId).update({
+          "email": _emailController.text.trim(),
           "fullname": _fullnameController.text.trim(),
           "phone": _phoneController.text.trim(),
           "address": _addressController.text.trim(),

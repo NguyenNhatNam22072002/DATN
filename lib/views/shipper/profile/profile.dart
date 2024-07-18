@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_shop/api/apis.dart';
 import 'package:shoes_shop/views/components/flashing_funds.dart';
-import 'package:shoes_shop/views/shipper/main_screen.dart'; // Updated import for shipper main screen
 import '../../../constants/color.dart';
 import '../../../controllers/route_manager.dart';
 import '../../../resources/assets_manager.dart';

@@ -27,7 +27,6 @@ class _CustomerForgotPasswordState extends State<CustomerForgotPassword> {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: _emailController.text,
       );
-      // Gửi email thành công
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -45,7 +44,6 @@ class _CustomerForgotPasswordState extends State<CustomerForgotPassword> {
         ),
       );
     } catch (error) {
-      // Xử lý lỗi
       showDialog(
         context: context,
         builder: (_) => AlertDialog(

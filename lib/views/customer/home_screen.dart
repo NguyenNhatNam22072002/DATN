@@ -15,7 +15,6 @@ import '../components/single_product_grid.dart';
 import '../widgets/banners.dart';
 import '../widgets/cart_icon.dart';
 import '../widgets/loading_widget.dart';
-import '../widgets/search_box.dart';
 import '../widgets/welcome_intro.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -230,17 +229,16 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Điều hướng đến giao diện chat ở đây
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
         },
         child: Icon(
           Icons.chat,
           color: Colors.white,
         ),
-        backgroundColor: Colors.blue, // Thay đổi màu sắc tùy ý
+        backgroundColor: Colors.blue,
       ),
     );
   }

@@ -15,13 +15,14 @@ class CartIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
 
-    return  GestureDetector(
+    return GestureDetector(
       onTap: () {
         // Navigate to the desired screen when the cart icon is tapped
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CartScreen(), // Replace YourNextScreen with the actual screen you want to navigate to
+            builder: (context) =>
+                const CartScreen(), // Replace YourNextScreen with the actual screen you want to navigate to
           ),
         );
       },

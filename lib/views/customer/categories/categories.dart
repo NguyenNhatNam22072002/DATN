@@ -80,7 +80,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 child: ListView.builder(
                   itemCount: 1, // Number of skeleton items
                   itemBuilder: (context, index) {
-                    return LoadingWidget(size: 1);
+                    return const LoadingWidget(size: 1);
                   },
                 ),
               );

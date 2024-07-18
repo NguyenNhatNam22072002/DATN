@@ -77,7 +77,7 @@ class CartScreenState extends State<CartScreen> {
                 RouteManager.ordersScreen,
               ),
               child: const Icon(
-                Icons.shopping_cart_checkout,
+                Icons.receipt_long,
                 color: iconColor,
                 size: 30,
               ),

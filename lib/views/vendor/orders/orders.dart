@@ -39,18 +39,18 @@ class _OrdersScreenState extends State<OrdersScreen>
           children: [
             Text(
               'Ordered Products',
-              textAlign: TextAlign.center, // Căn giữa
+              textAlign: TextAlign.center,
               style: getRegularStyle(
                 color: Colors.black,
-                fontSize: 24.0, // Tăng kích thước
-                fontWeight: FontWeight.bold, // Làm đậm
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
         backgroundColor: primaryColor,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(50.0),
           child: Container(
             padding: const EdgeInsets.only(bottom: 2.0),
             child: TabBar(

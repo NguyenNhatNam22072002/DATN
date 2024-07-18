@@ -250,9 +250,8 @@ class _GeneralTabState extends State<GeneralTab>
                                     fontWeight: FontWeight.w700,
                                     color: Colors.grey[800],
                                   ),
-                                  maxLines: 2, // Giới hạn số dòng hiển thị
-                                  overflow: TextOverflow
-                                      .ellipsis, // Hiển thị dấu ba chấm khi vượt quá số dòng
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 )
                               : const SizedBox.shrink(),
                         ],

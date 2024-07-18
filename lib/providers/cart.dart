@@ -8,13 +8,10 @@ class CartProvider extends ChangeNotifier {
 
   Map<String, Cart> get getCartItems => {..._cartItems};
 
-  // get cart item length
   get getCartQuantity => _cartItems.isEmpty ? 0 : getCartItems.length;
 
-  // is cart empty
   bool isItemEmpty() => _cartItems.isEmpty ? true : false;
 
-  // get cart total amount
   double getCartTotalAmount() {
     double totalAmount = 0.0;
 
@@ -25,7 +22,6 @@ class CartProvider extends ChangeNotifier {
     return totalAmount;
   }
 
-  // get product quantity on cart
   int getProductQuantityOnCart(String prodId) {
     int quantity = 0;
     _cartItems.forEach((key, value) {
@@ -37,7 +33,6 @@ class CartProvider extends ChangeNotifier {
     return quantity;
   }
 
-  // increase quantity
   void increaseQuantity(String prodId) {
     _cartItems.forEach((key, value) {
       if (key == prodId) {
@@ -47,7 +42,6 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // decrease quantity
   void decreaseQuantity(String prodId) {
     _cartItems.forEach((key, value) {
       if (key == prodId) {
@@ -59,10 +53,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // increment or decrement product in cart | alternative method - (NOT CURRENTLY USED)
   void toggleQuantity(QuantityOperation operation, String cartId) {
-    // another way you can implement this is by making use of the model and creating a method for increment and decrement
-
     switch (operation) {
       case QuantityOperation.increment:
         _cartItems.update(
@@ -101,7 +92,6 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // checking if item is on cart
   bool isItemOnCart(String prodId) => _cartItems.containsKey(prodId);
 
   void addToCart(Cart cartItem) {
@@ -126,15 +116,32 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // removing item from cart
   void removeFromCart(String prodId) {
     _cartItems.remove(prodId);
     notifyListeners();
   }
 
-  // clear cart
   void clearCart() {
     _cartItems.clear();
+    notifyListeners();
+  }
+
+  // New method to update quantity directly
+  void updateQuantity(String prodId, int newQuantity) {
+    _cartItems.update(
+      prodId,
+      (existingCartItem) => Cart(
+        cartId: existingCartItem.cartId,
+        prodId: existingCartItem.prodId,
+        prodName: existingCartItem.prodName,
+        prodImg: existingCartItem.prodImg,
+        vendorId: existingCartItem.vendorId,
+        quantity: newQuantity,
+        prodSize: existingCartItem.prodSize,
+        price: existingCartItem.price,
+        date: existingCartItem.date,
+      ),
+    );
     notifyListeners();
   }
 }

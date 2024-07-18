@@ -25,7 +25,6 @@ class _VendorForgotPasswordState extends State<VendorForgotPassword> {
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: _emailController.text,
       );
-      // Gửi email thành công
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -43,7 +42,6 @@ class _VendorForgotPasswordState extends State<VendorForgotPassword> {
         ),
       );
     } catch (error) {
-      // Xử lý lỗi
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -54,7 +52,7 @@ class _VendorForgotPasswordState extends State<VendorForgotPassword> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -62,7 +60,6 @@ class _VendorForgotPasswordState extends State<VendorForgotPassword> {
     }
   }
 
-  // navigate to sign in screen
   _navigateToSignIn() {
     Navigator.of(context).pushNamed(RouteManager.vendorAuthScreen);
   }

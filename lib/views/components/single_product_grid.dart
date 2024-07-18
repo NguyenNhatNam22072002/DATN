@@ -1,16 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
-
-import '../../models/cart.dart';
 import '../../models/product.dart';
-import '../../providers/cart.dart';
-
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../widgets/k_cached_image.dart';
 
-class SingleProductGridItem extends StatelessWidget {
+class SingleProductGridItem extends StatefulWidget {
   const SingleProductGridItem({
     super.key,
     required this.product,
@@ -21,35 +17,55 @@ class SingleProductGridItem extends StatelessWidget {
   final Size size;
 
   @override
-  Widget build(BuildContext context) {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
-    Uuid uuid = const Uuid();
+  _SingleProductGridItemState createState() => _SingleProductGridItemState();
+}
 
-    // toggle cart action
-    void toggleCartAction() {
-      if (cartProvider.isItemOnCart(product.prodId)) {
-        cartProvider.removeFromCart(product.prodId);
-      } else {
-        Cart cartItem = Cart(
-          cartId: uuid.v4(),
-          prodId: product.prodId,
-          prodName: product.productName,
-          prodImg: product.imgUrls[0],
-          vendorId: product.vendorId,
-          quantity: 1,
-          prodSize: product.sizesAvailable[0],
-          date: DateTime.now(),
-          price: product.price,
-        );
+class _SingleProductGridItemState extends State<SingleProductGridItem> {
+  double _averageRating = 0;
+  int _ratingCount = 0;
 
-        cartProvider.addToCart(cartItem);
+  @override
+  void initState() {
+    super.initState();
+    _fetchAverageRating();
+  }
+
+  Future<void> _fetchAverageRating() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('prodId', isEqualTo: widget.product.prodId)
+          .get();
+      List<double> ratings = querySnapshot.docs
+          .map((doc) => (doc['rating'] as num).toDouble())
+          .toList();
+      if (ratings.isEmpty) return;
+      double averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
+
+      setState(() {
+        _averageRating = averageRating;
+        _ratingCount = ratings.length;
+      });
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(widget.product.prodId)
+          .update({
+        'averageRating': averageRating,
+        'ratingCount': ratings.length,
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting average rating: $e');
       }
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         KCachedImage(
-          image: product.imgUrls[1],
+          image: widget.product.imgUrls[1],
           height: 205,
           width: double.infinity,
         ),
@@ -58,7 +74,7 @@ class SingleProductGridItem extends StatelessWidget {
           left: 3,
           right: 3,
           child: Container(
-            height: size.height / 15,
+            height: widget.size.height / 15,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               gradient: LinearGradient(
@@ -83,7 +99,7 @@ class SingleProductGridItem extends StatelessWidget {
                   children: [
                     FittedBox(
                       child: Text(
-                        product.productName,
+                        widget.product.productName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: getMediumStyle(
@@ -96,20 +112,45 @@ class SingleProductGridItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '\$${product.price}',
+                          '\$${widget.product.price}',
                           style: getBoldStyle(
                             color: Colors.black,
                             fontSize: FontSize.s14,
                           ),
                         ),
-                        InkWell(
-                          onTap: () => toggleCartAction(),
-                          child: Icon(
-                            cartProvider.isItemOnCart(product.prodId)
-                                ? Icons.shopping_cart
-                                : Icons.shopping_cart_outlined,
-                          ),
-                        )
+                        _ratingCount > 0
+                            ? Row(
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 14,
+                                  ),
+                                  Text(
+                                    '$_averageRating ($_ratingCount)',
+                                    style: getRegularStyle(
+                                      color: Colors.black,
+                                      fontSize: FontSize.s14,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star_border,
+                                    color: Colors.grey,
+                                    size: 14,
+                                  ),
+                                  Text(
+                                    '0 (0)',
+                                    style: getRegularStyle(
+                                      color: Colors.black,
+                                      fontSize: FontSize.s14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                       ],
                     )
                   ],

@@ -19,7 +19,7 @@ class CustomerMainScreen extends StatefulWidget {
 }
 
 class _CustomerMainStateScreen extends State<CustomerMainScreen> {
-  var _pageIndex = 0;
+  late int _pageIndex;
   final List<Widget> _pages = const [
     CustomerHomeScreen(),
     CategoriesScreen(),
@@ -29,23 +29,21 @@ class _CustomerMainStateScreen extends State<CustomerMainScreen> {
     ProfileScreen(),
   ];
 
-  void setNewPage(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _pageIndex = widget.index != 0 ? widget.index : 0;
+  }
+
+  void _setNewPage(int index) {
     setState(() {
       _pageIndex = index;
     });
   }
 
   @override
-  void initState() {
-    if (widget.index != 0) {
-      setNewPage(widget.index);
-    }
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
@@ -54,43 +52,42 @@ class _CustomerMainStateScreen extends State<CustomerMainScreen> {
         style: TabStyle.reactCircle,
         initialActiveIndex: _pageIndex,
         items: [
-          buildTabItem(Icons.home, 0),
-          buildTabItem(Icons.manage_search, 1),
-          buildTabItem(Icons.favorite_border, 2),
-          buildTabItem(Icons.search, 3),
-
-          // cart
-          TabItem(
-            icon: Badge(
-              backgroundColor: Colors.white,
-              label: Text(
-                '${cartProvider.getCartQuantity}',
-                style: const TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              child: Icon(
-                Icons.shopping_cart,
-                size: _pageIndex == 4 ? 40 : 25,
-                color: accentColor,
-              ),
-            ),
-          ),
-          buildTabItem(Icons.person, 5),
+          _buildTabItem(Icons.home, 0),
+          _buildTabItem(Icons.category_outlined, 1),
+          _buildTabItem(Icons.favorite_border, 2),
+          _buildTabItem(Icons.search, 3),
+          _buildCartTabItem(cartProvider),
+          _buildTabItem(Icons.person, 5),
         ],
-        onTap: setNewPage,
+        onTap: _setNewPage,
       ),
       body: _pages[_pageIndex],
     );
   }
 
-  // custom tab item
-  TabItem<dynamic> buildTabItem(IconData icon, int pageIndex) {
+  TabItem<dynamic> _buildTabItem(IconData icon, int pageIndex) {
     return TabItem(
       icon: Icon(
         icon,
         color: accentColor,
         size: _pageIndex == pageIndex ? 40 : 25,
+      ),
+    );
+  }
+
+  TabItem<dynamic> _buildCartTabItem(CartProvider cartProvider) {
+    return TabItem(
+      icon: Badge(
+        backgroundColor: Colors.white,
+        label: Text(
+          '${cartProvider.getCartQuantity}',
+          style: const TextStyle(color: Colors.black),
+        ),
+        child: Icon(
+          Icons.shopping_cart,
+          size: _pageIndex == 4 ? 40 : 25,
+          color: accentColor,
+        ),
       ),
     );
   }

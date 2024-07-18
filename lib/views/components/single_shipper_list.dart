@@ -61,6 +61,11 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
     fetchVendorDetails();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   // Method to get the status label based on the status value
   String getStatusLabel(int status) {
     switch (status) {
@@ -83,7 +88,7 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
 
   // Method to launch map with directions from vendor to buyer
   Future<void> openMap() async {
-    final String buyerAddress = buyer.address ?? '';
+    final String buyerAddress = buyer.address;
     final String vendorAddress = vendor.address ?? '';
 
     final Uri googleMapsUri = Uri.parse(
