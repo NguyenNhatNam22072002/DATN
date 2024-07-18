@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:shoes_shop/constants/firebase_refs/collections.dart';
 import 'package:shoes_shop/views/shipper/profile/profile.dart';
 import 'package:shoes_shop/views/shipper/shipping/delivered_orders.dart';
 import 'package:shoes_shop/views/shipper/shipping/ready_to_delivery_orders.dart';
@@ -38,12 +40,30 @@ class _ShipperHomeScreenState extends State<ShipperHomeScreen>
       }
     } catch (e) {
       // Handle errors if any
-      print('Error fetching user details: $e');
+      if (kDebugMode) {
+        print('Error fetching user details: $e');
+      }
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  Stream<QuerySnapshot> _getReadyToDeliverOrders() {
+    return FirebaseCollections.ordersCollection
+        .where('status', isEqualTo: 6)
+        .where('shipperId', isEqualTo: _userId)
+        .limit(5)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> _getDeliveredOrders() {
+    return FirebaseCollections.ordersCollection
+        .where('status', isEqualTo: 1)
+        .where('shipperId', isEqualTo: _userId)
+        .limit(5)
+        .snapshots();
   }
 
   @override
@@ -137,7 +157,13 @@ class _ShipperHomeScreenState extends State<ShipperHomeScreen>
             children: [
               _buildLocationSection(),
               const SizedBox(height: 20),
-              _buildEarningsSection(), // Add this line
+              _buildEarningsSection(),
+              const SizedBox(height: 20),
+              _buildOrderSection("Ready to Deliver", _getReadyToDeliverOrders(),
+                  Icons.local_shipping),
+              const SizedBox(height: 20),
+              _buildOrderSection("Delivered Orders", _getDeliveredOrders(),
+                  Icons.check_circle),
               const SizedBox(height: 20),
               _buildGridSection(),
             ],
@@ -238,6 +264,64 @@ class _ShipperHomeScreenState extends State<ShipperHomeScreen>
         _buildGridItem('Earnings', Icons.attach_money, ProfileScreen()),
         _buildGridItem('Profile', Icons.person, ProfileScreen()),
       ],
+    );
+  }
+
+  Widget _buildOrderSection(
+      String title, Stream<QuerySnapshot> stream, IconData icon) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            StreamBuilder<QuerySnapshot>(
+              stream: stream,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                if (!snapshot.hasData) {
+                  return const Text("No data available");
+                }
+                int orderCount = snapshot.data!.docs.length;
+                return Text(
+                  '$orderCount',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to order list
+              },
+              child: const Text('View Details'),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:provider/provider.dart';
 import 'package:shoes_shop/views/shipper/home_screen.dart';
 import 'package:shoes_shop/views/shipper/shipping/delivered_orders.dart';
 import 'package:shoes_shop/views/shipper/profile/profile.dart';
+import 'package:shoes_shop/views/shipper/shipping/delivering_orders.dart';
 import 'package:shoes_shop/views/shipper/shipping/ready_to_delivery_orders.dart';
-import '../../providers/cart.dart';
 import '../../constants/color.dart';
 
 class ShipperMainScreen extends StatefulWidget {
@@ -21,6 +20,7 @@ class _ShipperMainStateScreen extends State<ShipperMainScreen> {
   final List<Widget> _pages = const [
     ShipperHomeScreen(),
     ReadyDeliveryScreen(),
+    DeliveringOrdersScreen(),
     DeliveredOrdersScreen(),
     ProfileScreen(),
   ];
@@ -41,8 +41,6 @@ class _ShipperMainStateScreen extends State<ShipperMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
-
     return Scaffold(
       bottomNavigationBar: ConvexAppBar(
         backgroundColor: primaryColor,
@@ -53,6 +51,7 @@ class _ShipperMainStateScreen extends State<ShipperMainScreen> {
           buildTabItem(Icons.home, 0),
           buildTabItem(Icons.local_shipping, 1),
           buildTabItem(Icons.local_shipping_outlined, 2),
+          buildTabItem(Icons.check_box, 3),
           buildTabItem(Icons.person, 3),
         ],
         onTap: setNewPage,

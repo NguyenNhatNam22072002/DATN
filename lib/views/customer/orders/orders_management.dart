@@ -26,6 +26,7 @@ class _OrdersManagementScreenState extends State<OrdersManagementScreen> {
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> ordersStream = FirebaseCollections.ordersCollection
         .where('customerId', isEqualTo: userId)
+        //.orderBy('date', descending: true) // Order by date descending
         .snapshots();
 
     return Scaffold(

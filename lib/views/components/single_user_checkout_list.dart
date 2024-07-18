@@ -45,15 +45,19 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
       DocumentSnapshot data = await FirebaseCollections.customersCollection
           .doc(widget.checkoutItem.customerId)
           .get();
-      setState(() {
-        buyer = Buyer.fromJson(data);
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          buyer = Buyer.fromJson(data);
+          isLoading = false;
+        });
+      }
     } catch (e) {
       // Handle error (e.g., show a snackbar)
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       if (kDebugMode) {
         print('Failed to fetch customer details: $e');
       }
@@ -69,12 +73,16 @@ class _SingleUserCheckOutListState extends State<SingleUserCheckOutList> {
           .get();
 
       if (refundSnapshot.docs.isNotEmpty) {
-        setState(() {
-          isRefunded = true;
-        });
+        if (mounted) {
+          setState(() {
+            isRefunded = true;
+          });
+        }
       }
     } catch (e) {
-      print('Failed to check refund status: $e');
+      if (kDebugMode) {
+        print('Failed to check refund status: $e');
+      }
     }
   }
 

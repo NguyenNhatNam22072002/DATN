@@ -121,7 +121,7 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
                     SlidableAction(
                       borderRadius: BorderRadius.circular(10),
                       onPressed: (context) {
-                        markAsDelivered(checkedOutItem, userId);
+                        markAsDelivering(checkedOutItem, userId);
                       },
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
@@ -141,43 +141,22 @@ class _ReadyDeliveryScreenState extends State<ReadyDeliveryScreen> {
     );
   }
 
-  void markAsDelivered(CheckedOutItem item, String shipperId) async {
+  void markAsDelivering(CheckedOutItem item, String shipperId) async {
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentReference orderRef =
             FirebaseCollections.ordersCollection.doc(item.orderId);
-        DocumentSnapshot orderSnapshot = await transaction.get(orderRef);
-        DocumentReference shipperRef =
-            FirebaseCollections.shippersCollection.doc(shipperId);
+
         transaction.update(orderRef, {
-          'status': 1,
+          'status': 2,
           'shipperId': shipperId,
         });
-        Map<String, dynamic>? shipperData =
-            orderSnapshot.data() as Map<String, dynamic>?;
-        double currentEarnings =
-            shipperData != null && shipperData.containsKey('earnings')
-                ? shipperData['earnings'] as double
-                : 0.0;
-        double newEarnings = currentEarnings + 1.0;
-        transaction.update(shipperRef, {'earnings': newEarnings});
-        String vendorId = orderSnapshot.get('vendorId');
-        DocumentReference vendorRef =
-            FirebaseCollections.vendorsCollection.doc(vendorId);
-        double totalAmount =
-            orderSnapshot['prodPrice'] * orderSnapshot['prodQuantity'];
-        DocumentSnapshot vendorSnapshot = await transaction.get(vendorRef);
-        double currentBalance = vendorSnapshot['balanceAvailable'] ?? 0.0;
-        transaction.update(
-            vendorRef, {'balanceAvailable': currentBalance + totalAmount});
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                'Order delivered, earnings updated, and vendor balance incremented')),
+        const SnackBar(content: Text('Order status updated to Delivering')),
       );
     } catch (error) {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $error')),
       );

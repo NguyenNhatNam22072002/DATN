@@ -105,6 +105,14 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
     }
   }
 
+  Future<void> callCustomer() async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: buyer.phone,
+    );
+    await launchUrl(launchUri);
+  }
+
   @override
   Widget build(BuildContext context) {
     // bottom sheet modal
@@ -239,12 +247,32 @@ class _SingleShipperCheckOutListState extends State<SingleShipperCheckOutList> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                ElevatedButton(
-                  onPressed: () async {
-                    await openMap();
-                    Navigator.of(context).pop(); // Close the bottom sheet
-                  },
-                  child: const Text('Open Map'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        await openMap();
+                        Navigator.of(context).pop(); // Close the bottom sheet
+                      },
+                      child: const Text(
+                        'Open Map',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await callCustomer();
+                        Navigator.of(context).pop(); // Close the bottom sheet
+                      },
+                      child: const Text(
+                        'Call',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
